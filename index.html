@@ -120,7 +120,7 @@ function playWord() {
   const reversed = currentWord.split("").reverse().join("").toLowerCase();
 
   if (word[0].toLowerCase() !== lastChar) {
-    message.textContent = `"${lastChar.toUpperCase()}"`;
+    message.textContent =`"${lastChar.toUpperCase()}"`;
     return;
   }
 
