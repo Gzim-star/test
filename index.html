@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Wort-Ketten-Spiel</title>
+<title>Word Chain Game</title>
 <style>
   html, body {
     height: 100%;
@@ -11,8 +11,8 @@
     justify-content: center;
     align-items: center;
     font-family: Arial, sans-serif;
-    background: #000000;
-    color: white;
+    background: #ffffff;
+    color: black;
     text-align: center;
   }
 
@@ -20,7 +20,7 @@
     width: 90%;
     max-width: 700px;
     padding: 20px;
-    background: #111;
+    background: #f1f1f1;
     border-radius: 15px;
   }
 
@@ -47,7 +47,7 @@
     font-size: 1.5em;
     padding: 10px;
     border-radius: 10px;
-    border: none;
+    border: 1px solid #ccc;
     margin-bottom: 15px;
     text-align: center;
   }
@@ -84,11 +84,11 @@
 <body>
 
 <div id="gameContainer">
-  <h1>Wort-Ketten-Spiel 🧠</h1>
-  <div id="wordDisplay">Startwort: Apfel</div>
+  <h1>Word Chain Game 🧠</h1>
+  <div id="wordDisplay">Start word: Apple</div>
 
   <div id="inputContainer">
-    <input type="text" id="playerWord" placeholder="Dein Wort hier" autofocus>
+    <input type="text" id="playerWord" placeholder="Type your word here" autofocus>
     <button onclick="playWord()">OK</button>
   </div>
 
@@ -96,11 +96,16 @@
 </div>
 
 <script>
-let currentWord = "Apfel";
+let currentWord = "Apple";
 const usedWords = [currentWord];
 
-// Einfache KI-Wortliste
-const wordList = ["Lamm", "Maus", "Sonne", "Ente", "Eule", "Elefant", "Tiger", "Reh", "Hase", "Erbse", "Erdbeere", "Apfel", "Lampe"];
+// Expanded AI word list
+const wordList = [
+  "Apple", "Elephant", "Tiger", "Rabbit", "Tree", "Eagle", "Egg", "Giraffe",
+  "Fish", "Horse", "Orange", "Grapes", "Snake", "Emu", "Umbrella", "Lion",
+  "Nut", "Tapir", "Rat", "Tomato", "Owl", "Lemon", "Night", "Hat", "Turtle",
+  "Eel", "Lamb", "Bread", "Dog", "Goat", "Ant", "Seal", "Lily", "Yak", "Kangaroo"
+];
 
 function playWord() {
   const playerWord = document.getElementById("playerWord").value.trim();
@@ -110,37 +115,52 @@ function playWord() {
 
   const lastChar = currentWord.slice(-1).toLowerCase();
   if (playerWord[0].toLowerCase() !== lastChar) {
-    messageDiv.textContent = `❌ Dein Wort muss mit "${lastChar.toUpperCase()}" beginnen!`;
+    messageDiv.textContent = `❌ Your word must start with "${lastChar.toUpperCase()}"!`;
     return;
   }
 
   if (usedWords.includes(playerWord)) {
-    messageDiv.textContent = "❌ Dieses Wort wurde schon benutzt!";
+    messageDiv.textContent = "❌ This word has already been used!";
     return;
   }
 
   usedWords.push(playerWord);
   currentWord = playerWord;
-  document.getElementById("wordDisplay").textContent = `Dein Wort: ${currentWord}`;
+  document.getElementById("wordDisplay").textContent = `Your word: ${currentWord}`;
   document.getElementById("playerWord").value = "";
   messageDiv.textContent = "";
 
   setTimeout(aiTurn, 500);
 }
 
+/* 🧠 SMART AI */
 function aiTurn() {
   const lastChar = currentWord.slice(-1).toLowerCase();
-  const possibleWords = wordList.filter(w => w[0].toLowerCase() === lastChar && !usedWords.includes(w));
+
+  // Filter words starting with last char and not used
+  let possibleWords = wordList.filter(w => w[0].toLowerCase() === lastChar && !usedWords.includes(w));
 
   if (possibleWords.length === 0) {
-    document.getElementById("message").textContent = "🎉 Du hast gewonnen! Die KI findet kein Wort mehr.";
+    document.getElementById("message").textContent = "🎉 You win! The AI cannot find a word.";
     return;
   }
 
-  const aiWord = possibleWords[Math.floor(Math.random() * possibleWords.length)];
-  usedWords.push(aiWord);
-  currentWord = aiWord;
-  document.getElementById("wordDisplay").textContent = `KI sagt: ${currentWord}`;
+  // SMART AI: choose a word where next letter is hard for player
+  let bestWord = possibleWords[0];
+  let maxOptions = -1;
+
+  for (let w of possibleWords) {
+    const nextChar = w.slice(-1).toLowerCase();
+    const playerOptions = wordList.filter(p => p[0].toLowerCase() === nextChar && !usedWords.includes(p));
+    if (playerOptions.length > maxOptions) {
+      maxOptions = playerOptions.length;
+      bestWord = w;
+    }
+  }
+
+  usedWords.push(bestWord);
+  currentWord = bestWord;
+  document.getElementById("wordDisplay").textContent = `AI says: ${currentWord}`;
 }
 </script>
 
