@@ -4,100 +4,124 @@
 <meta charset="UTF-8">
 <title>Word Chain Game</title>
 
+<!-- 🔒 verhindert Springen & Zoomen -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
 <!-- Pixel Font -->
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
 <style>
-  html, body {
-    height: 100%;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: Arial, sans-serif;
-    background: #000000; /* ✅ Hintergrund SCHWARZ */
-    color: white;
-    text-align: center;
-  }
+html, body {
+  height: 100%;
+  margin: 0;
+}
 
-  #gameContainer {
-    width: 90%;
-    max-width: 700px;
-    padding: 20px;
-    background: #000000; /* ✅ Tablet SCHWARZ */
-    border-radius: 15px;
-    box-shadow: 0 0 25px rgba(255,255,255,0.08);
-  }
+/* 🔒 Fester Center-Wrapper */
+body {
+  display: grid;
+  place-items: center;          /* ✅ IMMER exakt mittig */
+  background: #000000;
+  color: white;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  overflow-x: hidden;           /* ❌ kein seitliches Rutschen */
+}
 
-  h1 {
-    font-size: 1.8em;
-    margin-bottom: 20px;
-    color: #4dd0e1;
-    font-family: 'Press Start 2P', cursive; /* Pixel Style */
-  }
+/* 🟦 TABLET / SPIELBOX */
+#gameContainer {
+  width: 90%;
+  max-width: 700px;
+  padding: 20px;
+  background: #000000;
+  border-radius: 15px;
+  box-shadow: 0 0 25px rgba(255,255,255,0.08);
+  box-sizing: border-box;       /* 🔒 stabil */
+}
 
-  #wordDisplay {
-    font-size: 1.4em;
-    margin: 20px 0;
-    min-height: 50px;
-    color: white;
-    font-family: 'Press Start 2P', cursive;
-  }
+/* 🟩 PIXEL TITLE */
+h1 {
+  font-size: 1.8em;
+  margin-bottom: 20px;
+  color: #4dd0e1;
+  font-family: 'Press Start 2P', cursive;
+}
 
-  #inputContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+/* 🧠 WORD DISPLAY */
+#wordDisplay {
+  font-size: 1.4em;
+  margin: 20px 0;
+  min-height: 50px;
+  font-family: 'Press Start 2P', cursive;
+}
 
-  #playerWord {
-    width: 80%;
-    font-size: 1em;
-    padding: 10px;
-    border-radius: 10px;
-    border: none;
-    margin-bottom: 15px;
-    text-align: center;
-  }
+/* INPUT */
+#inputContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-  button {
-    padding: 12px 25px;
-    font-size: 1em;
-    border: none;
-    border-radius: 10px;
-    background: #2e7d32;
-    color: white;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
+#playerWord {
+  width: 80%;
+  max-width: 400px;
+  font-size: 1em;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  margin-bottom: 15px;
+  text-align: center;
+  box-sizing: border-box;   /* 🔒 kein Springen */
+}
 
-  button:hover {
-    background: #4caf50;
-  }
+/* BUTTON */
+button {
+  padding: 12px 25px;
+  font-size: 1em;
+  border: none;
+  border-radius: 10px;
+  background: #2e7d32;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
 
-  #message {
-    margin-top: 20px;
-    font-size: 1em;
-    min-height: 40px;
-    color: white;
-  }
+button:hover {
+  background: #4caf50;
+}
 
-  @media (max-width: 768px) {
-    h1 { font-size: 1.4em; }
-    #wordDisplay { font-size: 1.2em; }
-    #playerWord { font-size: 0.9em; }
-    button { font-size: 0.9em; padding: 10px 20px; }
-  }
+#message {
+  margin-top: 20px;
+  font-size: 1em;
+  min-height: 40px;
+}
+
+/* 📱 MOBILE */
+@media (max-width: 768px) {
+  h1 { font-size: 1.4em; }
+  #wordDisplay { font-size: 1.2em; }
+  #playerWord { font-size: 0.9em; }
+  button { font-size: 0.9em; padding: 10px 20px; }
+}
 </style>
 </head>
+
 <body>
 
 <div id="gameContainer">
   <h1>Word Chain Game 🧠</h1>
+
   <div id="wordDisplay">Start word: Apple</div>
 
   <div id="inputContainer">
-    <input type="text" id="playerWord" placeholder="Type your word here" autofocus>
+    <input
+      type="text"
+      id="playerWord"
+      placeholder="Type your word here"
+      inputmode="text"
+      autocomplete="off"
+      autocorrect="off"
+      autocapitalize="none"
+    >
     <button onclick="playWord()">OK</button>
   </div>
 
