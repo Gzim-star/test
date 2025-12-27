@@ -29,7 +29,7 @@ body {
   right: 20px;
   background: none;
   border: none;
-  color: white;
+  color: whith;
   font-size: 28px;
   cursor: pointer;
   z-index: 1000;
@@ -39,7 +39,7 @@ body {
 .modal {
   display: none;
   position: fixed;
-  z-index: 1000;
+  z-index: 1001;
   left: 0;
   top: 0;
   width: 100%;
@@ -53,13 +53,13 @@ body {
   border-radius: 12px;
   width: 80%;
   max-width: 400px;
-  color: white;
+  color: whith;
   text-align: left;
   max-height: 63vh; /* maximale Höhe */
   overflow-y: auto;  /* scrollen, wenn Text zu lang ist */
 }
 .close {
-  color: white;
+  color: #00000000;
   float: right;
   font-size: 28px;
   font-weight: bold;
@@ -100,13 +100,10 @@ button:hover { background: #00000000; }
 .modal-content li {
   font-family: 'Press Start 2P', cursive;
   font-size: 0.8em;
-  color: white
-}
-.modal.open {
-  display: block;
+  color: whith;
 }
 
-  /* ➕ Zeilenumbrüche korrekt anzeigen */
+/* ➕ Zeilenumbrüche korrekt anzeigen */
 .modal-content p {
   white-space: pre-line;
 }
@@ -208,15 +205,13 @@ Only those who think cleverly, react quickly, and recognize patterns can reach t
     
   `;
   typeText(tipModal.querySelector('p'), tipText, 0.5);
-  closeBtn.onclick = () => {
-  tipModal.classList.remove('open');
+  tipModal.style.display = 'block';
 };
 
-window.onclick = (e) => {
-  if (e.target === tipModal) {
-    tipModal.classList.remove('open');
-  
+closeBtn.onclick = () => tipModal.style.display = 'none';
 
+window.onclick = (e) => { 
+  if(e.target === tipModal) tipModal.style.display = 'none';
 };// ========================== TYPEWRITER EFFECT ==========================
 function typeText(element, text, speed = 15) {
   element.innerHTML = "";
