@@ -99,10 +99,10 @@ button:hover { background: #4caf50; }
     grid-gap:5px;
     margin-top:20px;
   ">
-    <div class="puzzle-piece" draggable="true" data-pos="1" style="width:100px;height:100px;background:red;cursor:grab;"></div>
-    <div class="puzzle-piece" draggable="true" data-pos="2" style="width:100px;height:100px;background:blue;cursor:grab;"></div>
-    <div class="puzzle-piece" draggable="true" data-pos="3" style="width:100px;height:100px;background:green;cursor:grab;"></div>
-    <div class="puzzle-piece" draggable="true" data-pos="4" style="width:100px;height:100px;background:yellow;cursor:grab;"></div>
+    <div class="puzzle-piece" draggable="true" data-pos="1" style="width:100px;height:100px;background:url('flow.jpg') 0 0/200% 200%; cursor:grab;"></div>
+    <div class="puzzle-piece" draggable="true" data-pos="2" style="width:100px;height:100px;background:url('flow.jpg') -100px 0/200% 200%; cursor:grab;"></div>
+    <div class="puzzle-piece" draggable="true" data-pos="3" style="width:100px;height:100px;background:url('flow.jpg') 0 -100px/200% 200%; cursor:grab;"></div>
+    <div class="puzzle-piece" draggable="true" data-pos="4" style="width:100px;height:100px;background:url('flow.jpg') -100px -100px/200% 200%; cursor:grab;"></div>
   </div>
   <p id="puzzleMessage" style="margin-top:15px;"></p>
 </div>
@@ -154,19 +154,24 @@ pieces.forEach(piece => {
   piece.addEventListener('drop', e => {
     e.preventDefault();
     if(dragged !== e.target){
-      // Swap colors (oder Inhalt)
-      let tempColor = dragged.style.background;
+      // Swap positions
+      let tempBG = dragged.style.background;
       dragged.style.background = e.target.style.background;
-      e.target.style.background = tempColor;
+      e.target.style.background = tempBG;
       checkPuzzle();
     }
   });
 });
 
 function checkPuzzle(){
-  const correctColors = ["red","blue","green","yellow"];
-  const currentColors = Array.from(pieces).map(p => p.style.background);
-  if(currentColors.join() === correctColors.join()){
+  const correctBG = [
+    "url(\"flow.jpg\") 0 0/200% 200%",
+    "url(\"flow.jpg\") -100px 0/200% 200%",
+    "url(\"flow.jpg\") 0 -100px/200% 200%",
+    "url(\"flow.jpg\") -100px -100px/200% 200%"
+  ];
+  const currentBG = Array.from(pieces).map(p => p.style.background);
+  if(currentBG.join() === correctBG.join()){
     message.textContent = "✅ Correct! Overlay will close...";
     setTimeout(() => {
       overlay.style.display = 'none';
@@ -176,6 +181,7 @@ function checkPuzzle(){
     message.textContent = "🧩 Not solved yet!";
   }
 }
+
 
 
   // 🔒 Brain-Test Game Original by Gëzim Hasani
