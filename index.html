@@ -77,7 +77,6 @@ button:hover { background: #4caf50; }
 </head>
 
 <body>
-<!-- Overlay -->
 <div id="dimensionOverlay" style="
   display:none;
   position:fixed;
@@ -92,10 +91,10 @@ button:hover { background: #4caf50; }
   align-items:center;
   padding:20px;
 ">
-  <p>🧩 Solve the puzzle to close this overlay!</p>
+  <p>🧩 Solve the 3x3 puzzle to close this overlay!</p>
   <div id="puzzle" style="
     display:grid;
-    grid-template-columns: 100px 100px;
+    grid-template-columns: 100px 100px 100px;
     grid-gap:5px;
     margin-top:20px;
   ">
@@ -103,12 +102,15 @@ button:hover { background: #4caf50; }
     <div class="puzzle-piece" data-pos="2" style="width:100px;height:100px;background:blue;cursor:pointer;"></div>
     <div class="puzzle-piece" data-pos="3" style="width:100px;height:100px;background:green;cursor:pointer;"></div>
     <div class="puzzle-piece" data-pos="4" style="width:100px;height:100px;background:yellow;cursor:pointer;"></div>
+    <div class="puzzle-piece" data-pos="5" style="width:100px;height:100px;background:orange;cursor:pointer;"></div>
+    <div class="puzzle-piece" data-pos="6" style="width:100px;height:100px;background:purple;cursor:pointer;"></div>
+    <div class="puzzle-piece" data-pos="7" style="width:100px;height:100px;background:pink;cursor:pointer;"></div>
+    <div class="puzzle-piece" data-pos="8" style="width:100px;height:100px;background:cyan;cursor:pointer;"></div>
+    <div class="puzzle-piece" data-pos="9" style="width:100px;height:100px;background:white;cursor:pointer;"></div>
   </div>
   <p id="puzzleMessage" style="margin-top:15px;"></p>
 </div>
 
-<!-- ©️2026 Button -->
-<div id="copyright" style="position:absolute; bottom:10px; right:10px; cursor:pointer;">©️2026</div>
   <div id="gameContainer">
   <h1>🧠</h1>
   <div id="wordDisplay">Start word: Apple</div>
@@ -130,16 +132,17 @@ button:hover { background: #4caf50; }
 </div>
 
 <script>
+
 const overlay = document.getElementById('dimensionOverlay');
-const copyright = document.getElementById('copyright');
 const pieces = document.querySelectorAll('.puzzle-piece');
 const message = document.getElementById('puzzleMessage');
 
 let selected = null;
 
-copyright.onclick = () => {
+// Funktion zum Öffnen des Overlay (kann angepasst werden)
+function openOverlay() {
   overlay.style.display = 'flex';
-};
+}
 
 // Klick-Tausch Logik
 pieces.forEach(piece => {
@@ -160,7 +163,7 @@ pieces.forEach(piece => {
 });
 
 function checkPuzzle(){
-  const correctColors = ["red","blue","green","yellow"];
+  const correctColors = ["red","blue","green","yellow","orange","purple","pink","cyan","white"];
   const currentColors = Array.from(pieces).map(p => p.style.background);
   if(currentColors.join() === correctColors.join()){
     message.textContent = "✅ Correct! Overlay will close...";
