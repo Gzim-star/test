@@ -166,7 +166,7 @@ function checkPuzzle(){
   const correctColors = ["red","blue","green","yellow","orange","purple","pink","cyan","white"];
   const currentColors = Array.from(pieces).map(p => p.style.background);
   if(currentColors.join() === correctColors.join()){
-    message.textContent = "✅";
+    
     setTimeout(() => {
       overlay.style.display = 'none';
       message.textContent = "";
