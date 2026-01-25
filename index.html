@@ -19,9 +19,9 @@
   /* Grid */
   #grid {
     display: grid;
-    grid-template-columns: repeat(12, 40px); /* 12 Spalten, kleinere Zellen */
-    grid-template-rows: repeat(12, 40px);    /* 12 Reihen */
-    gap: 4px;
+    grid-template-columns: repeat(12, 60px); /* 12 Spalten, größere Zellen */
+    grid-template-rows: repeat(12, 60px);    /* 12 Reihen */
+    gap: 6px;
     transition: opacity 0.5s;
   }
 
@@ -30,7 +30,7 @@
     background-color: #808080;
     cursor: pointer;
     transition: opacity 0.2s, transform 0.2s;
-    border-radius: 50%;
+    border-radius: 50%; /* rund */
   }
 
   .active {
@@ -55,10 +55,10 @@
 
   /* Lösung Button unter Grid, zentriert */
   #solutionBtn {
-    padding: 10px 20px;
+    padding: 12px 24px;
     font-size: 16px;
     cursor: pointer;
-    background-color: limegreen; /* Farbe ändern wie du willst */
+    background-color: limegreen; /* hier Farbe ändern */
     color: black;
     border: none;
     border-radius: 8px;
