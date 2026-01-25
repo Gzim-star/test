@@ -15,6 +15,7 @@
     overflow: hidden;
   }
 
+  /* Grid */
   #grid {
     display: grid;
     grid-template-columns: repeat(6, 60px); /* 6 Spalten */
@@ -23,6 +24,7 @@
     transition: opacity 0.5s;
   }
 
+  /* Zellen */
   .cell {
     background-color: #808080;
     cursor: pointer;
@@ -33,6 +35,7 @@
     opacity: 0.4;
   }
 
+  /* Restart Button */
   #restart {
     position: absolute;
     top: 50%;
@@ -47,16 +50,29 @@
     display: none;
     z-index: 1000;
   }
+
+  /* Lösung Button */
+  #solutionBtn {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 2000;
+    padding: 10px 15px;
+    font-size: 14px;
+    cursor: pointer;
+  }
 </style>
 </head>
 <body>
 
 <div id="grid"></div>
 <div id="restart" title="Restart"></div>
+<button id="solutionBtn">Lösung anzeigen</button>
 
 <script>
 const grid = document.getElementById("grid");
 const restartBtn = document.getElementById("restart");
+const solutionBtn = document.getElementById("solutionBtn");
 const size = 6; // 6x6 Grid
 let state = [];
 let gameOver = false;
@@ -117,6 +133,62 @@ restartBtn.onclick = () => {
   gameOver = false;
   render();
   checkWin();
+}
+
+// -------------------
+// Lösung berechnen
+function solvePuzzle(state) {
+  const n = size*size;
+  let matrix = [];
+  let vector = state.slice(); // Kopie
+
+  // Matrix erstellen
+  for(let i=0;i<n;i++){
+    matrix[i] = Array(n).fill(0);
+    matrix[i][i] = 1;
+
+    let row = Math.floor(i/size);
+    let col = i%size;
+    if(row>0) matrix[i][i-size] = 1;
+    if(row<size-1) matrix[i][i+size] = 1;
+    if(col>0) matrix[i][i-1] = 1;
+    if(col<size-1) matrix[i][i+1] = 1;
+  }
+
+  // Gauss-Jordan-Elimination Mod 2
+  for(let i=0;i<n;i++){
+    if(matrix[i][i]===0){
+      for(let j=i+1;j<n;j++){
+        if(matrix[j][i]===1){
+          [matrix[i],matrix[j]] = [matrix[j],matrix[i]];
+          [vector[i],vector[j]] = [vector[j],vector[i]];
+          break;
+        }
+      }
+    }
+
+    for(let j=0;j<n;j++){
+      if(i!==j && matrix[j][i]===1){
+        for(let k=0;k<n;k++){
+          matrix[j][k] ^= matrix[i][k];
+        }
+        vector[j] ^= vector[i];
+      }
+    }
+  }
+
+  // vector enthält die Lösung
+  let solution = [];
+  for(let i=0;i<n;i++){
+    if(vector[i]===1) solution.push(i);
+  }
+  return solution;
+}
+
+// Button klick: Lösung anzeigen
+solutionBtn.onclick = () => {
+  let solution = solvePuzzle(state);
+  alert("Klicke diese Zellen: " + solution.map(i => `(${Math.floor(i/6)+1},${i%6+1})`).join(", "));
 }
 
 render();
