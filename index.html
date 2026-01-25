@@ -3,173 +3,206 @@
 <head>
 <meta charset="UTF-8">
 <title>State Puzzle 12x12 Rund</title>
+
 <style>
-  body {
-    margin: 0;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #000;
-    font-family: Arial, sans-serif;
-    overflow: hidden; /* Scrollen verhindern */
-  }
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: black;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+}
 
-  /* Wrapper für Grid + Lösung-Button */
-  .game-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+/* Haupt-Wrapper */
+.game-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-  /* Grid */
-  #grid {
-    display: grid;
-    grid-template-columns: repeat(12, min(60px, 6vw));
-    grid-template-rows: repeat(12, min(60px, 6vw));
-    gap: 6px;
-    transition: opacity 0.5s;
-  }
+/* Obere Zahlen */
+.top-labels {
+  display: grid;
+  grid-template-columns: 40px repeat(12, min(60px, 6vw));
+  gap: 6px;
+  margin-bottom: 6px;
+}
 
-  /* Zellen rund */
-  .cell {
-    background-color: #808080;
-    cursor: pointer;
-    transition: opacity 0.2s, transform 0.2s;
-    border-radius: 50%;
-  }
+.top-labels span {
+  color: #aaa;
+  font-size: 14px;
+  text-align: center;
+}
 
-  .active {
-    opacity: 0.4;
-  }
+/* Grid + linke Zahlen */
+.grid-row {
+  display: flex;
+}
 
-  /* Lösung Button unter Grid, zentriert */
-  #solutionBtn {
-    padding: 12px 24px;
-    font-size: 16px;
-    cursor: pointer;
-    background-color: limegreen;
-    color: black;
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    transition: background 0.3s;
-    margin-top: 15px;
-  }
+/* Linke Zahlen */
+.left-labels {
+  display: grid;
+  grid-template-rows: repeat(12, min(60px, 6vw));
+  gap: 6px;
+  margin-right: 6px;
+}
 
-  #solutionBtn:hover {
-    background-color: #32cd32;
-  }
+.left-labels span {
+  color: #aaa;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Grid */
+#grid {
+  display: grid;
+  grid-template-columns: repeat(12, min(60px, 6vw));
+  grid-template-rows: repeat(12, min(60px, 6vw));
+  gap: 6px;
+}
+
+/* Zellen */
+.cell {
+  background: #777;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.cell.active {
+  opacity: 0.4;
+}
+
+/* Lösung Button */
+#solutionBtn {
+  margin-top: 18px;
+  padding: 12px 26px;
+  font-size: 16px;
+  background: limegreen;
+  color: black;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#solutionBtn:hover {
+  background: #32cd32;
+}
 </style>
 </head>
+
 <body>
 
-<!-- Wrapper für Grid + Lösung-Button -->
 <div class="game-wrapper">
-  <div id="grid"></div>
+
+  <!-- Obere Zahlen -->
+  <div class="top-labels">
+    <span></span>
+    <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span>
+    <span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
+  </div>
+
+  <!-- Linke Zahlen + Grid -->
+  <div class="grid-row">
+    <div class="left-labels">
+      <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span>
+      <span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
+    </div>
+
+    <div id="grid"></div>
+  </div>
+
   <button id="solutionBtn">Lösung anzeigen</button>
+
 </div>
 
 <script>
 const grid = document.getElementById("grid");
 const solutionBtn = document.getElementById("solutionBtn");
-const size = 12; // 12x12 Grid = 144 Felder
+const size = 12;
 let state = [];
-let gameOver = false;
 
-// Zufällige Initialisierung
-for(let i=0; i<size*size; i++){
+// Initialisierung
+for (let i = 0; i < size * size; i++) {
   state[i] = Math.random() > 0.5 ? 1 : 0;
 }
 
-// Render Funktion
+// Render
 function render() {
   grid.innerHTML = "";
   state.forEach((v, i) => {
     const cell = document.createElement("div");
     cell.className = "cell" + (v ? " active" : "");
-    cell.onclick = () => {
-      if(!gameOver) toggle(i);
-    };
+    cell.onclick = () => toggle(i);
     grid.appendChild(cell);
   });
 }
 
-// Zellen toggeln
+// Toggle
 function toggle(i) {
-  const neighbors = [i, i-1, i+1, i-size, i+size];
-
-  neighbors.forEach(n => {
-    if(n >= 0 && n < size*size && Math.abs((n%size)-(i%size)) <= 1){
-      state[n] ^= 1;
+  const n = [i, i-1, i+1, i-size, i+size];
+  n.forEach(x => {
+    if (
+      x >= 0 &&
+      x < size * size &&
+      Math.abs((x % size) - (i % size)) <= 1
+    ) {
+      state[x] ^= 1;
     }
   });
-
   render();
-  checkWin();
 }
 
-// Überprüfung
-function checkWin() {
-  if(state.every(v => v === 0)){
-    grid.style.opacity = "0.3";
-    gameOver = true;
-  } else {
-    grid.style.opacity = "1";
-    gameOver = false;
-  }
-}
-
-// Lösung berechnen
+// Lösung
 function solvePuzzle(state) {
-  const n = size*size;
+  const n = size * size;
   let matrix = [];
-  let vector = state.slice(); 
+  let vector = state.slice();
 
-  for(let i=0;i<n;i++){
+  for (let i = 0; i < n; i++) {
     matrix[i] = Array(n).fill(0);
     matrix[i][i] = 1;
-    let row = Math.floor(i/size);
-    let col = i%size;
-    if(row>0) matrix[i][i-size] = 1;
-    if(row<size-1) matrix[i][i+size] = 1;
-    if(col>0) matrix[i][i-1] = 1;
-    if(col<size-1) matrix[i][i+1] = 1;
+    let r = Math.floor(i / size);
+    let c = i % size;
+    if (r > 0) matrix[i][i - size] = 1;
+    if (r < size - 1) matrix[i][i + size] = 1;
+    if (c > 0) matrix[i][i - 1] = 1;
+    if (c < size - 1) matrix[i][i + 1] = 1;
   }
 
-  for(let i=0;i<n;i++){
-    if(matrix[i][i]===0){
-      for(let j=i+1;j<n;j++){
-        if(matrix[j][i]===1){
-          [matrix[i],matrix[j]] = [matrix[j],matrix[i]];
-          [vector[i],vector[j]] = [vector[j],vector[i]];
+  for (let i = 0; i < n; i++) {
+    if (!matrix[i][i]) {
+      for (let j = i + 1; j < n; j++) {
+        if (matrix[j][i]) {
+          [matrix[i], matrix[j]] = [matrix[j], matrix[i]];
+          [vector[i], vector[j]] = [vector[j], vector[i]];
           break;
         }
       }
     }
-
-    for(let j=0;j<n;j++){
-      if(i!==j && matrix[j][i]===1){
-        for(let k=0;k<n;k++){
-          matrix[j][k] ^= matrix[i][k];
-        }
+    for (let j = 0; j < n; j++) {
+      if (i !== j && matrix[j][i]) {
+        for (let k = 0; k < n; k++) matrix[j][k] ^= matrix[i][k];
         vector[j] ^= vector[i];
       }
     }
   }
 
-  let solution = [];
-  for(let i=0;i<n;i++){
-    if(vector[i]===1) solution.push(i);
-  }
-  return solution;
+  return vector
+    .map((v, i) => v ? `(${Math.floor(i/size)+1},${i%size+1})` : null)
+    .filter(Boolean);
 }
 
-// Button klick: Lösung anzeigen
+// Button
 solutionBtn.onclick = () => {
-  let solution = solvePuzzle(state);
-  alert("Klicke diese Zellen: " + solution.map(i => `(${Math.floor(i/size)+1},${i%size+1})`).join(", "));
-}
+  alert("Klicke diese Zellen:\n" + solvePuzzle(state).join(", "));
+};
 
 render();
 </script>
