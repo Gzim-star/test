@@ -13,16 +13,19 @@
     align-items: center;
     background-color: #000;
     font-family: Arial, sans-serif;
-    overflow: hidden;
+    overflow: hidden; /* Scrollen verhindern */
   }
 
   /* Grid */
   #grid {
     display: grid;
-    grid-template-columns: repeat(12, 60px); /* 12 Spalten, größere Zellen */
-    grid-template-rows: repeat(12, 60px);    /* 12 Reihen */
+    grid-template-columns: repeat(12, min(60px, 6vw));
+    grid-template-rows: repeat(12, min(60px, 6vw));
     gap: 6px;
     transition: opacity 0.5s;
+    margin: auto; /* zentriert */
+    max-width: calc(100vw - 20px);
+    max-height: calc(100vh - 120px); /* Platz für Lösung-Button */
   }
 
   /* Zellen rund */
@@ -30,27 +33,11 @@
     background-color: #808080;
     cursor: pointer;
     transition: opacity 0.2s, transform 0.2s;
-    border-radius: 50%; /* rund */
+    border-radius: 50%;
   }
 
   .active {
     opacity: 0.4;
-  }
-
-  /* Restart Button */
-  #restart {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: gold;
-    cursor: pointer;
-    box-shadow: 0 0 10px 3px gold;
-    display: none;
-    z-index: 1000;
   }
 
   /* Lösung Button unter Grid, zentriert */
@@ -58,7 +45,7 @@
     padding: 12px 24px;
     font-size: 16px;
     cursor: pointer;
-    background-color: #00000000; /* hier Farbe ändern */
+    background-color: limegreen;
     color: black;
     border: none;
     border-radius: 8px;
@@ -68,14 +55,13 @@
   }
 
   #solutionBtn:hover {
-    background-color: #00000000;
+    background-color: #32cd32;
   }
 </style>
 </head>
 <body>
 
 <div id="grid"></div>
-<div id="restart" title="Restart"></div>
 
 <!-- Lösung Button unter Grid -->
 <div style="display:flex; justify-content:center; width:100%;">
@@ -84,7 +70,6 @@
 
 <script>
 const grid = document.getElementById("grid");
-const restartBtn = document.getElementById("restart");
 const solutionBtn = document.getElementById("solutionBtn");
 const size = 12; // 12x12 Grid = 144 Felder
 let state = [];
@@ -126,23 +111,11 @@ function toggle(i) {
 function checkWin() {
   if(state.every(v => v === 0)){
     grid.style.opacity = "0.3";
-    restartBtn.style.display = "block";
     gameOver = true;
   } else {
     grid.style.opacity = "1";
-    restartBtn.style.display = "none";
     gameOver = false;
   }
-}
-
-// Restart Button Klick
-restartBtn.onclick = () => {
-  for(let i=0;i<size*size;i++){
-    state[i] = Math.random() > 0.5 ? 1 : 0;
-  }
-  gameOver = false;
-  render();
-  checkWin();
 }
 
 // Lösung berechnen
