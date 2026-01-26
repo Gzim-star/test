@@ -21,7 +21,8 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  transition: opacity 1.2s ease; /* 👈 Fade */
+  justify-content: center; /* vertikal zentrieren */
+  transition: opacity 1.2s ease;
 }
 
 .game-wrapper.hide {
@@ -32,8 +33,8 @@ body {
 /* Grid */
 #grid {
   display: grid;
-  grid-template-columns: repeat(12, min(60px, 6vw));
-  grid-template-rows: repeat(12, min(60px, 6vw));
+  grid-template-columns: repeat(12, 50px); /* feste Zellgröße */
+  grid-template-rows: repeat(12, 50px);    /* feste Zellgröße */
   gap: 6px;
 }
 
@@ -66,6 +67,10 @@ body {
   border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
+}
+
+#solutionBtn:hover {
+  background: #00000000;
 }
 </style>
 </head>
@@ -145,7 +150,7 @@ function checkSolved() {
   }
 }
 
-/* Lösung berechnen (bleibt gleich) */
+/* Lösung berechnen */
 function solvePuzzle(state) {
   const n = size * size;
   let matrix = [];
