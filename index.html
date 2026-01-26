@@ -2,9 +2,8 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>BrainTrials – State Puzzle</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<title>State Puzzle 12x12 Rund</title>
 
 <style>
 body {
@@ -25,17 +24,6 @@ body {
   align-items: center;
 }
 
-/* 🔍 Meta-Hinweis */
-.meta-hint {
-  margin-bottom: 16px;
-  font-family: 'Press Start 2P', cursive;
-  font-size: 10px;
-  color: #777;
-  text-align: center;
-  opacity: 0.85;
-  user-select: none;
-}
-
 /* Grid */
 #grid {
   display: grid;
@@ -52,9 +40,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: bold;
-  color: black;
+  color: black; /* Zahlen schwarz */
   user-select: none;
   transition: opacity 0.2s;
 }
@@ -63,10 +51,37 @@ body {
   opacity: 0.4;
 }
 
-/* Wenn gelöst → kein Klick mehr */
-.solved .cell {
+/* 🔒 Gesperrt nach Lösung */
+.cell.locked {
   pointer-events: none;
-  opacity: 0.25;
+  cursor: default;
+  opacity: 0.35;
+}
+
+/* Lösung Button */
+#solutionBtn {
+  margin-top: 18px;
+  padding: 12px 26px;
+  font-size: 16px;
+  background: #00000000;
+  color: black;
+  border: 1px solid #00000000;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.meta-hint {
+  margin-bottom: 14px;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 20px;
+  color: #777;
+  text-align: center;
+  opacity: 0.8;
+  user-select: none;
+}
+#solutionBtn:disabled {
+  opacity: 0.3;
+  cursor: default;
 }
 </style>
 </head>
@@ -74,18 +89,18 @@ body {
 <body>
 
 <div class="game-wrapper">
-
   <div class="meta-hint">
-    Somewhere, the solution exists.
-  </div>
-
+  Somewhere, the solution exists.
+</div>
   <div id="grid"></div>
-
+  <button id="solutionBtn">Lösung anzeigen</button>
 </div>
 
 <script>
 const grid = document.getElementById("grid");
+const solutionBtn = document.getElementById("solutionBtn");
 const size = 12;
+
 let state = [];
 let solved = false;
 
@@ -102,6 +117,8 @@ function render() {
     const cell = document.createElement("div");
     cell.className = "cell" + (v ? " active" : "");
 
+    if (solved) cell.classList.add("locked");
+
     const row = Math.floor(i / size);
     const col = i % size;
 
@@ -115,12 +132,12 @@ function render() {
 
     grid.appendChild(cell);
   });
-
-  checkSolved();
 }
 
 /* Toggle */
 function toggle(i) {
+  if (solved) return;
+
   const n = [i, i-1, i+1, i-size, i+size];
   n.forEach(x => {
     if (
@@ -131,16 +148,62 @@ function toggle(i) {
       state[x] ^= 1;
     }
   });
+
+  /* ✅ WIN CHECK */
+  if (state.every(v => v === 0)) {
+    solved = true;
+    solutionBtn.disabled = true;
+  }
+
   render();
 }
 
-/* Lösung prüfen */
-function checkSolved() {
-  if (state.every(v => v === 0)) {
-    solved = true;
-    grid.classList.add("solved");
+/* Lösung berechnen */
+function solvePuzzle(state) {
+  const n = size * size;
+  let matrix = [];
+  let vector = state.slice();
+
+  for (let i = 0; i < n; i++) {
+    matrix[i] = Array(n).fill(0);
+    matrix[i][i] = 1;
+
+    let r = Math.floor(i / size);
+    let c = i % size;
+
+    if (r > 0) matrix[i][i - size] = 1;
+    if (r < size - 1) matrix[i][i + size] = 1;
+    if (c > 0) matrix[i][i - 1] = 1;
+    if (c < size - 1) matrix[i][i + 1] = 1;
   }
+
+  for (let i = 0; i < n; i++) {
+    if (!matrix[i][i]) {
+      for (let j = i + 1; j < n; j++) {
+        if (matrix[j][i]) {
+          [matrix[i], matrix[j]] = [matrix[j], matrix[i]];
+          [vector[i], vector[j]] = [vector[j], vector[i]];
+          break;
+        }
+      }
+    }
+    for (let j = 0; j < n; j++) {
+      if (i !== j && matrix[j][i]) {
+        for (let k = 0; k < n; k++) matrix[j][k] ^= matrix[i][k];
+        vector[j] ^= vector[i];
+      }
+    }
+  }
+
+  return vector
+    .map((v, i) => v ? `(${Math.floor(i/size)+1},${i%size+1})` : null)
+    .filter(Boolean);
 }
+
+/* Button */
+solutionBtn.onclick = () => {
+  alert("Klicke diese Zellen:\n" + solvePuzzle(state).join(", "));
+};
 
 render();
 </script>
