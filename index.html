@@ -93,9 +93,9 @@ body {
 
 /* Lösung Box */
 #solutionBox {
-  background: #777;
-  color: white;
-  padding: 18px 25px;
+  background: white;
+  color: black;
+  padding: 18px 20px;
   border-radius: 0px;
   font-size: 18px;
   max-width: 85vw;
@@ -131,7 +131,7 @@ const solutionBox = document.getElementById("solutionBox");
 
 solutionBtn.onclick = () => {
   solutionBox.textContent =
-    "\n" + solvePuzzle(state).join(" <> ");
+    "\n" + solvePuzzle(state).join(" <~> ");
 
   solutionOverlay.classList.add("show");
 
