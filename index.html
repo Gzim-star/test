@@ -117,7 +117,7 @@ body {
 </div>
   <div id="grid"></div>
 
-  <button id="solutionBtn">Lösung anzeigen</button>
+  <button id="solutionBtn"></button>
 </div>
 
 
@@ -131,7 +131,7 @@ const solutionBox = document.getElementById("solutionBox");
 
 solutionBtn.onclick = () => {
   solutionBox.textContent =
-    "Tipp\n" + solvePuzzle(state).join(", ");
+    "Tipp the numbers:\n" + solvePuzzle(state).join(", ");
 
   solutionOverlay.classList.add("show");
 
