@@ -73,7 +73,10 @@ body {
 
 /* Lösung Overlay */
 #solutionOverlay {
-  position: fixed;
+  position: absolute;
+  top: 39.5%;
+  left: 46.5%;
+  transform: translate(-50%, -50%);
   inset: 0;
   background: rgba(0,0,0,0.55);
   display: flex;
@@ -131,7 +134,7 @@ const solutionBox = document.getElementById("solutionBox");
 
 solutionBtn.onclick = () => {
   solutionBox.textContent =
-    "\n" + solvePuzzle(state).join(" , ");
+    "\n" + solvePuzzle(state).join("  , ");
 
   solutionOverlay.classList.add("show");
 
