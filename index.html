@@ -151,16 +151,8 @@ const solutionBox = document.getElementById("solutionBox");
 solutionBtn.onclick = () => {
 solutionBox.innerHTML =
   solvePuzzle(state)
-    .map(p => {
-      const [r, c] = p.match(/\d+/g);
-      return `<span style="
-        display:inline-block;
-        min-width:60px;
-        margin:2px 6px;
-        opacity:.85
-      ">${r} · ${c}</span>`;
-    })
-    .join("");
+    .map(p => p.replace(/[()]/g, ""))
+    .join(" · ");
 
   solutionOverlay.classList.add("show");
 
