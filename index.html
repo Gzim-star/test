@@ -131,7 +131,7 @@ const solutionBox = document.getElementById("solutionBox");
 
 solutionBtn.onclick = () => {
   solutionBox.textContent =
-    "This numbers\n" + solvePuzzle(state).join(", ");
+    "This numbers\n" + solvePuzzle(state).join(",");
 
   solutionOverlay.classList.add("show");
 
