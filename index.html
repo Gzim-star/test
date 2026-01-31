@@ -67,6 +67,15 @@ body {
   user-select: none;
 }
 
+.cell.correct { background: #0f0; }
+.cell.wrong { background: #f00; }
+
+#message {
+  margin-top: 12px;
+  font-size: 18px;
+  color: #0f0;
+}
+
 .cell.active {
   opacity: 0.4;
 }
@@ -327,9 +336,9 @@ function checkClick(div) {
     div.classList.add("correct");
     currentIndex++;
 
-    if (currentIndex === positions.length) {
-      setTimeout(generateGrid, 1200);
-    }
+  if (currentIndex === positions.length) {
+    setTimeout(exitToFlow, 800);
+
   } else {
     div.classList.add("wrong");
     setTimeout(() => div.classList.remove("wrong"), 700);
@@ -396,17 +405,15 @@ function checkSolved() {
   if (state.every(v => v === 0)) {
     solved = true;
 
-    // 🔥 SOFORT Fade-Out starten
+    // State fade-out
     wrapper.classList.remove("show");
 
-    // ⏳ Nach Fade zurück zum Flow
+    // ⏳ danach IQ fade-in
     setTimeout(() => {
-      flowImage.style.display = "block";
-      flowImage.style.opacity = 1;
-
-      initState();
-      render();
-    }, 2500); // muss zur CSS-Dauer passen
+      ACTIVE_PUZZLE = "IQ";
+      wrapper.classList.add("show");
+      startPuzzle();
+    }, 2500);
   }
 }
 
@@ -455,6 +462,16 @@ function solvePuzzle(state) {
 
 
 render();
+function exitToFlow() {
+  wrapper.classList.remove("show");
+
+  setTimeout(() => {
+    flowImage.style.display = "block";
+    flowImage.style.opacity = 1;
+
+    ACTIVE_PUZZLE = "STATE";
+  }, 2500);
+}
 </script>
 
 </body>
