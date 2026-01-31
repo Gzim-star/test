@@ -200,7 +200,142 @@ function startPuzzle() {
     generateGrid(); // ← dein IQ-Puzzle Code
   }
 }
-/* FLOW → PUZZLE */
+<h1>IQ</h1>
+<div id="grid"></div>
+<div id="message"></div>
+
+<script>
+const grid = document.getElementById("grid");
+const message = document.getElementById("message");
+
+const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const words = [
+  "GZIM",  "MIND", "FLOW", "FOCUS", "VOID", "TRACE",
+  "LOGIC", "BRAIN", "THINK", "SHIFT", "AWARE",
+  "DEPTH", "VISION", "PATTERN", "REACT",
+  "MEMORY", "ATTENTION", "COGNITION"
+];
+
+let positions = [];
+let currentIndex = 0;
+
+/* 🧠 Grid erzeugen */
+function generateGrid() {
+  grid.innerHTML = "";
+  message.textContent = "";
+  currentIndex = 0;
+  positions = [];
+
+  /* 6 verschiedene Wörter wählen */
+const WORDS_PER_GRID = 6;
+
+const selected = [];
+while (selected.length < WORDS_PER_GRID) {
+  const w = words[Math.floor(Math.random() * words.length)];
+  if (!selected.includes(w)) selected.push(w);
+}
+
+  /* leeres Grid vorbereiten */
+  const gridData = Array.from({ length: 12 }, () =>
+    Array.from({ length: 12 }, () => null)
+  );
+
+  /* Wörter platzieren */
+  selected.forEach(word => placeWord(word, gridData));
+
+  /* Grid zeichnen */
+  for (let r = 0; r < 12; r++) {
+    for (let c = 0; c < 12; c++) {
+      const div = document.createElement("div");
+      div.className = "cell";
+
+      if (gridData[r][c]) {
+        div.textContent = gridData[r][c].letter;
+        positions.push({ div, order: gridData[r][c].order });
+      } else {
+        div.textContent = alphabet[Math.floor(Math.random() * alphabet.length)];
+      }
+
+      div.onclick = () => checkClick(div);
+      grid.appendChild(div);
+    }
+  }
+
+  /* Klick-Reihenfolge sortieren */
+  positions.sort((a, b) => a.order - b.order);
+}
+
+/* 🔤 Wort platzieren */
+let globalOrder = 0;
+
+function placeWord(word, gridData) {
+  const len = word.length;
+  let placed = false;
+
+  while (!placed) {
+    // 0 = horizontal ➡️ | 1 = vertikal ⬇️ | 2 = diagonal ↘️ | 3 = diagonal ↗️
+    let mode = Math.floor(Math.random() * 4); // jetzt 0-3 statt 0-2
+
+    const maxRow = (mode === 0 || mode === 3) ? 12 : 12 - len;
+    const maxCol = (mode === 1 || mode === 2 || mode === 3) ? 12 - len : 12;
+
+    const sr = Math.floor(Math.random() * maxRow);
+    const sc = Math.floor(Math.random() * maxCol);
+
+    let fits = true;
+    for (let i = 0; i < len; i++) {
+      let r = sr + (mode === 1 || mode === 2 ? i : 0);
+      let c = sc + (mode === 0 || mode === 2 ? i : 0);
+
+      if (mode === 3) { // ↗️
+        r = sr - i;
+        c = sc + i;
+      }
+
+      if (r < 0 || r >= 12 || c < 0 || c >= 12 || gridData[r][c]) {
+        fits = false;
+        break;
+      }
+    }
+
+    if (!fits) continue;
+
+    for (let i = 0; i < len; i++) {
+      let r = sr + (mode === 1 || mode === 2 ? i : 0);
+      let c = sc + (mode === 0 || mode === 2 ? i : 0);
+
+      if (mode === 3) { // ↗️
+        r = sr - i;
+        c = sc + i;
+      }
+
+      gridData[r][c] = {
+        letter: word[i],
+        order: globalOrder++
+      };
+    }
+
+    placed = true;
+  }
+}
+
+/* ✅ Klick prüfen */
+function checkClick(div) {
+  const expected = positions[currentIndex]?.div;
+
+  if (div === expected) {
+    div.classList.add("correct");
+    currentIndex++;
+
+    if (currentIndex === positions.length) {
+      setTimeout(generateGrid, 1200);
+    }
+  } else {
+    div.classList.add("wrong");
+    setTimeout(() => div.classList.remove("wrong"), 700);
+  }
+}
+  /* FLOW → PUZZLE */
 flowImage.onclick = () => {
   flowImage.style.opacity = 0;
 
