@@ -435,7 +435,7 @@ function generateIQGrid(){
   positions = []; 
   globalOrder = 0;
 
-  const WORDS_PER_GRID = 8;
+  const WORDS_PER_GRID = 6;
   currentIQWords = [];  // ← hier speichern wir die gewählten Wörter
   while(currentIQWords.length < WORDS_PER_GRID){
     const w = words[Math.floor(Math.random()*words.length)];
@@ -578,7 +578,7 @@ const colors = [
   colorOrder = 0;
 
   const selected = [];
-  while(selected.length < 10){
+  while(selected.length < 6){
     const c = colors[Math.floor(Math.random()*colors.length)];
     if(!selected.includes(c)) selected.push(c);
   }
