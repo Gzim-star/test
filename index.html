@@ -535,10 +535,11 @@ iqColorSolutionBtn.onclick = () => {
   iqColorSolutionOverlay.classList.add("show");
 
   setTimeout(
-    () => iqColorSolutionOverlay.classList.remove("show"),
+   ()=> iqColorSolutionOverlay.classList.remove("show"),
     5000
   );
 };
+  iqColorSolutionOverlay.onclick = ()=>iqColorSolutionOverlay.classList.remove("show");
 const colors = [
   { name:"RED",        value:"#e53935" },
   { name:"BLUE",       value:"#1e88e5" },
