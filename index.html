@@ -506,8 +506,11 @@ function checkClickIQ(div){
 
 function startIQColorPuzzle(){
   iqWrapper.classList.remove("show");
-  iqColorWrapper.classList.add("show");
-  generateColorGrid();
+
+  setTimeout(()=>{
+    iqColorWrapper.classList.add("show");
+    generateColorGrid();
+  }, 600); // gleiche Logik wie State → IQ
 }
  const colors = [
   { name:"RED", value:"#e53935" },
@@ -611,10 +614,11 @@ function checkColorClick(div){
   // EXIT IQ → FLOW
 function exitColorToFlow(){
   iqColorWrapper.classList.remove("show");
+
   setTimeout(()=>{
-    flowImage.style.display="block";
-    flowImage.style.opacity=1;
-  },1400);
+    flowImage.style.display = "block";
+    flowImage.style.opacity = 1;
+  }, 1500); // exakt gleiche Dauer wie CSS transition
 }
 
 </script>
