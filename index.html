@@ -221,14 +221,12 @@ const iqSolutionOverlay = document.getElementById("iqSolutionOverlay");
 const iqSolutionBox = document.getElementById("iqSolutionBox");
 
 iqSolutionBtn.onclick = () => {
-  // Liste der Wörter anzeigen
-  iqSolutionBox.innerHTML = words
+  iqSolutionBox.innerHTML = currentIQWords
     .map(w => `<span style="display:inline-block;min-width:60px;margin:2px 6px;opacity:.85">${w}</span>`)
     .join("");
 
   iqSolutionOverlay.classList.add("show");
 
-  // Automatisch schließen nach 5 Sekunden
   setTimeout(() => iqSolutionOverlay.classList.remove("show"), 5000);
 };
 
