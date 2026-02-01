@@ -210,7 +210,7 @@ const solutionBox = document.getElementById("solutionBox");
 let size = 12;
 let state = [];
 let solvedState = false;
-
+let currentIQWords = []; // <-- speichert die 6 aktuell gewählten Wörter
 // IQ
 const iqWrapper = document.getElementById("iqWrapper");
 const iqGrid = document.getElementById("iqGrid");
@@ -372,6 +372,7 @@ function startIQPuzzle(){
 function generateIQGrid(){
   iqGrid.innerHTML=""; message.textContent=""; currentIndex=0; positions=[]; globalOrder=0;
   const WORDS_PER_GRID=6;
+  currentIQWords = [];  // ← hier speichern wir die gewählten Wörter
   const selected=[];
   while(selected.length<WORDS_PER_GRID){
     const w=words[Math.floor(Math.random()*words.length)];
