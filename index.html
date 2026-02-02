@@ -168,6 +168,48 @@ body {
   font-size: 13px;
   cursor: pointer;
 }
+#iqSymbolSolutionOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 60px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  z-index: 50;
+}
+
+#iqSymbolSolutionOverlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#iqSymbolSolutionBox {
+  background: black;
+  color: white;
+  padding: 10px 12px;
+  border-radius: 0px;
+  font-size: 25px;
+  line-height: 1.4;
+  width: 90vw;
+  max-width: 90vh;
+  overflow-y: auto;
+  text-align: center;
+}
+
+#iqSymbolSolutionBtn {
+  margin-top: 24px;
+  align-self: center;
+  background: rgba(255,255,255,0.85);
+  color: black;
+  border: none;
+  padding: 8px 14px;
+  font-size: 13px;
+  cursor: pointer;
+}
 #iqColorSolutionOverlay {
   position: fixed;
   inset: 0;
@@ -236,6 +278,18 @@ body {
     <div id="iqSolutionBox"></div>
   </div>
 </div>
+<!-- IQ SYMBOL PUZZLE -->
+<div id="iqSymbolWrapper" class="game-wrapper">
+  <h1 style="color:white"></h1>
+  <div id="iqSymbolGrid" class="grid"></div>
+  <div id="symbolMessage"></div>
+
+  <button id="iqSymbolSolutionBtn"></button>
+
+  <div id="iqSymbolSolutionOverlay">
+    <div id="iqSymbolSolutionBox"></div>
+  </div>
+</div>
 <!-- IQ Color PUZZLE -->
 <div id="iqColorWrapper" class="game-wrapper">
   <h1 style="color:white"></h1>
@@ -264,6 +318,9 @@ let currentIQWords = []; // <-- speichert die 6 aktuell gewählten Wörter
 let colorPositions = [];
 let colorIndex = 0;
 let colorOrder = 0;
+let symbolPositions = [];
+let symbolIndex = 0;
+let symbolOrder = 0;
 // IQ
 const iqWrapper = document.getElementById("iqWrapper");
 const iqGrid = document.getElementById("iqGrid");
@@ -272,6 +329,14 @@ const message = document.getElementById("message");
 const iqSolutionBtn = document.getElementById("iqSolutionBtn");
 const iqSolutionOverlay = document.getElementById("iqSolutionOverlay");
 const iqSolutionBox = document.getElementById("iqSolutionBox");
+
+const iqSymbolWrapper = document.getElementById("iqSymbolWrapper");
+const iqSymbolGrid = document.getElementById("iqSymbolGrid");
+const symbolMessage = document.getElementById("symbolMessage");
+
+const iqSymbolSolutionBtn = document.getElementById("iqSymbolSolutionBtn");
+const iqSymbolSolutionOverlay = document.getElementById("iqSymbolSolutionOverlay");
+const iqSymbolSolutionBox = document.getElementById("iqSymbolSolutionBox");
 
 const iqColorWrapper = document.getElementById("iqColorWrapper");
 const iqColorGrid = document.getElementById("iqColorGrid");
@@ -490,6 +555,130 @@ function placeWordIQ(word,gridData){
   }
 }
 
+// CHECK CLICK IQ
+function checkClickIQ(div){
+  const expected=positions[currentIndex]?.div;
+  if(div===expected){
+    div.classList.add("correct"); currentIndex++;
+    if(currentIndex===positions.length){
+      setTimeout(()=>{ startIQSymbolPuzzle(); },1500);
+    }
+  }else{
+    div.classList.add("wrong");
+    setTimeout(()=>div.classList.remove("wrong"),700);
+  }
+}
+
+function startIQSymbolPuzzle(){
+  iqWrapper.classList.remove("show");
+
+  setTimeout(()=>{
+    iqSymbolWrapper.classList.add("show");
+    generateColorGrid();
+  }, 1500); // gleiche Logik wie State → IQ
+}  
+iqSymbolSolutionBtn.onclick = () => {
+  iqSymbolSolutionBox.innerHTML = currentIQSymbol
+    .map(w => `<span style="display:inline-block;min-width:60px;margin:2px 6px;opacity:.85">${w}</span>`)
+    .join("");
+
+  iqSymbolSolutionOverlay.classList.add("show");
+
+  setTimeout(() => iqSymbolSolutionOverlay.classList.remove("show"), 5000);
+};
+
+// Klick irgendwo schließt Overlay
+iqSymbolSolutionOverlay.onclick = () => iqSymbolSolutionOverlay.classList.remove("show");
+const symbolAlphabet =
+"-/:;()£&@“.,?!’[]{}#%^*+=_\\|~<>€$¥•⇐⇒⇑⇓⇖⇗⇘⇙⬈⬉⬊⬋➔➜➝➞➤➥➦➧➨➙⟵⟶⟷⟸⟹⟺⇦⇠";
+
+const symbolWords = [
+  "⇠•⟺€➤",
+  "⇠#@⟸;",
+  "⟸£⇠&@%",
+  "⇠[]%{}",
+  "<>⟸€⇠$",
+  "^⟸*+⇠=",
+  "|~⇠<>",
+  "?⟸!’.⇠",
+  "⬈()⟸£&",
+  "⇐/⇒&⇑⇓",
+  "⇖?⇗⇘!⇙",
+  "⬈/⬉$⬊?⬋"
+];
+ function generateSymbolGrid(){
+  iqSymbolGrid.innerHTML = "";
+  symbolPositions = [];
+  symbolIndex = 0;
+  symbolOrder = 0;
+
+  const selected = [];
+  while(selected.length < 6){
+    const c = symbol[Math.floor(Math.random()*symbols.length)];
+    if(!selected.includes(c)) selected.push(c);
+  }
+
+  const gridData = Array.from({length:12},()=>Array(12).fill(null));
+  selected.forEach(c => placeSymbol(c, gridData));
+
+  for(let r=0;r<12;r++){
+    for(let c=0;c<12;c++){
+      const div = document.createElement("div");
+      div.className = "cell symbol";
+
+      if(gridData[r][c]){
+        div.style.background = gridData[r][c].symbol;
+        symbolPositions.push({div, order:gridData[r][c].order, value:gridData[r][c].symbol});
+      } else {
+        div.style.background = symbols[Math.floor(Math.random()*symbols.length)].value;
+      }
+
+      div.onclick = ()=>checkSymbolClick(div);
+      iqSymbolGrid.appendChild(div);
+    }
+  }
+
+  symbolPositions.sort((a,b)=>a.order-b.order);
+}
+function placeSymbol(symbol, gridData){
+  const len = 3; // wie viele Felder pro Farbe (kannst du ändern)
+  let placed = false;
+
+  while(!placed){
+    const mode = Math.floor(Math.random()*4); 
+    // 0 ➡️ | 1 ⬇️ | 2 ↘️ | 3 ↗️
+
+    const maxRow = (mode===0||mode===3)?12:12-len;
+    const maxCol = (mode===1||mode===2||mode===3)?12-len:12;
+
+    const sr = Math.floor(Math.random()*maxRow);
+    const sc = Math.floor(Math.random()*maxCol);
+
+    let fits = true;
+    for(let i=0;i<len;i++){
+      let r = sr + (mode===1||mode===2 ? i : 0);
+      let c = sc + (mode===0||mode===2 ? i : 0);
+      if(mode===3){ r = sr - i; c = sc + i; }
+
+      if(r<0||r>=12||c<0||c>=12||gridData[r][c]){
+        fits=false; break;
+      }
+    }
+    if(!fits) continue;
+
+    for(let i=0;i<len;i++){
+      let r = sr + (mode===1||mode===2 ? i : 0);
+      let c = sc + (mode===0||mode===2 ? i : 0);
+      if(mode===3){ r = sr - i; c = sc + i; }
+
+      gridData[r][c] = {
+        symbol: symbol.value,
+        order: symbolOrder++
+      };
+    }
+    placed = true;
+  }
+}
 // CHECK CLICK IQ
 function checkClickIQ(div){
   const expected=positions[currentIndex]?.div;
