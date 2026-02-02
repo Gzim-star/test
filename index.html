@@ -1,9 +1,9 @@
-<!-- TEST 23:59 -->
+<!-- TEST 00:26 -->
 <!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>BrainTrials Puzzel – IQ State & IQ Word & IQ Symbol & IQ Color</title>
+<title>BrainTrials – State & IQ Puzzle & Color</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -75,8 +75,6 @@ body {
 .cell.wrong { background: #f00; }
 .cell.color.correct { outline: 3px solid #00ff00; }
 .cell.color.wrong   { outline: 3px solid #ff0000; }
-.cell.correct { background: #0f0; }
-.cell.wrong { background: #f00; }
 .cell.active { opacity: 0.4; }
 
 #message {
@@ -357,7 +355,8 @@ iqSolutionBtn.onclick = () => {
 
   iqSolutionOverlay.classList.add("show");
 
-
+  setTimeout(() => iqSolutionOverlay.classList.remove("show"), 5000);
+};
 
 // Klick irgendwo schließt Overlay
 iqSolutionOverlay.onclick = () => iqSolutionOverlay.classList.remove("show");
@@ -452,7 +451,8 @@ solutionBtn.onclick = ()=>{
     return `<span style="display:inline-block;min-width:60px;margin:2px 6px;opacity:.85">${r} ' ${c}</span>`;
   }).join("");
   solutionOverlay.classList.add("show");
-
+  setTimeout(()=>solutionOverlay.classList.remove("show"),5000);
+};
 
 solutionOverlay.onclick = ()=>solutionOverlay.classList.remove("show");
 
@@ -585,7 +585,8 @@ iqSymbolSolutionBtn.onclick = () => {
 
   iqSymbolSolutionOverlay.classList.add("show");
 
-
+  setTimeout(() => iqSymbolSolutionOverlay.classList.remove("show"), 5000);
+};
 
 // Klick irgendwo schließt Overlay
 iqSymbolSolutionOverlay.onclick = () => iqSymbolSolutionOverlay.classList.remove("show");
@@ -727,7 +728,11 @@ iqColorSolutionBtn.onclick = () => {
 
   iqColorSolutionOverlay.classList.add("show");
 
-  
+  setTimeout(
+    () => iqColorSolutionOverlay.classList.remove("show"),
+    5000
+  );
+};  
 iqColorSolutionOverlay.onclick = () =>
   iqColorSolutionOverlay.classList.remove("show");
 const colors = [
@@ -865,7 +870,7 @@ function exitColorToFlow(){
 
 
 
-<!--BrainTrials - IQ State & IQ Puzzel & IQ Symbol & IQ Color
+<!--BrainTrials - State & IQ Puzzel & Color
 
 Created by Gëzim Hasani
 © 2026
