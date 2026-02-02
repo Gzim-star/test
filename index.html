@@ -585,6 +585,9 @@ iqSymbolSolutionBtn.onclick = () => {
   iqSymbolSolutionOverlay.classList.add("show");
   setTimeout(() => iqSymbolSolutionOverlay.classList.remove("show"), 5000);
 };
+iqSymbolSolutionOverlay.onclick = () =>
+  iqSymbolSolutionOverlay.classList.remove("show");
+
 const symbolAlphabet =
 "-/:;()£&@“.,?!’[]{}#%^*+=_\\|~<>€$¥•⇐⇒⇑⇓⇖⇗⇘⇙⬈⬉⬊⬋➔➜➝➞➤➥➦➧➨➙⟵⟶⟷⟸⟹⟺⇦⇠";
 
