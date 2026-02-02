@@ -569,15 +569,15 @@ function checkClickIQ(div){
     setTimeout(()=>div.classList.remove("wrong"),700);
   }
 }
-
- function startIQColorPuzzle(){
-  iqSymbolWrapper.classList.remove("show"); // ✅ RICHTIG
+function startIQSymbolPuzzle(){
+  iqWrapper.classList.remove("show");
 
   setTimeout(()=>{
-    iqColorWrapper.classList.add("show");
-    generateColorGrid();
+    iqSymbolWrapper.classList.add("show");
+    generateSymbolGrid();
   }, 1500);
 }
+
 iqSymbolSolutionBtn.onclick = () => {
   iqSymbolSolutionBox.innerHTML = currentIQSymbolWords
     .map(w => `<span style="display:inline-block;margin:6px;opacity:.85">${w}</span>`)
