@@ -686,15 +686,19 @@ function checkSymbolClick(div){
 }
 
 function startIQColorPuzzle(){
-  iqWrapper.classList.remove("show");
+  // 1️⃣ Symbol Puzzle fade OUT
+  iqSymbolWrapper.classList.remove("show");
 
-    setTimeout(()=>{
-   
-     requestAnimationFrame(() => {
+  // 2️⃣ Warten bis Fade-Out sichtbar ist
+  setTimeout(() => {
 
-     iqColorWrapper.classList.add("show");
-    generateColorGrid();
-  }, 1500); // gleiche Logik wie State → IQ
+    // 3️⃣ Mini-Frame erzwingen (wichtig!)
+    requestAnimationFrame(() => {
+      iqColorWrapper.classList.add("show"); // fade IN
+      generateColorGrid();
+    });
+
+  }, 1500); // exakt deine CSS-Dauer
 }
 
 iqColorSolutionBtn.onclick = () => {
