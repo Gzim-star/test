@@ -3,7 +3,7 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Stick Jump</title>
+<title>Stick Runner</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
   body { margin:0; background:black; overflow:hidden; }
@@ -25,22 +25,21 @@ c.height = innerHeight;
 const player = {
   x: 140,
   y: 0,
-  baseY: c.height - 120,
+  baseY: c.height - 140,
   vy: 0,
-  r: 12,
-  jumping: false
+  jumping: false,
+  legPhase: 0
 };
+
+const gravity = 0.7;
+const jumpPower = -14;
+const speed = 4;
 
 // ===== OBSTACLES =====
 let obstacles = [];
-let speed = 4;
-let gravity = 0.7;
-let jumpPower = -14;
 
 // ===== INPUT =====
-addEventListener("keydown", e => {
-  if(e.code === "Space") jump();
-});
+addEventListener("keydown", e => e.code==="Space" && jump());
 addEventListener("touchstart", jump);
 
 function jump(){
@@ -62,9 +61,24 @@ function reset(){
 function spawnObstacle(){
   obstacles.push({
     x: c.width + 40,
-    y: player.baseY + 25,
+    y: player.baseY + 30,
     r: 16
   });
+}
+
+// ===== DRAW FOG =====
+function drawFog(t){
+  for(let i=0;i<6;i++){
+    ctx.fillStyle = "rgba(255,255,255,0.04)";
+    ctx.beginPath();
+    ctx.arc(
+      (t*0.3 + i*220) % c.width,
+      120 + i*80,
+      180,
+      0, Math.PI*2
+    );
+    ctx.fill();
+  }
 }
 
 // ===== DRAW STICK =====
@@ -72,14 +86,16 @@ function drawStick(){
   ctx.strokeStyle = "white";
   ctx.lineWidth = 2;
 
+  const swing = Math.sin(player.legPhase) * 12;
+
   // head
   ctx.beginPath();
-  ctx.arc(player.x, player.y - 20, player.r, 0, Math.PI*2);
+  ctx.arc(player.x, player.y - 25, 12, 0, Math.PI*2);
   ctx.stroke();
 
   // body
   ctx.beginPath();
-  ctx.moveTo(player.x, player.y - 8);
+  ctx.moveTo(player.x, player.y - 10);
   ctx.lineTo(player.x, player.y + 30);
   ctx.stroke();
 
@@ -89,28 +105,31 @@ function drawStick(){
   ctx.lineTo(player.x + 12, player.y + 5);
   ctx.stroke();
 
-  // legs
+  // legs (ANIMATED)
   ctx.beginPath();
   ctx.moveTo(player.x, player.y + 30);
-  ctx.lineTo(player.x - 10, player.y + 50);
+  ctx.lineTo(player.x - swing, player.y + 55);
   ctx.moveTo(player.x, player.y + 30);
-  ctx.lineTo(player.x + 10, player.y + 50);
+  ctx.lineTo(player.x + swing, player.y + 55);
   ctx.stroke();
 }
 
 // ===== LOOP =====
 let frame = 0;
-function loop(){
+function loop(t){
   ctx.clearRect(0,0,c.width,c.height);
+
+  // fog background
+  drawFog(t);
 
   // ground
   ctx.strokeStyle="#333";
   ctx.beginPath();
-  ctx.moveTo(0, player.baseY + 50);
-  ctx.lineTo(c.width, player.baseY + 50);
+  ctx.moveTo(0, player.baseY + 55);
+  ctx.lineTo(c.width, player.baseY + 55);
   ctx.stroke();
 
-  // gravity
+  // physics
   player.vy += gravity;
   player.y += player.vy;
 
@@ -120,30 +139,28 @@ function loop(){
     player.jumping = false;
   }
 
-  // spawn obstacles
-  frame++;
-  if(frame % 100 === 0) spawnObstacle();
+  // leg animation
+  if(!player.jumping) player.legPhase += 0.2;
 
-  // move + draw obstacles
+  // obstacles
+  frame++;
+  if(frame % 110 === 0) spawnObstacle();
+
   obstacles.forEach(o=>{
     o.x -= speed;
 
-    ctx.fillStyle = "#666";
+    ctx.fillStyle = "#777";
     ctx.beginPath();
     ctx.arc(o.x, o.y, o.r, 0, Math.PI*2);
     ctx.fill();
 
-    // collision (circle vs body)
+    // collision
     const dx = player.x - o.x;
-    const dy = (player.y + 25) - o.y;
-    const dist = Math.sqrt(dx*dx + dy*dy);
-
-    if(dist < o.r + 15){
-      reset();
-    }
+    const dy = (player.y + 30) - o.y;
+    if(Math.sqrt(dx*dx + dy*dy) < o.r + 14) reset();
   });
 
-  obstacles = obstacles.filter(o => o.x > -50);
+  obstacles = obstacles.filter(o=>o.x>-50);
 
   drawStick();
   requestAnimationFrame(loop);
