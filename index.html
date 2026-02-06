@@ -3,7 +3,7 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Flow Puzzle Animiert</title>
+<title>Flow Puzzle Logisch</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 body {
@@ -14,11 +14,9 @@ body {
   background:#111;
   font-family:sans-serif;
 }
-
 .container {
   text-align:center;
 }
-
 .grid {
   display:grid;
   grid-template-columns:repeat(6,60px);
@@ -26,7 +24,6 @@ body {
   gap:5px;
   margin-bottom:20px;
 }
-
 .cell {
   background:#eee;
   display:flex;
@@ -38,17 +35,8 @@ body {
   transition: transform 0.3s, background 0.3s;
   user-select:none;
 }
-
-.cell.correct {
-  background:#4caf50;
-  color:#fff;
-}
-
-.cell.wrong {
-  background:#f44336;
-  color:#fff;
-}
-
+.cell.correct { background:#4caf50; color:#fff; }
+.cell.wrong { background:#f44336; color:#fff; }
 #solutionBtn {
   padding:10px 20px;
   font-size:16px;
@@ -67,45 +55,47 @@ body {
 </div>
 
 <script>
-// ===== Puzzle Setup =====
 const gridEl = document.getElementById("grid");
 const size = 6;
-let solution = [];
-let solutionShown = false;
-const arrows = ["↑","→","↓","←"]; // Reihenfolge für Drehungen
+const arrows = ["↑","→","↓","←"];
 const cells = [];
+let solutionShown = false;
 
-// Grid erstellen & zufällige Pfeile
-for(let r=0;r<size;r++){
-  solution[r] = [];
-  for(let c=0;c<size;c++){
+// ===== Lösung erzeugen =====
+let solution = Array.from({length:size},()=>Array(size).fill(null));
+
+// Erzeugt einen logischen Flow von links oben nach rechts unten
+let r = 0, c = 0;
+while(r<size && c<size){
+  solution[r][c] = "→"; // Standardrichtung nach rechts
+  if(c<size-1) c++;
+  else if(r<size-1){ r++; c=0; }
+  else break;
+}
+
+// ===== Grid rendern =====
+for(let row=0;row<size;row++){
+  for(let col=0;col<size;col++){
     const cell = document.createElement("div");
     cell.className="cell";
-    cell.dataset.row = r;
-    cell.dataset.col = c;
+    const correctArrow = solution[row][col];
 
-    // Lösung speichern
-    const arrow = arrows[Math.floor(Math.random()*arrows.length)];
-    solution[r][c] = arrow;
+    // zufälliger Startwert
+    const startArrow = arrows[Math.floor(Math.random()*arrows.length)];
+    cell.textContent = startArrow;
+    cell.dataset.index = arrows.indexOf(startArrow);
+    cell.dataset.solution = arrows.indexOf(correctArrow);
 
-    // zufälliger Startwert (falsch)
-    const randArrow = arrows[Math.floor(Math.random()*arrows.length)];
-    cell.textContent = randArrow;
-    cell.dataset.index = arrows.indexOf(randArrow); // aktueller Winkel
-    cell.dataset.solution = arrows.indexOf(arrow); // Zielwinkel
-
-    // Klick auf Zelle
     cell.onclick = ()=>{
-      if(solutionShown) return; // nicht mehr klickbar nach Lösung
-      let current = parseInt(cell.dataset.index);
-      current = (current + 1) % arrows.length; // Drehung
-      cell.dataset.index = current;
-      cell.textContent = arrows[current];
+      if(solutionShown) return;
+      let idx = parseInt(cell.dataset.index);
+      idx = (idx+1)%arrows.length;
+      cell.dataset.index = idx;
+      cell.textContent = arrows[idx];
 
-      // Prüfen
-      if(current === parseInt(cell.dataset.solution)){
+      if(idx===parseInt(cell.dataset.solution)){
         cell.classList.add("correct");
-      } else {
+      }else{
         cell.classList.remove("correct");
         cell.classList.add("wrong");
         setTimeout(()=>cell.classList.remove("wrong"),300);
