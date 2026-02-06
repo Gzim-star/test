@@ -1,2 +1,269 @@
 <!-- TEST 13:10 -->
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Tetris Classic</title>
+<style>
+  body {
+    background: #111;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    height: 100vh;
+    margin: 0;
+    color: #fff;
+    font-family: sans-serif;
+  }
+  .tetris-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+  }
+  .grid {
+    width: 240px;
+    display: grid;
+    grid-template-columns: repeat(10, 24px);
+    grid-template-rows: repeat(20, 24px);
+    gap: 1px;
+    background: #222;
+  }
+  .grid div {
+    width: 24px;
+    height: 24px;
+    background: #111;
+    border: 1px solid #222;
+    transition: background 0.15s ease; /* sanftes Fallen */
+  }
+  .next-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 24px);
+    grid-template-rows: repeat(4, 24px);
+    gap: 1px;
+    margin-top: 10px;
+  }
+  .next-grid div {
+    width: 24px;
+    height: 24px;
+    background: #111;
+    border: 1px solid #222;
+    transition: background 0.15s ease;
+  }
+  button {
+    margin-top: 10px;
+    padding: 6px 12px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<div class="tetris-wrapper">
+  <h1>Tetris Classic</h1>
+  <div class="grid"></div>
+  <button id="start-btn">Start Game</button>
+  <div>
+    <p id="score">Score: 0</p>
+    <p id="level">Level: 1</p>
+  </div>
+  <h3>Nächstes Tetromino:</h3>
+  <div class="next-grid"></div>
+</div>
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const grid = document.querySelector('.grid');
+  const nextGrid = document.querySelector('.next-grid');
+  const scoreEl = document.getElementById('score');
+  const levelEl = document.getElementById('level');
+  const startBtn = document.getElementById('start-btn');
+
+  const width = 10;
+  const height = 20;
+  let timerId;
+  let score = 0;
+  let level = 1;
+
+  const cells = Array.from({length: width*height}, () => {
+    const div = document.createElement('div');
+    grid.appendChild(div);
+    return div;
+  });
+
+  const nextCells = Array.from({length: 16}, () => {
+    const div = document.createElement('div');
+    nextGrid.appendChild(div);
+    return div;
+  });
+
+  // Tetrominoes
+  const lTetromino = [
+    [1, width+1, width*2+1, 2],
+    [width, width+1, width+2, width*2+2],
+    [1, width+1, width*2+1, width*2],
+    [width, width*2, width*2+1, width*2+2]
+  ];
+
+  const zTetromino = [
+    [0,width,width+1,width*2+1],
+    [width+1, width+2, width*2, width*2+1],
+    [0,width,width+1,width*2+1],
+    [width+1, width+2, width*2, width*2+1]
+  ];
+
+  const tTetromino = [
+    [1,width,width+1,width+2],
+    [1,width+1,width+2,width*2+1],
+    [width,width+1,width+2,width*2+1],
+    [1,width,width+1,width*2+1]
+  ];
+
+  const oTetromino = [
+    [0,1,width,width+1],
+    [0,1,width,width+1],
+    [0,1,width,width+1],
+    [0,1,width,width+1]
+  ];
+
+  const iTetromino = [
+    [1,width+1,width*2+1,width*3+1],
+    [width,width+1,width+2,width+3],
+    [1,width+1,width*2+1,width*3+1],
+    [width,width+1,width+2,width+3]
+  ];
+
+  const theTetrominoes = [lTetromino,zTetromino,tTetromino,oTetromino,iTetromino];
+  const colors = ['orange','red','purple','yellow','cyan'];
+
+  let currentPos = 4;
+  let currentRotation = 0;
+  let currentShape;
+  let currentColor;
+
+  let nextShape;
+  let nextColor;
+
+  function randomTetromino() {
+    const rand = Math.floor(Math.random()*theTetrominoes.length);
+    currentShape = theTetrominoes[rand];
+    currentColor = colors[rand];
+    const nextRand = Math.floor(Math.random()*theTetrominoes.length);
+    nextShape = theTetrominoes[nextRand];
+    nextColor = colors[nextRand];
+    drawNext();
+  }
+
+  function drawNext() {
+    nextCells.forEach(cell => cell.style.background='#111');
+    nextShape[0].forEach(index => {
+      nextCells[index].style.background = nextColor;
+    });
+  }
+
+  function draw() {
+    currentShape[currentRotation].forEach(index => {
+      cells[currentPos + index].style.background = currentColor;
+    });
+  }
+
+  function undraw() {
+    currentShape[currentRotation].forEach(index => {
+      cells[currentPos + index].style.background = '#111';
+    });
+  }
+
+  function moveDown() {
+    undraw();
+    currentPos += width;
+    draw();
+    freeze();
+  }
+
+  function freeze() {
+    if(currentShape[currentRotation].some(index => (currentPos+index+width >= width*height) || cells[currentPos+index+width].style.background != '#111')){
+      currentShape[currentRotation].forEach(index => {
+        cells[currentPos + index].style.background = currentColor;
+      });
+      checkLines();
+      currentPos = 4;
+      currentRotation = 0;
+      currentShape = nextShape;
+      currentColor = nextColor;
+      const rand = Math.floor(Math.random()*theTetrominoes.length);
+      nextShape = theTetrominoes[rand];
+      nextColor = colors[rand];
+      drawNext();
+      draw();
+      if(currentShape[currentRotation].some(index => cells[currentPos+index].style.background != '#111')){
+        alert("Game Over! Score: "+score);
+        clearInterval(timerId);
+      }
+    }
+  }
+
+  function checkLines() {
+    for(let i=0; i<height; i++){
+      const row = Array.from({length:width}, (_,k)=> i*width+k);
+      if(row.every(index => cells[index].style.background != '#111')){
+        score += 10;
+        scoreEl.textContent = "Score: "+score;
+        row.forEach(index => cells[index].style.background='#111');
+        const removed = cells.splice(i*width, width);
+        cells.unshift(...removed);
+        cells.forEach(div => grid.appendChild(div));
+        level = Math.floor(score/50)+1;
+        levelEl.textContent = "Level: "+level;
+        clearInterval(timerId);
+        timerId = setInterval(moveDown, 500 - (level-1)*50);
+      }
+    }
+  }
+
+  function moveLeft() {
+    undraw();
+    const isAtLeft = currentShape[currentRotation].some(index => (currentPos+index) % width === 0);
+    if(!isAtLeft) currentPos -= 1;
+    if(currentShape[currentRotation].some(index => cells[currentPos+index].style.background != '#111')) currentPos +=1;
+    draw();
+  }
+
+  function moveRight() {
+    undraw();
+    const isAtRight = currentShape[currentRotation].some(index => (currentPos+index) % width === width-1);
+    if(!isAtRight) currentPos +=1;
+    if(currentShape[currentRotation].some(index => cells[currentPos+index].style.background != '#111')) currentPos -=1;
+    draw();
+  }
+
+  function rotate() {
+    undraw();
+    currentRotation++;
+    if(currentRotation === currentShape.length) currentRotation =0;
+    draw();
+  }
+
+  document.addEventListener('keydown', e => {
+    if(e.key==='ArrowLeft') moveLeft();
+    if(e.key==='ArrowRight') moveRight();
+    if(e.key==='ArrowDown') moveDown();
+    if(e.key==='ArrowUp') rotate();
+  });
+
+  startBtn.onclick = ()=>{
+    clearInterval(timerId);
+    score = 0;
+    level = 1;
+    scoreEl.textContent = "Score: 0";
+    levelEl.textContent = "Level: 1";
+    cells.forEach(cell => cell.style.background='#111');
+    currentPos = 4;
+    currentRotation = 0;
+    randomTetromino();
+    draw();
+    timerId = setInterval(moveDown, 500); // Blöcke fallen
+  };
+});
+</script>
+</body>
+</html>
