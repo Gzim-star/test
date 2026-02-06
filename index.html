@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Triangle Puzzle</title>
+<title>Triangle Puzzle Step Solution</title>
 <style>
 body {
   margin: 0;
@@ -16,7 +16,6 @@ body {
   font-family: Arial, sans-serif;
 }
 
-/* Puzzle Grid */
 #puzzle {
   display: grid;
   grid-template-columns: repeat(4, 60px);
@@ -24,7 +23,6 @@ body {
   margin-bottom: 20px;
 }
 
-/* Triangle Style */
 .triangle {
   width: 0;
   height: 0;
@@ -34,13 +32,25 @@ body {
   cursor: pointer;
   transform-origin: center bottom;
   transition: transform 0.3s;
+  position: relative;
 }
 
+/* Nummer in Dreieck */
+.triangle span {
+  position: absolute;
+  top: -35px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: yellow;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* Grün wenn korrekt */
 .correct {
   border-bottom-color: limegreen;
 }
 
-/* Solution Button */
 #solutionBtn {
   background: rgba(255,255,255,0.85);
   color: black;
@@ -60,72 +70,69 @@ body {
 <body>
 
 <div id="puzzle"></div>
-<button id="solutionBtn">Show Solution</button>
+<button id="solutionBtn">Show Step</button>
 
 <script>
-// Settings
 const rows = 4;
 const cols = 4;
-
-// Create triangles
 const puzzle = document.getElementById('puzzle');
 let triangles = [];
 
+// Schritt-Reihenfolge (0 = zuerst, 1 = danach, ...)
+let solutionSteps = [];
+
+// Erstelle Dreiecke
 for (let i = 0; i < rows*cols; i++) {
   const tri = document.createElement('div');
   tri.classList.add('triangle');
-
-  // Random initial rotation: 0, 90, 180, 270
   tri.rotation = [0,90,180,270][Math.floor(Math.random()*4)];
   tri.style.transform = `rotate(${tri.rotation}deg)`;
+
+  const num = document.createElement('span');
+  num.innerText = i+1; // Nummer für Lösungs-Hinweis
+  tri.appendChild(num);
+
   puzzle.appendChild(tri);
   triangles.push(tri);
+  solutionSteps.push(tri); // Reihenfolge für Lösung
 
-  // Click logic
   tri.addEventListener('click', () => {
     rotateTriangle(tri);
     checkWin();
   });
 }
 
-// Rotate a triangle and optionally neighbors
+// Dreieck drehen
 function rotateTriangle(tri) {
   tri.rotation = (tri.rotation + 90) % 360;
   tri.style.transform = `rotate(${tri.rotation}deg)`;
-
-  const idx = triangles.indexOf(tri);
-  const neighbors = [
-    idx - 1, // left
-    idx + 1, // right
-    idx - cols, // top
-    idx + cols // bottom
-  ];
-  neighbors.forEach(n => {
-    if (triangles[n]) {
-      triangles[n].rotation = (triangles[n].rotation + 90) % 360;
-      triangles[n].style.transform = `rotate(${triangles[n].rotation}deg)`;
-    }
-  });
 }
 
-// Check if all triangles are upright
+// Prüfen ob alles korrekt
 function checkWin() {
   if (triangles.every(t => t.rotation === 0)) {
     triangles.forEach(t => t.classList.add('correct'));
-    setTimeout(() => alert('You solved the puzzle! 🎉'), 100);
+    setTimeout(() => alert('Puzzle solved! 🎉'), 100);
   } else {
     triangles.forEach(t => t.classList.remove('correct'));
   }
 }
 
-// Solution Button
+// Lösung Schritt für Schritt
+let currentStep = 0;
 document.getElementById('solutionBtn').addEventListener('click', () => {
-  triangles.forEach(t => {
-    t.rotation = 0;
-    t.style.transform = 'rotate(0deg)';
-    t.classList.add('correct');
-  });
-  setTimeout(() => alert('Solution applied!'), 100);
+  if (currentStep < solutionSteps.length) {
+    const tri = solutionSteps[currentStep];
+    // Markiere das Dreieck temporär für 1 Sekunde
+    tri.style.borderBottomColor = 'orange';
+    setTimeout(() => {
+      tri.style.borderBottomColor = 'white';
+    }, 1000);
+    currentStep++;
+  } else {
+    alert('All steps shown!');
+    currentStep = 0; // zurücksetzen
+  }
 });
 </script>
 
