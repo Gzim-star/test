@@ -3,89 +3,88 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>IQ Triangle Puzzle</title>
+<title>Triangle Puzzle</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
 body {
-  margin: 0;
-  background: black;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  font-family: Arial, sans-serif;
+  margin:0;
+  height:100vh;
+  background:black;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-family:Arial, sans-serif;
 }
 
-#grid {
-  display: grid;
-  grid-template-columns: repeat(5, 60px);
-  gap: 12px;
+/* Puzzle Container */
+#puzzle {
+  display:grid;
+  grid-template-columns:repeat(2, 1fr);
+  gap:6px;
 }
 
+/* Triangle Base */
 .triangle {
-  width: 0;
-  height: 0;
-  border-left: 30px solid transparent;
-  border-right: 30px solid transparent;
-  border-bottom: 52px solid white;
-  cursor: pointer;
-  transform-origin: center;
-  transition: transform 0.3s ease, opacity 0.2s ease;
+  width:0;
+  height:0;
+  border-style:solid;
+  cursor:pointer;
+  transition:transform .25s ease, opacity .2s ease;
+}
+
+/* Triangle Shape */
+.triangle.up {
+  border-width:0 40px 70px 40px;
+  border-color:transparent transparent white transparent;
 }
 
 .triangle.correct {
-  opacity: 0.3;
+  opacity:.3;
 }
 </style>
 </head>
 
 <body>
 
-<div id="grid"></div>
+<div id="puzzle"></div>
 
 <script>
-const grid = document.getElementById("grid");
-const SIZE = 5;
-let triangles = [];
+const puzzle = document.getElementById("puzzle");
+const triangles = [];
+const TOTAL = 4;
 
-function createGrid() {
-  grid.innerHTML = "";
-  triangles = [];
+/* Create triangles */
+for(let i=0;i<TOTAL;i++){
+  const t = document.createElement("div");
+  t.className = "triangle up";
+  t.rotation = Math.floor(Math.random()*4);
+  applyRotation(t);
 
-  for (let i = 0; i < SIZE * SIZE; i++) {
-    const div = document.createElement("div");
-    div.className = "triangle";
+  t.onclick = () => {
+    t.rotation = (t.rotation + 1) % 4;
+    applyRotation(t);
+    checkSolved();
+  };
 
-    const rotation = Math.floor(Math.random() * 4) * 90;
-    div.dataset.rot = rotation;
-    div.style.transform = `rotate(${rotation}deg)`;
-
-    div.onclick = () => rotateTriangle(div);
-
-    triangles.push(div);
-    grid.appendChild(div);
-  }
+  triangles.push(t);
+  puzzle.appendChild(t);
 }
 
-function rotateTriangle(el) {
-  let rot = parseInt(el.dataset.rot);
-  rot = (rot + 90) % 360;
-  el.dataset.rot = rot;
-  el.style.transform = `rotate(${rot}deg)`;
-
-  checkWin();
+/* Rotate triangle */
+function applyRotation(el){
+  el.style.transform = `rotate(${el.rotation * 90}deg)`;
 }
 
-function checkWin() {
-  const solved = triangles.every(t => parseInt(t.dataset.rot) === 0);
-
-  if (solved) {
+/* Check if square is formed */
+function checkSolved(){
+  if(triangles.every(t => t.rotation === 0)){
     triangles.forEach(t => t.classList.add("correct"));
-    setTimeout(createGrid, 1200);
+    setTimeout(() => {
+      alert("✔ Square completed");
+    }, 300);
   }
 }
-
-createGrid();
 </script>
 
 </body>
