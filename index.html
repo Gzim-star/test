@@ -3,123 +3,79 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Flow Puzzle – Test</title>
+<title>Flow Motion Test</title>
 <style>
   body {
     margin: 0;
-    background: #000;
-    color: #fff;
-    font-family: system-ui;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  canvas {
-    margin-top: 20px;
     background: #fff;
-    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
   }
-
-  .info {
-    margin-top: 15px;
-    opacity: 0.8;
-  }
-
-  button {
-    margin-top: 15px;
-    padding: 10px 20px;
-    background: #222;
-    color: #fff;
-    border: 1px solid #555;
-    border-radius: 8px;
-    cursor: pointer;
+  canvas {
+    width: 300px;
+    height: 500px;
   }
 </style>
 </head>
 <body>
 
-<canvas id="c" width="320" height="320"></canvas>
-
-<div class="info">
-  Folge dem Flow. Welcher Ausgang ist korrekt?
-</div>
-
-<button onclick="showSolution()">Lösung</button>
+<canvas id="c" width="300" height="500"></canvas>
 
 <script>
-const canvas = document.getElementById("c");
-const ctx = canvas.getContext("2d");
+const c = document.getElementById("c");
+const ctx = c.getContext("2d");
 
-const exits = [
-  {x: 40, y: 300, ok: false},
-  {x: 160, y: 300, ok: true},
-  {x: 280, y: 300, ok: false},
-];
+let t = 0;
 
-let solved = false;
-
-function drawArrow(x1,y1,x2,y2){
-  const angle = Math.atan2(y2-y1,x2-x1);
+function drawCurve(){
   ctx.beginPath();
-  ctx.moveTo(x1,y1);
-  ctx.lineTo(x2,y2);
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(x2,y2);
-  ctx.lineTo(x2-8*Math.cos(angle-0.4), y2-8*Math.sin(angle-0.4));
-  ctx.lineTo(x2-8*Math.cos(angle+0.4), y2-8*Math.sin(angle+0.4));
-  ctx.closePath();
-  ctx.fill();
-}
-
-function draw(){
-  ctx.clearRect(0,0,320,320);
-  ctx.lineWidth = 2;
+  ctx.moveTo(50,50);
+  ctx.bezierCurveTo(250,100,50,250,150,350);
+  ctx.bezierCurveTo(250,450,100,480,150,480);
   ctx.strokeStyle = "#000";
-  ctx.fillStyle = "#000";
+  ctx.lineWidth = 3;
+  ctx.stroke();
+}
 
-  // Flow-Linien
-  drawArrow(160,20,160,80);
-  drawArrow(160,80,100,140);
-  drawArrow(100,140,160,200);
-  drawArrow(160,200,220,260);
-  drawArrow(220,260,160,300);
+function pointOnCurve(p){
+  // Bezier interpolation (vereinfacht)
+  const x = 50*(1-p) + 150*p;
+  const y = 50*(1-p) + 480*p;
+  return {x,y};
+}
 
-  // Start
+function drawArrow(x,y,angle){
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.rotate(angle);
   ctx.beginPath();
-  ctx.arc(160,20,6,0,Math.PI*2);
+  ctx.moveTo(-6,-4);
+  ctx.lineTo(6,0);
+  ctx.lineTo(-6,4);
+  ctx.closePath();
+  ctx.fillStyle = "#000";
   ctx.fill();
-
-  // Exits
-  exits.forEach(e=>{
-    ctx.beginPath();
-    ctx.arc(e.x,e.y,10,0,Math.PI*2);
-    ctx.fillStyle = solved && e.ok ? "lime" : "#000";
-    ctx.fill();
-  });
+  ctx.restore();
 }
 
-canvas.addEventListener("click", e=>{
-  const r = canvas.getBoundingClientRect();
-  const x = e.clientX - r.left;
-  const y = e.clientY - r.top;
+function animate(){
+  ctx.clearRect(0,0,c.width,c.height);
 
-  exits.forEach(e=>{
-    const d = Math.hypot(x-e.x, y-e.y);
-    if(d < 12){
-      alert(e.ok ? "✔️ Richtig!" : "❌ Falscher Flow");
-    }
-  });
-});
+  drawCurve();
 
-function showSolution(){
-  solved = true;
-  draw();
+  for(let i=0;i<8;i++){
+    const p = ((t+i*0.12)%1);
+    const pos = pointOnCurve(p);
+    drawArrow(pos.x,pos.y,Math.PI/2);
+  }
+
+  t += 0.005;
+  requestAnimationFrame(animate);
 }
 
-draw();
+animate();
 </script>
 
 </body>
