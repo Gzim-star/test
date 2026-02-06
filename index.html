@@ -3,119 +3,154 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Flow Puzzle</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flow-Puzzle</title>
 <style>
-  body {
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
-    background:#111;
-    font-family:sans-serif;
-  }
-  .grid {
-    display:grid;
-    grid-template-columns:repeat(6,60px);
-    grid-template-rows:repeat(6,60px);
-    gap:5px;
-  }
-  .cell {
-    background:#eee;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-size:24px;
-    cursor:pointer;
-    border-radius:8px;
-    transition:0.3s;
-    user-select:none;
-  }
-  .cell.correct {
-    background:#4caf50;
-    color:#fff;
-  }
-  .cell.wrong {
-    background:#f44336;
-    color:#fff;
-  }
-  #solutionBtn {
-    margin-top:20px;
-    padding:10px 20px;
-    font-size:16px;
-    cursor:pointer;
-    background:#fff;
-    color:#000;
-    border:none;
-    border-radius:5px;
-  }
+body {
+  background: #111;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-family: sans-serif;
+  color: #fff;
+}
+#grid {
+  display: grid;
+  grid-template-columns: repeat(6, 60px);
+  grid-template-rows: repeat(6, 60px);
+  gap: 5px;
+}
+.cell {
+  background: #222;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 30px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.cell.correct { background: #0f0; }
+.cell.wrong   { background: #f00; }
+.cell.active  { transform: scale(1.2); }
 </style>
 </head>
 <body>
 
-<div>
-  <div class="grid" id="grid"></div>
-  <button id="solutionBtn">Lösung anzeigen</button>
-</div>
+<div id="grid"></div>
+<!-- Füge direkt unter dem Grid ein Button-Element ein -->
+<button id="solutionBtn" style="
+  margin-top:20px;
+  padding:10px 20px;
+  font-size:16px;
+  cursor:pointer;
+  background:#fff;
+  color:#000;
+  border:none;
+  border-radius:5px;
+">Lösung anzeigen</button>
 
 <script>
-// ===== Puzzle Setup =====
-const gridEl = document.getElementById("grid");
-const size = 6;
-let solution = [];
-let solutionShown = false;
-
-// zufällige Pfeile
-const arrows = ["↑","↓","←","→"];
-
-// Grid erstellen & zufällige Pfeile
-for(let r=0;r<size;r++){
-  solution[r] = [];
-  for(let c=0;c<size;c++){
-    const cell = document.createElement("div");
-    cell.className="cell";
-    cell.dataset.row = r;
-    cell.dataset.col = c;
-
-    // zufällige Lösung speichern
-    const arrow = arrows[Math.floor(Math.random()*arrows.length)];
-    solution[r][c] = arrow;
-
-    // zufälliger Anfangspfeil (falsch)
-    const randArrow = arrows[Math.floor(Math.random()*arrows.length)];
-    cell.textContent = randArrow;
-
-    // Klick auf Zelle
-    cell.onclick = ()=>{
-      if(solutionShown) return; // nicht mehr klickbar nach Lösung
-      if(cell.textContent === solution[r][c]){
-        cell.classList.add("correct");
-      }else{
-        cell.classList.add("wrong");
-        setTimeout(()=>cell.classList.remove("wrong"),500);
-      }
-    };
-
-    gridEl.appendChild(cell);
-  }
-}
-
-// ===== Lösungsbutton =====
 const solutionBtn = document.getElementById("solutionBtn");
-solutionBtn.onclick = ()=>{
-  if(solutionShown) return;
+let solutionShown = false; // damit Button nur 1x funktioniert
+
+solutionBtn.onclick = () => {
+  if(solutionShown) return; // nur 1x klickbar
   solutionShown = true;
 
-  document.querySelectorAll(".cell").forEach(cell=>{
+  document.querySelectorAll(".cell").forEach(cell => {
     const r = parseInt(cell.dataset.row);
     const c = parseInt(cell.dataset.col);
-    cell.textContent = solution[r][c];
-    cell.classList.add("correct");
+    cell.textContent = solution[r][c]; // Pfeil zeigen
+    cell.classList.add("correct");      // grün markieren
   });
 
+  // Button deaktivieren optisch
   solutionBtn.style.opacity = 0.5;
   solutionBtn.style.cursor = "default";
 };
+
+<script>
+const size = 6;
+const grid = document.getElementById("grid");
+const directions = ["↑","→","↓","←"];
+const dx = { "↑":0, "→":1, "↓":0, "←":-1 };
+const dy = { "↑":-1, "→":0, "↓":1, "←":0 };
+
+let solution = []; // Matrix der Pfeile
+let visited = [];  // Reihenfolge der geklickten Zellen
+let currentCell = null;
+
+// Matrix vorbereiten
+for(let r=0;r<size;r++){
+  solution[r] = [];
+  visited[r] = [];
+  for(let c=0;c<size;c++){
+    solution[r][c] = directions[Math.floor(Math.random()*4)];
+    visited[r][c] = false;
+  }
+}
+
+// Grid erzeugen
+for(let r=0;r<size;r++){
+  for(let c=0;c<size;c++){
+    const div = document.createElement("div");
+    div.className = "cell";
+    div.dataset.row = r;
+    div.dataset.col = c;
+    div.textContent = "?";
+
+    div.onclick = () => handleClick(r,c,div);
+    grid.appendChild(div);
+  }
+}
+
+function handleClick(r,c,div){
+  if(currentCell === null){
+    // Startzelle
+    currentCell = {r,c};
+    div.textContent = solution[r][c];
+    div.classList.add("correct","active");
+    visited[r][c] = true;
+  } else {
+    // nächste Zelle prüfen
+    const last = currentCell;
+    const arrow = solution[last.r][last.c];
+    const nr = last.r + dy[arrow];
+    const nc = last.c + dx[arrow];
+
+    if(nr === r && nc === c){
+      div.textContent = solution[r][c];
+      div.classList.add("correct","active");
+      visited[r][c] = true;
+      currentCell = {r,c};
+      // alte aktive entfernen
+      document.querySelectorAll(".cell.active").forEach(el=>{
+        if(el !== div) el.classList.remove("active");
+      });
+      checkComplete();
+    } else {
+      div.classList.add("wrong");
+      setTimeout(()=>div.classList.remove("wrong"),700);
+    }
+  }
+}
+
+// Prüfen, ob alle Zellen besucht
+function checkComplete(){
+  let done = true;
+  for(let r=0;r<size;r++){
+    for(let c=0;c<size;c++){
+      if(!visited[r][c]){
+        done = false;
+        break;
+      }
+    }
+  }
+  if(done){
+    setTimeout(()=>alert("🎉 Flow-Puzzle gelöst!"),300);
+  }
+}
 </script>
 
 </body>
