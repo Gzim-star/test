@@ -1,1 +1,120 @@
 <!-- TEST 13:10 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Color Pattern Puzzle</title>
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #111;
+    font-family: Arial, sans-serif;
+    color: white;
+    flex-direction: column;
+  }
+
+  #puzzle {
+    display: grid;
+    grid-template-columns: repeat(4, 70px);
+    grid-template-rows: repeat(4, 70px);
+    gap: 8px;
+    margin-bottom: 30px;
+  }
+
+  .cell {
+    width: 70px;
+    height: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 24px;
+    font-weight: bold;
+    border-radius: 12px;
+    user-select: none;
+    transition: transform 0.3s;
+  }
+
+  #solveBtn {
+    padding: 10px 18px;
+    font-size: 16px;
+    background: #fff;
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background 0.3s;
+  }
+
+  #solveBtn:hover {
+    background: #ddd;
+  }
+</style>
+</head>
+<body>
+
+<h1>🖌 Color Pattern Puzzle</h1>
+<div id="puzzle"></div>
+<button id="solveBtn">Show Solution</button>
+
+<script>
+  const colors = ["#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FF00FF", "#00FFFF", "#FFA500", "#800080"];
+  const patternOrder = []; // richtige Reihenfolge
+  const cells = [];
+  const gridSize = 4;
+
+  const puzzle = document.getElementById('puzzle');
+
+  // Puzzle aufbauen
+  for(let i=0; i<gridSize*gridSize; i++){
+    const cell = document.createElement('div');
+    cell.classList.add('cell');
+
+    // Nummer im Feld
+    cell.textContent = i+1;
+
+    // Zufällige Farbe
+    const color = colors[Math.floor(Math.random()*colors.length)];
+    cell.style.backgroundColor = color;
+
+    // Speichere richtiges Muster (die Lösung)
+    patternOrder.push(color);
+
+    // Click Event: beim Klicken rotiert Farbe
+    cell.addEventListener('click', () => {
+      let idx = colors.indexOf(cell.style.backgroundColor);
+      idx = (idx + 1) % colors.length;
+      cell.style.backgroundColor = colors[idx];
+    });
+
+    puzzle.appendChild(cell);
+    cells.push(cell);
+  }
+
+  // Shuffle beim Start
+  function shuffleColors(){
+    const shuffled = [...patternOrder].sort(() => Math.random()-0.5);
+    cells.forEach((cell,i)=>{
+      cell.style.backgroundColor = shuffled[i];
+    });
+  }
+
+  shuffleColors();
+
+  // Lösungsbutton
+  const solveBtn = document.getElementById('solveBtn');
+  solveBtn.addEventListener('click', () => {
+    cells.forEach((cell,i)=>{
+      cell.style.backgroundColor = patternOrder[i];
+    });
+  });
+</script>
+
+</body>
+</html>
