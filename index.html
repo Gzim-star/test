@@ -1,2 +1,138 @@
 <!-- TEST 13:10 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Order Puzzle</title>
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #111;
+  flex-direction: column;
+  font-family: Arial, sans-serif;
+}
 
+#puzzle {
+  display: grid;
+  grid-template-columns: repeat(4, 70px);
+  grid-gap: 10px;
+  margin-bottom: 60px; /* Platz für Button */
+}
+
+.cell {
+  width: 70px;
+  height: 70px;
+  background: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: transform 0.2s, background 0.3s;
+}
+
+.cell.correct {
+  background: limegreen;
+  color: white;
+}
+
+#solutionBtn {
+  background: rgba(255,255,255,0.85);
+  color: black;
+  border: none;
+  padding: 12px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: 0.3s;
+}
+#solutionBtn:hover {
+  background: limegreen;
+  color: white;
+}
+</style>
+</head>
+<body>
+
+<div id="puzzle"></div>
+<button id="solutionBtn">Show Step</button>
+
+<script>
+const rows = 4;
+const cols = 4;
+const puzzle = document.getElementById('puzzle');
+let numbers = [];
+let cells = [];
+
+// Zahlen erstellen
+for (let i = 1; i <= rows*cols; i++) numbers.push(i);
+
+// Zahlen mischen
+numbers = numbers.sort(() => Math.random()-0.5);
+
+// Felder erstellen
+for (let i = 0; i < rows*cols; i++) {
+  const cell = document.createElement('div');
+  cell.classList.add('cell');
+  cell.number = numbers[i];
+  cell.innerText = cell.number;
+  puzzle.appendChild(cell);
+  cells.push(cell);
+}
+
+// Klick-Logik
+cells.forEach(cell => {
+  cell.addEventListener('click', () => {
+    const index = cells.indexOf(cell);
+    const nextCell = cells[index+1];
+    // nur wenn nächste Zahl kleiner gedrückt wurde, tauschen
+    if (nextCell && cell.number > nextCell.number) {
+      [cell.number, nextCell.number] = [nextCell.number, cell.number];
+      [cell.innerText, nextCell.innerText] = [nextCell.innerText, cell.innerText];
+    }
+    checkOrder();
+  });
+});
+
+// Prüfen ob korrekt sortiert
+function checkOrder() {
+  let correct = true;
+  for (let i = 0; i < cells.length; i++) {
+    if (cells[i].number !== i+1) correct = false;
+  }
+  if (correct) {
+    cells.forEach(c => c.classList.add('correct'));
+    setTimeout(() => alert('Puzzle solved! 🎉'), 100);
+  } else {
+    cells.forEach(c => c.classList.remove('correct'));
+  }
+}
+
+// Lösung Schritt-für-Schritt
+let currentStep = 0;
+document.getElementById('solutionBtn').addEventListener('click', () => {
+  if (currentStep < cells.length) {
+    const cell = cells.find(c => c.number === currentStep+1);
+    // kurz pulsiereffekt
+    cell.style.transform = 'scale(1.3)';
+    cell.style.background = 'orange';
+    setTimeout(() => {
+      cell.style.transform = 'scale(1)';
+      cell.style.background = 'white';
+    }, 800);
+    currentStep++;
+  } else {
+    alert('All steps shown!');
+    currentStep = 0;
+  }
+});
+</script>
+
+</body>
+</html>
