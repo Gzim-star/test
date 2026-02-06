@@ -524,6 +524,32 @@ function showSolution() {
 
   renderSolution(solution);
 }
+const solutions = {
+  topBottom: readTopToBottom(solutionGrid),
+  leftRight: readLeftToRight(solutionGrid),
+  rightLeft: readRightToLeft(solutionGrid),
+  bottomTop: readBottomToTop(solutionGrid)
+};
+let playerSequence = [];
+
+function handleCellClick(row, col) {
+  playerSequence.push([row + 1, col + 1]);
+}
+function arraysEqual(a, b) {
+  return a.length === b.length &&
+    a.every((v, i) => v[0] === b[i][0] && v[1] === b[i][1]);
+}
+function checkSolution() {
+  const valid = Object.values(solutions).some(sol =>
+    arraysEqual(sol, playerSequence)
+  );
+
+  if (valid) {
+    showSuccess();
+  } else {
+    showFail();
+  }
+}
 // RENDER STATE
 function renderState() {
   stateGrid.innerHTML = "";
