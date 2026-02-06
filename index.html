@@ -12,14 +12,19 @@ body {
   justify-content: center;
   align-items: center;
   background: black;
+  flex-direction: column;
+  font-family: Arial, sans-serif;
 }
 
+/* Puzzle Grid */
 #puzzle {
   display: grid;
   grid-template-columns: repeat(4, 60px);
   grid-gap: 6px;
+  margin-bottom: 20px;
 }
 
+/* Triangle Style */
 .triangle {
   width: 0;
   height: 0;
@@ -34,11 +39,28 @@ body {
 .correct {
   border-bottom-color: limegreen;
 }
+
+/* Solution Button */
+#solutionBtn {
+  background: rgba(255,255,255,0.85);
+  color: black;
+  border: none;
+  padding: 8px 14px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: 0.3s;
+}
+#solutionBtn:hover {
+  background: limegreen;
+  color: white;
+}
 </style>
 </head>
 <body>
 
 <div id="puzzle"></div>
+<button id="solutionBtn">Show Solution</button>
 
 <script>
 // Settings
@@ -52,6 +74,7 @@ let triangles = [];
 for (let i = 0; i < rows*cols; i++) {
   const tri = document.createElement('div');
   tri.classList.add('triangle');
+
   // Random initial rotation: 0, 90, 180, 270
   tri.rotation = [0,90,180,270][Math.floor(Math.random()*4)];
   tri.style.transform = `rotate(${tri.rotation}deg)`;
@@ -60,35 +83,50 @@ for (let i = 0; i < rows*cols; i++) {
 
   // Click logic
   tri.addEventListener('click', () => {
-    // Rotate triangle 90deg clockwise
-    tri.rotation = (tri.rotation + 90) % 360;
-    tri.style.transform = `rotate(${tri.rotation}deg)`;
-
-    // Optional: affect neighbor triangles
-    const idx = triangles.indexOf(tri);
-    const neighbors = [
-      idx - 1, // left
-      idx + 1, // right
-      idx - cols, // top
-      idx + cols // bottom
-    ];
-    neighbors.forEach(n => {
-      if (triangles[n]) {
-        triangles[n].rotation = (triangles[n].rotation + 90) % 360;
-        triangles[n].style.transform = `rotate(${triangles[n].rotation}deg)`;
-      }
-    });
-
+    rotateTriangle(tri);
     checkWin();
   });
 }
 
-// Check if all triangles are upright (0deg)
+// Rotate a triangle and optionally neighbors
+function rotateTriangle(tri) {
+  tri.rotation = (tri.rotation + 90) % 360;
+  tri.style.transform = `rotate(${tri.rotation}deg)`;
+
+  const idx = triangles.indexOf(tri);
+  const neighbors = [
+    idx - 1, // left
+    idx + 1, // right
+    idx - cols, // top
+    idx + cols // bottom
+  ];
+  neighbors.forEach(n => {
+    if (triangles[n]) {
+      triangles[n].rotation = (triangles[n].rotation + 90) % 360;
+      triangles[n].style.transform = `rotate(${triangles[n].rotation}deg)`;
+    }
+  });
+}
+
+// Check if all triangles are upright
 function checkWin() {
   if (triangles.every(t => t.rotation === 0)) {
-    alert('You solved the puzzle! 🎉');
+    triangles.forEach(t => t.classList.add('correct'));
+    setTimeout(() => alert('You solved the puzzle! 🎉'), 100);
+  } else {
+    triangles.forEach(t => t.classList.remove('correct'));
   }
 }
+
+// Solution Button
+document.getElementById('solutionBtn').addEventListener('click', () => {
+  triangles.forEach(t => {
+    t.rotation = 0;
+    t.style.transform = 'rotate(0deg)';
+    t.classList.add('correct');
+  });
+  setTimeout(() => alert('Solution applied!'), 100);
+});
 </script>
 
 </body>
