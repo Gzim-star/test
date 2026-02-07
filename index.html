@@ -3,8 +3,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
 <title>Word Tetris</title>
 
 <style>
@@ -20,6 +22,7 @@ html, body {
   font-family: system-ui, sans-serif;
 }
 
+/* Game immer fest in der Mitte */
 .game {
   position: fixed;
   inset: 0;
@@ -65,7 +68,7 @@ canvas {
 </div>
 
 <script>
-/* ===== DOUBLE TAP ZOOM KILLER ===== */
+/* ===== DOUBLE TAP ZOOM KILLER (iOS + Android) ===== */
 let lastTouchEnd = 0;
 document.addEventListener('touchend', e => {
   const now = Date.now();
@@ -78,15 +81,15 @@ const canvas = document.getElementById('tetris');
 const ctx = canvas.getContext('2d');
 ctx.scale(20, 20);
 
-/* ===== ENGLISH DICTIONARY ===== */
+/* ===== DICTIONARY ===== */
 const WORDS = [
   'CAT','DOG','SUN','CAR','HAT','BAT','BOOK','CODE',
   'GAME','WORD','JAVA','HTML','CSS','PLAY','FUN'
 ];
 const MIN_LEN = 3;
 
-/* ===== COLORS ===== */
-const COLORS = ['#ff3333','#33ff33','#3333ff','#ff33ff','#33ffff','#ffff33'];
+/* ===== COLORS für Wörter ===== */
+const COLORS = ['#00ffcc', '#ffcc00', '#ff6699', '#66ff66', '#66ccff'];
 
 /* ===== ARENA ===== */
 const arena = Array.from({ length: 20 }, () => Array(10).fill(null));
@@ -97,28 +100,29 @@ const player = {
   letter: ''
 };
 
-let freeze = false; // stoppt Spieler während Wort-Highlight
-
-/* ===== LOGIC ===== */
-function collide(arena, player){
-  const {x,y} = player.pos;
-  return y >= arena.length || x < 0 || x >= arena[0].length || arena[y][x] !== null;
+/* ===== GAME LOGIC ===== */
+function collide(arena, player) {
+  const { x, y } = player.pos;
+  return (
+    y >= arena.length ||
+    x < 0 ||
+    x >= arena[0].length ||
+    arena[y][x] !== null
+  );
 }
 
-function merge(arena, player){
+function merge(arena, player) {
   arena[player.pos.y][player.pos.x] = player.letter;
 }
 
-function move(dir){
-  if(freeze) return;
+function move(dir) {
   player.pos.x += dir;
-  if(collide(arena, player)) player.pos.x -= dir;
+  if (collide(arena, player)) player.pos.x -= dir;
 }
 
-function drop(){
-  if(freeze) return;
+function drop() {
   player.pos.y++;
-  if(collide(arena, player)){
+  if (collide(arena, player)) {
     player.pos.y--;
     merge(arena, player);
     checkAndClearWords();
@@ -127,70 +131,75 @@ function drop(){
 }
 
 /* ===== WORD DETECTION ===== */
-function checkAndClearWords(){
+function checkAndClearWords() {
   clearHighlights();
   const found = findWords();
-  if(!found.length) return;
+  if (!found.length) return;
 
-  freeze = true;
-
-  found.forEach(group=>{
-    const color = COLORS[Math.random()*COLORS.length|0];
-    group.forEach(([y,x])=>{
-      highlights[y][x]=color;
-    });
+  found.forEach(group => {
+    const color = COLORS[Math.random() * COLORS.length | 0];
+    group.forEach(([y, x]) => highlights[y][x] = color);
   });
 
-  setTimeout(()=>{
-    found.flat().forEach(([y,x])=>arena[y][x]=null);
+  setTimeout(() => {
+    found.flat().forEach(([y, x]) => arena[y][x] = null);
     applyGravity();
     clearHighlights();
-    freeze=false;
-  },700);
+  }, 300);
 }
 
-function findWords(){
-  const found=[];
+function findWords() {
+  const found = [];
 
   // Horizontal
-  for(let y=0;y<arena.length;y++){
-    let word='', pos=[];
-    for(let x=0;x<=arena[0].length;x++){
-      const c=arena[y][x];
-      if(c){ word+=c; pos.push([y,x]); }
-      else{ extract(word,pos,found); word=''; pos=[]; }
+  for (let y = 0; y < arena.length; y++) {
+    let word = '', pos = [];
+    for (let x = 0; x <= arena[0].length; x++) {
+      const c = arena[y][x];
+      if (c) {
+        word += c;
+        pos.push([y, x]);
+      } else {
+        extract(word, pos, found);
+        word = ''; pos = [];
+      }
     }
   }
 
   // Vertical
-  for(let x=0;x<arena[0].length;x++){
-    let word='', pos=[];
-    for(let y=0;y<=arena.length;y++){
-      const c=arena[y]?.[x];
-      if(c){ word+=c; pos.push([y,x]); }
-      else{ extract(word,pos,found); word=''; pos=[]; }
+  for (let x = 0; x < arena[0].length; x++) {
+    let word = '', pos = [];
+    for (let y = 0; y <= arena.length; y++) {
+      const c = arena[y]?.[x];
+      if (c) {
+        word += c;
+        pos.push([y, x]);
+      } else {
+        extract(word, pos, found);
+        word = ''; pos = [];
+      }
     }
   }
   return found;
 }
 
-function extract(word,pos,found){
-  if(word.length<MIN_LEN) return;
-  WORDS.forEach(w=>{
-    const i=word.indexOf(w);
-    if(i!==-1) found.push(pos.slice(i,i+w.length));
+function extract(word, pos, found) {
+  if (word.length < MIN_LEN) return;
+  WORDS.forEach(w => {
+    const i = word.indexOf(w);
+    if (i !== -1) found.push(pos.slice(i, i + w.length));
   });
 }
 
 /* ===== GRAVITY ===== */
-function applyGravity(){
-  for(let x=0;x<arena[0].length;x++){
-    for(let y=arena.length-1;y>=0;y--){
-      if(arena[y][x]===null){
-        for(let k=y-1;k>=0;k--){
-          if(arena[k][x]!==null){
-            arena[y][x]=arena[k][x];
-            arena[k][x]=null;
+function applyGravity() {
+  for (let x = 0; x < arena[0].length; x++) {
+    for (let y = arena.length - 1; y >= 0; y--) {
+      if (arena[y][x] === null) {
+        for (let k = y - 1; k >= 0; k--) {
+          if (arena[k][x] !== null) {
+            arena[y][x] = arena[k][x];
+            arena[k][x] = null;
             break;
           }
         }
@@ -200,61 +209,70 @@ function applyGravity(){
 }
 
 /* ===== PLAYER ===== */
-function randomLetter(){ return String.fromCharCode(65+Math.random()*26|0); }
+function randomLetter() {
+  return String.fromCharCode(65 + Math.random() * 26 | 0);
+}
 
-function resetPlayer(){
-  player.letter=randomLetter();
-  player.pos.y=0;
-  player.pos.x=arena[0].length/2|0;
-  if(collide(arena,player)) arena.forEach(row=>row.fill(null));
+function resetPlayer() {
+  player.letter = randomLetter();
+  player.pos.y = 0;
+  player.pos.x = arena[0].length / 2 | 0;
+
+  if (collide(arena, player)) {
+    arena.forEach(row => row.fill(null));
+  }
 }
 
 /* ===== DRAW ===== */
-function clearHighlights(){ highlights.forEach(row=>row.fill(null)); }
+function clearHighlights() {
+  highlights.forEach(row => row.fill(null));
+}
 
-function draw(){
-  ctx.fillStyle='#000';
-  ctx.fillRect(0,0,canvas.width,canvas.height);
+// 🌈 Fallende Buchstaben farbig
+function draw() {
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  ctx.font='1px monospace';
-  ctx.textAlign='center';
-  ctx.textBaseline='middle';
+  ctx.font = '1px monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
 
-  arena.forEach((row,y)=>{
-    row.forEach((v,x)=>{
-      if(v){
-        ctx.fillStyle=highlights[y][x]||'#0f0'; // gefundene Wörter = bunt, sonst grün
-        ctx.fillText(v,x+0.5,y+0.5);
+  arena.forEach((row, y) => {
+    row.forEach((v, x) => {
+      if (v) {
+        ctx.fillStyle = highlights[y][x] || COLORS[(x + y) % COLORS.length]; // Regenbogen-Effekt
+        ctx.fillText(v, x + 0.5, y + 0.5);
       }
     });
   });
 
-  ctx.fillStyle='#0f0';
-  ctx.fillText(player.letter,player.pos.x+0.5,player.pos.y+0.5);
+  ctx.fillStyle = COLORS[(player.pos.x + player.pos.y) % COLORS.length]; // Spieler-Buchstabe farbig
+  ctx.fillText(player.letter, player.pos.x + 0.5, player.pos.y + 0.5);
 }
 
 /* ===== LOOP ===== */
-let lastTime=0, dropCounter=0, dropInterval=700;
+let lastTime = 0;
+let dropCounter = 0;
+const dropInterval = 700;
 
-function update(time=0){
-  const delta=time-lastTime;
-  lastTime=time;
-  dropCounter+=delta;
+function update(time = 0) {
+  const delta = time - lastTime;
+  lastTime = time;
+  dropCounter += delta;
 
-  if(dropCounter>dropInterval){
+  if (dropCounter > dropInterval) {
     drop();
-    dropCounter=0;
+    dropCounter = 0;
   }
-
   draw();
   requestAnimationFrame(update);
 }
 
 /* ===== INPUT ===== */
-document.addEventListener('keydown',e=>{
-  if(e.key==='ArrowLeft') move(-1);
-  if(e.key==='ArrowRight') move(1);
-  if(e.key==='ArrowDown') drop();
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft') move(-1);
+  if (e.key === 'ArrowRight') move(1);
+  if (e.key === 'ArrowDown') drop();
 });
 
 resetPlayer();
