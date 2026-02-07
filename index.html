@@ -7,7 +7,7 @@
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-<title>Word Tetris with Hint</title>
+<title>Word Tetris with Round Reset</title>
 
 <style>
 html, body {
@@ -22,7 +22,6 @@ html, body {
   font-family: system-ui, sans-serif;
 }
 
-/* Game immer fest in der Mitte */
 .game {
   position: fixed;
   inset: 0;
@@ -32,7 +31,6 @@ html, body {
   align-items: center;
 }
 
-/* Hint über dem Grid */
 .hint {
   color: #fff;
   font-size: 18px;
@@ -77,7 +75,7 @@ canvas {
 </div>
 
 <script>
-/* ===== DOUBLE TAP ZOOM KILLER (iOS + Android) ===== */
+/* ===== DOUBLE TAP ZOOM KILLER ===== */
 let lastTouchEnd = 0;
 document.addEventListener('touchend', e => {
   const now = Date.now();
@@ -92,36 +90,17 @@ ctx.scale(20, 20);
 
 /* ===== DICTIONARY ===== */
 const WORDS = [
-  'ABOMINABLE',   // A
-  'BIRDCATCHER',  // B
-  'CROSSBREED',   // C
-  'DISASTROUS',   // D
-  'EVERYTHING',   // E
-  'FASCINATOR',   // F
-  'GRANDMOTHER',  // G
-  'HEARTBEATS',   // H
-  'IMMEDIATES',   // I
-  'JOURNALISM',   // J
-  'KNIGHTHOOD',   // K
-  'LANDSCAPER',   // L
-  'MASTERMIND',   // M
-  'NIGHTSTAND',   // N
-  'OPERATIONS',   // O
-  'POPULATION',   // P
-  'QUARTERBACK',  // Q
-  'RENDEZVOUS',   // R
-  'SCRATCHING',   // S
-  'TRANSPARENT',  // T
-  'UNDERTAKER',   // U
-  'VOLUNTEERS',   // V
-  'WATERMELON',   // W
-  'XENOPHOBIC',   // X
-  'YELLOWHAZE',   // Y
-  'ZOOLOGISTS'    // Z
+  'ABOMINABLE',   'BIRDCATCHER',  'CROSSBREED',   'DISASTROUS',
+  'EVERYTHING',   'FASCINATOR',   'GRANDMOTHER',  'HEARTBEATS',
+  'IMMEDIATES',   'JOURNALISM',   'KNIGHTHOOD',   'LANDSCAPER',
+  'MASTERMIND',   'NIGHTSTAND',   'OPERATIONS',   'POPULATION',
+  'QUARTERBACK',  'RENDEZVOUS',   'SCRATCHING',   'TRANSPARENT',
+  'UNDERTAKER',   'VOLUNTEERS',   'WATERMELON',   'XENOPHOBIC',
+  'YELLOWHAZE',   'ZOOLOGISTS'
 ];
 const MIN_LEN = 10;
 
-/* ===== COLORS für Wörter & Player ===== */
+/* ===== COLORS ===== */
 const COLORS = ['#00ffcc', '#ffcc00', '#ff6699', '#66ff66', '#66ccff'];
 
 /* ===== ARENA ===== */
@@ -177,16 +156,32 @@ function checkAndClearWords() {
   const found = findWords();
   if (!found.length) return;
 
+  let targetFound = false;
+
   found.forEach(group => {
+    const letters = group.map(([y,x]) => arena[y][x]).join('');
+    if (letters.toUpperCase() === targetWord) {
+      targetFound = true;
+    }
+
     const color = COLORS[Math.floor(Math.random() * COLORS.length)];
     group.forEach(([y, x]) => highlights[y][x] = color);
   });
 
   setTimeout(() => {
+    if (targetFound) {
+      // Runde reset
+      arena.forEach(row => row.fill(null));
+      newTargetWord();
+      resetPlayer();
+      clearHighlights();
+      return;
+    }
+
+    // Normale Wörter (nicht Zielwort) löschen + Gravity anwenden
     found.flat().forEach(([y, x]) => arena[y][x] = null);
     applyGravity();
     clearHighlights();
-    newTargetWord(); // neues Zielwort
   }, 300);
 }
 
@@ -253,7 +248,7 @@ function applyGravity() {
 
 /* ===== PLAYER ===== */
 function randomLetter() {
-  return String.fromCharCode(65 + Math.floor(Math.random() * 26)); // Großbuchstaben A-Z
+  return String.fromCharCode(65 + Math.floor(Math.random() * 26));
 }
 
 function resetPlayer() {
@@ -282,13 +277,13 @@ function draw() {
   arena.forEach((row, y) => {
     row.forEach((v, x) => {
       if (v) {
-        ctx.fillStyle = highlights[y][x] || COLORS[(x + y) % COLORS.length]; // Regenbogen-Effekt
+        ctx.fillStyle = highlights[y][x] || COLORS[(x + y) % COLORS.length];
         ctx.fillText(v, x + 0.5, y + 0.5);
       }
     });
   });
 
-  ctx.fillStyle = COLORS[(player.pos.x + player.pos.y) % COLORS.length]; // Spieler-Buchstabe farbig
+  ctx.fillStyle = COLORS[(player.pos.x + player.pos.y) % COLORS.length];
   ctx.fillText(player.letter, player.pos.x + 0.5, player.pos.y + 0.5);
 }
 
