@@ -68,11 +68,13 @@ canvas {
   <div class="hint"><span id="wordHint"></span></div>
   <canvas id="wordFallCanvas" width="300" height="600"></canvas>
 
-  <div class="controls">
-    <button onclick="move(-1)">◀</button>
-    <button onclick="move(1)">▶</button>
-    </div>
-  </div>
+<div class="controls">
+  <button onclick="startGame()">Start</button>
+  <button onclick="move(-1)">◀</button>
+  <button onclick="move(1)">▶</button>
+  <button onclick="restartGame()">Restart</button>
+</div>
+</div>
 
 <script>
 /* ===== DOUBLE TAP ZOOM KILLER ===== */
@@ -237,6 +239,20 @@ document.addEventListener('keydown',e=>{
   if(e.key==='ArrowDown') drop();
 });
 
+function startGame() {
+  // Einfach den Player resetten und Loop starten
+  resetPlayer();
+  dropCounter = 0;
+}
+
+function restartGame() {
+  // Alles löschen und neues Target
+  arena.forEach(row => row.fill(null));
+  clearHighlights();
+  mode = 'word'; // oder 'number', je nach Wunsch
+  newTarget();
+  resetPlayer();
+}
 /* ===== START ===== */
 newTargetWord();
 resetPlayer();
