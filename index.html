@@ -210,8 +210,19 @@ function applyGravity(){
 }
 
 /* ===== PLAYER ===== */
-function randomLetter(){ return String.fromCharCode(65+Math.floor(Math.random()*26)); }
+const letterCount = {}; // Buchstaben zählen
 
+function randomLetter() {
+  let letter;
+  do {
+    letter = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+  } while(letterCount[letter] >= 2); // maximal 2 gleichzeitig
+  letterCount[letter] = (letterCount[letter] || 0) + 1;
+  return letter;
+}
+
+// Wenn ein Buchstabe vom Grid gelöscht wird, dann:
+letterCount[deletedLetter]--;
 function resetPlayer(){
   player.letter = randomLetter();
   player.pos.y = 0;
