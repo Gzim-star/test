@@ -92,43 +92,34 @@ ctx.scale(20, 20);
 
 /* ===== DICTIONARY ===== */
 const WORDS = [
-  'Abominable',   // A
-  'Birdcatcher',  // B
-  'Crossbreed',   // C
-  'Disastrous',   // D
-  'Everything',   // E
-  'Fascinator',   // F
-  'Grandmother',  // G
-  'Heartbeats',   // H
-  'Immediates',   // I
-  'Journalism',   // J
-  'Knighthood',   // K
-  'Landscaper',   // L
-  'Mastermind',   // M
-  'Nightstand',   // N
-  'Operations',   // O
-  'Population',   // P
-  'Quarterback',  // Q
-  'Rendezvous',   // R
-  'Scratching',   // S
-  'Transparent',  // T
-  'Undertaker',   // U
-  'Volunteers',   // V
-  'Watermelon',   // W
-  'Xenophobic',   // X
-  'Yellowhaze',   // Y
-  'Zoologists'    // Z
+  'ABOMINABLE',   // A
+  'BIRDCATCHER',  // B
+  'CROSSBREED',   // C
+  'DISASTROUS',   // D
+  'EVERYTHING',   // E
+  'FASCINATOR',   // F
+  'GRANDMOTHER',  // G
+  'HEARTBEATS',   // H
+  'IMMEDIATES',   // I
+  'JOURNALISM',   // J
+  'KNIGHTHOOD',   // K
+  'LANDSCAPER',   // L
+  'MASTERMIND',   // M
+  'NIGHTSTAND',   // N
+  'OPERATIONS',   // O
+  'POPULATION',   // P
+  'QUARTERBACK',  // Q
+  'RENDEZVOUS',   // R
+  'SCRATCHING',   // S
+  'TRANSPARENT',  // T
+  'UNDERTAKER',   // U
+  'VOLUNTEERS',   // V
+  'WATERMELON',   // W
+  'XENOPHOBIC',   // X
+  'YELLOWHAZE',   // Y
+  'ZOOLOGISTS'    // Z
 ];
 const MIN_LEN = 10;
-
-function extract(word, pos, found) {
-  if (word.length < MIN_LEN) return;
-  const upperWord = word.toUpperCase();
-  WORDS.forEach(w => {
-    const i = upperWord.indexOf(w);
-    if (i !== -1) found.push(pos.slice(i, i + w.length));
-  });
-}
 
 /* ===== COLORS für Wörter & Player ===== */
 const COLORS = ['#00ffcc', '#ffcc00', '#ff6699', '#66ff66', '#66ccff'];
@@ -187,7 +178,7 @@ function checkAndClearWords() {
   if (!found.length) return;
 
   found.forEach(group => {
-    const color = COLORS[Math.random() * COLORS.length | 0];
+    const color = COLORS[Math.floor(Math.random() * COLORS.length)];
     group.forEach(([y, x]) => highlights[y][x] = color);
   });
 
@@ -236,8 +227,9 @@ function findWords() {
 
 function extract(word, pos, found) {
   if (word.length < MIN_LEN) return;
+  const upperWord = word.toUpperCase();
   WORDS.forEach(w => {
-    const i = word.indexOf(w);
+    const i = upperWord.indexOf(w);
     if (i !== -1) found.push(pos.slice(i, i + w.length));
   });
 }
@@ -261,13 +253,13 @@ function applyGravity() {
 
 /* ===== PLAYER ===== */
 function randomLetter() {
-  return String.fromCharCode(65 + Math.random() * 26 | 0);
+  return String.fromCharCode(65 + Math.floor(Math.random() * 26)); // Großbuchstaben A-Z
 }
 
 function resetPlayer() {
   player.letter = randomLetter();
   player.pos.y = 0;
-  player.pos.x = arena[0].length / 2 | 0;
+  player.pos.x = Math.floor(arena[0].length / 2);
 
   if (collide(arena, player)) {
     arena.forEach(row => row.fill(null));
@@ -279,7 +271,6 @@ function clearHighlights() {
   highlights.forEach(row => row.fill(null));
 }
 
-// 🌈 Fallende Buchstaben farbig
 function draw() {
   ctx.fillStyle = '#000';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
