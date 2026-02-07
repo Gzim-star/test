@@ -7,7 +7,7 @@
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-<title>Word Tetris</title>
+<title>Word Tetris with Hint</title>
 
 <style>
 html, body {
@@ -30,6 +30,14 @@ html, body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+/* Hint über dem Grid */
+.hint {
+  color: #fff;
+  font-size: 18px;
+  margin-bottom: 10px;
+  font-family: monospace;
 }
 
 canvas {
@@ -58,6 +66,7 @@ canvas {
 <body>
 
 <div class="game">
+  <div class="hint">Word Hint: <span id="wordHint"></span></div>
   <canvas id="tetris" width="200" height="400"></canvas>
 
   <div class="controls">
@@ -112,7 +121,7 @@ const WORDS = [
 ];
 const MIN_LEN = 10;
 
-/* ===== COLORS für Wörter ===== */
+/* ===== COLORS für Wörter & Player ===== */
 const COLORS = ['#00ffcc', '#ffcc00', '#ff6699', '#66ff66', '#66ccff'];
 
 /* ===== ARENA ===== */
@@ -123,6 +132,14 @@ const player = {
   pos: { x: 0, y: 0 },
   letter: ''
 };
+
+/* ===== TARGET WORD HINT ===== */
+let targetWord = '';
+
+function newTargetWord() {
+  targetWord = WORDS[Math.floor(Math.random() * WORDS.length)];
+  document.getElementById('wordHint').textContent = targetWord;
+}
 
 /* ===== GAME LOGIC ===== */
 function collide(arena, player) {
@@ -169,6 +186,7 @@ function checkAndClearWords() {
     found.flat().forEach(([y, x]) => arena[y][x] = null);
     applyGravity();
     clearHighlights();
+    newTargetWord(); // neues Zielwort
   }, 300);
 }
 
@@ -299,6 +317,8 @@ document.addEventListener('keydown', e => {
   if (e.key === 'ArrowDown') drop();
 });
 
+/* ===== START ===== */
+newTargetWord();
 resetPlayer();
 update();
 </script>
