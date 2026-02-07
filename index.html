@@ -1,17 +1,11 @@
-<!-- TEST 13:10 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-<title>WordFall</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<title>Word Fall</title>
 
 <style>
 html, body {
@@ -37,14 +31,14 @@ html, body {
 
 .hint {
   color: #fff;
-  font-size: 24px;
+  font-size: 20px;
   margin-bottom: 10px;
   font-family: monospace;
 }
 
 canvas {
   background: #000;
-  border: 2px solid #444;
+  border: 3px solid #444;
   touch-action: none;
 }
 
@@ -68,8 +62,8 @@ canvas {
 <body>
 
 <div class="game">
-  <div class="hint"><span id="wordHint"></span></div>
-  <canvas id="worfall" width="300" height="600"></canvas>
+  <div class="hint">Word Hint: <span id="wordHint"></span></div>
+  <canvas id="wordFallCanvas" width="300" height="600"></canvas>
 
   <div class="controls">
     <button onclick="move(-1)">◀</button>
@@ -88,19 +82,19 @@ document.addEventListener('touchend', e => {
 }, { passive: false });
 
 /* ===== CANVAS ===== */
-const canvas = document.getElementById('');
+const canvas = document.getElementById('wordFallCanvas');
 const ctx = canvas.getContext('2d');
-ctx.scale(20, 20);
+ctx.scale(30, 30); // größeres Grid
 
 /* ===== DICTIONARY ===== */
 const WORDS = [
-  'ABOMINABLE',   'BIRDCATCHER',  'CROSSBREED',   'DISASTROUS',
-  'EVERYTHING',   'FASCINATOR',   'GRANDMOTHER',  'HEARTBEATS',
-  'IMMEDIATES',   'JOURNALISM',   'KNIGHTHOOD',   'LANDSCAPER',
-  'MASTERMIND',   'NIGHTSTAND',   'OPERATIONS',   'POPULATION',
-  'QUARTERBACK',  'RENDEZVOUS',   'SCRATCHING',   'TRANSPARENT',
-  'UNDERTAKER',   'VOLUNTEERS',   'WATERMELON',   'XENOPHOBIC',
-  'YELLOWHAZE',   'ZOOLOGISTS'
+  'ABOMINABLE', 'BIRDCATCHER', 'CROSSBREED', 'DISASTROUS',
+  'EVERYTHING', 'FASCINATOR', 'GRANDMOTHER', 'HEARTBEATS',
+  'IMMEDIATES', 'JOURNALISM', 'KNIGHTHOOD', 'LANDSCAPER',
+  'MASTERMIND', 'NIGHTSTAND', 'OPERATIONS', 'POPULATION',
+  'QUARTERBACK', 'RENDEZVOUS', 'SCRATCHING', 'TRANSPARENT',
+  'UNDERTAKER', 'VOLUNTEERS', 'WATERMELON', 'XENOPHOBIC',
+  'YELLOWHAZE', 'ZOOLOGISTS'
 ];
 const MIN_LEN = 10;
 
@@ -111,14 +105,10 @@ const COLORS = ['#00ffcc', '#ffcc00', '#ff6699', '#66ff66', '#66ccff'];
 const arena = Array.from({ length: 20 }, () => Array(10).fill(null));
 const highlights = Array.from({ length: 20 }, () => Array(10).fill(null));
 
-const player = {
-  pos: { x: 0, y: 0 },
-  letter: ''
-};
+const player = { pos: { x: 0, y: 0 }, letter: '' };
 
 /* ===== TARGET WORD HINT ===== */
 let targetWord = '';
-
 function newTargetWord() {
   targetWord = WORDS[Math.floor(Math.random() * WORDS.length)];
   document.getElementById('wordHint').textContent = targetWord;
@@ -127,23 +117,10 @@ function newTargetWord() {
 /* ===== GAME LOGIC ===== */
 function collide(arena, player) {
   const { x, y } = player.pos;
-  return (
-    y >= arena.length ||
-    x < 0 ||
-    x >= arena[0].length ||
-    arena[y][x] !== null
-  );
+  return y >= arena.length || x < 0 || x >= arena[0].length || arena[y][x] !== null;
 }
-
-function merge(arena, player) {
-  arena[player.pos.y][player.pos.x] = player.letter;
-}
-
-function move(dir) {
-  player.pos.x += dir;
-  if (collide(arena, player)) player.pos.x -= dir;
-}
-
+function merge(arena, player) { arena[player.pos.y][player.pos.x] = player.letter; }
+function move(dir) { player.pos.x += dir; if (collide(arena, player)) player.pos.x -= dir; }
 function drop() {
   player.pos.y++;
   if (collide(arena, player)) {
@@ -161,89 +138,60 @@ function checkAndClearWords() {
   if (!found.length) return;
 
   let targetFound = false;
-
   found.forEach(group => {
     const letters = group.map(([y,x]) => arena[y][x]).join('');
-    if (letters.toUpperCase() === targetWord) {
-      targetFound = true;
-    }
+    if (letters.toUpperCase() === targetWord) targetFound = true;
 
-    const color = COLORS[Math.floor(Math.random() * COLORS.length)];
-    group.forEach(([y, x]) => highlights[y][x] = color);
+    const color = COLORS[Math.floor(Math.random()*COLORS.length)];
+    group.forEach(([y,x]) => highlights[y][x]=color);
   });
 
   setTimeout(() => {
     if (targetFound) {
-      // Runde reset
       arena.forEach(row => row.fill(null));
       newTargetWord();
       resetPlayer();
       clearHighlights();
       return;
     }
-
-    // Normale Wörter (nicht Zielwort) löschen + Gravity anwenden
-    found.flat().forEach(([y, x]) => arena[y][x] = null);
+    found.flat().forEach(([y,x])=>arena[y][x]=null);
     applyGravity();
     clearHighlights();
   }, 300);
 }
-
 function findWords() {
-  const found = [];
-
-  // Horizontal
-  for (let y = 0; y < arena.length; y++) {
-    let word = '', pos = [];
-    for (let x = 0; x <= arena[0].length; x++) {
-      const c = arena[y][x];
-      if (c) {
-        word += c;
-        pos.push([y, x]);
-      } else {
-        extract(word, pos, found);
-        word = ''; pos = [];
-      }
+  const found=[];
+  for(let y=0;y<arena.length;y++){
+    let word='',pos=[];
+    for(let x=0;x<=arena[0].length;x++){
+      const c=arena[y][x];
+      if(c){ word+=c; pos.push([y,x]); }
+      else{ extract(word,pos,found); word=''; pos=[]; }
     }
   }
-
-  // Vertical
-  for (let x = 0; x < arena[0].length; x++) {
-    let word = '', pos = [];
-    for (let y = 0; y <= arena.length; y++) {
-      const c = arena[y]?.[x];
-      if (c) {
-        word += c;
-        pos.push([y, x]);
-      } else {
-        extract(word, pos, found);
-        word = ''; pos = [];
-      }
+  for(let x=0;x<arena[0].length;x++){
+    let word='',pos=[];
+    for(let y=0;y<=arena.length;y++){
+      const c=arena[y]?.[x];
+      if(c){ word+=c; pos.push([y,x]); }
+      else{ extract(word,pos,found); word=''; pos=[]; }
     }
   }
   return found;
 }
-
-function extract(word, pos, found) {
-  if (word.length < MIN_LEN) return;
+function extract(word,pos,found){
+  if(word.length<MIN_LEN) return;
   const upperWord = word.toUpperCase();
-  WORDS.forEach(w => {
-    const i = upperWord.indexOf(w);
-    if (i !== -1) found.push(pos.slice(i, i + w.length));
-  });
+  WORDS.forEach(w=>{const i=upperWord.indexOf(w); if(i!==-1) found.push(pos.slice(i,i+w.length)); });
 }
 
 /* ===== GRAVITY ===== */
-function applyGravity() {
-  for (let x = 0; x < arena[0].length; x++) {
-    for (let y = arena.length - 1; y >= 0; y--) {
-      if (arena[y][x] === null) {
-        for (let k = y - 1; k >= 0; k--) {
-          if (arena[k][x] !== null) {
-            arena[y][x] = arena[k][x];
-            arena[k][x] = null;
-            break;
-          }
+function applyGravity(){
+  for(let x=0;x<arena[0].length;x++){
+    for(let y=arena.length-1;y>=0;y--){
+      if(arena[y][x]===null){
+        for(let k=y-1;k>=0;k--){
+          if(arena[k][x]!==null){ arena[y][x]=arena[k][x]; arena[k][x]=null; break; }
         }
       }
     }
@@ -251,69 +199,40 @@ function applyGravity() {
 }
 
 /* ===== PLAYER ===== */
-function randomLetter() {
-  return String.fromCharCode(65 + Math.floor(Math.random() * 26));
-}
-
-function resetPlayer() {
+function randomLetter(){ return String.fromCharCode(65+Math.floor(Math.random()*26)); }
+function resetPlayer(){
   player.letter = randomLetter();
   player.pos.y = 0;
-  player.pos.x = Math.floor(arena[0].length / 2);
-
-  if (collide(arena, player)) {
-    arena.forEach(row => row.fill(null));
-  }
+  player.pos.x = Math.floor(arena[0].length/2);
+  if(collide(arena,player)) arena.forEach(row=>row.fill(null));
 }
 
 /* ===== DRAW ===== */
-function clearHighlights() {
-  highlights.forEach(row => row.fill(null));
-}
-
-function draw() {
-  ctx.fillStyle = '#000';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  ctx.font = '1.5px monospace';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-
-  arena.forEach((row, y) => {
-    row.forEach((v, x) => {
-      if (v) {
-        ctx.fillStyle = highlights[y][x] || COLORS[(x + y) % COLORS.length];
-        ctx.fillText(v, x + 0.5, y + 0.5);
-      }
-    });
-  });
-
-  ctx.fillStyle = COLORS[(player.pos.x + player.pos.y) % COLORS.length];
-  ctx.fillText(player.letter, player.pos.x + 0.5, player.pos.y + 0.5);
+function clearHighlights(){ highlights.forEach(row=>row.fill(null)); }
+function draw(){
+  ctx.fillStyle='#000'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.font='1px monospace'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  arena.forEach((row,y)=>{ row.forEach((v,x)=>{ if(v){ ctx.fillStyle = highlights[y][x]||COLORS[(x+y)%COLORS.length]; ctx.fillText(v,x+0.5,y+0.5); } }); });
+  ctx.fillStyle = COLORS[(player.pos.x+player.pos.y)%COLORS.length];
+  ctx.fillText(player.letter,player.pos.x+0.5,player.pos.y+0.5);
 }
 
 /* ===== LOOP ===== */
-let lastTime = 0;
-let dropCounter = 0;
-const dropInterval = 700;
-
-function update(time = 0) {
+let lastTime=0,dropCounter=0,dropInterval=700;
+function update(time=0){
   const delta = time - lastTime;
-  lastTime = time;
-  dropCounter += delta;
-
-  if (dropCounter > dropInterval) {
-    drop();
-    dropCounter = 0;
-  }
+  lastTime=time;
+  dropCounter+=delta;
+  if(dropCounter>dropInterval){ drop(); dropCounter=0; }
   draw();
   requestAnimationFrame(update);
 }
 
 /* ===== INPUT ===== */
-document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowLeft') move(-1);
-  if (e.key === 'ArrowRight') move(1);
-  if (e.key === 'ArrowDown') drop();
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowLeft') move(-1);
+  if(e.key==='ArrowRight') move(1);
+  if(e.key==='ArrowDown') drop();
 });
 
 /* ===== START ===== */
