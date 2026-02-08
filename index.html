@@ -110,6 +110,14 @@ const player = { pos: { x: 0, y: 0 }, letter: '' };
 let targetWord = '';
 let gameRunning = false;
 
+/* ===== FRAME (GRAUER RAHMEN) ===== */
+let frameX = 9;      // bleibt fix (rechte Spalte)
+let frameY = 5;      // Start-Position
+const frameH = 10;   // Höhe des Rahmens
+
+const FRAME_MIN_Y = arena.length - 15;   // max 15 von unten
+const FRAME_MAX_Y = arena.length - frameH;
+
 /* ===== TARGET WORD HINT ===== */
 function newTargetWord() {
   targetWord = WORDS[Math.floor(Math.random() * WORDS.length)];
@@ -170,6 +178,7 @@ function checkAndClearWords() {
   setTimeout(() => {
     if (targetFound) {
       arena.forEach(row => row.fill(null));
+      moveFrameAfterSuccess(); // 👈 NUR HIER
       newTargetWord();
       resetPlayer();
       clearHighlights();
@@ -275,9 +284,7 @@ function draw(){
   ctx.textBaseline='middle';
 
   // 🔲 GRAUER RAHMEN
-  const frameX = 9;
-  const frameY = 5;
-  const frameH = 10;
+
   ctx.fillStyle = '#808080';
   ctx.fillRect(frameX + 0.05, frameY - 0.3, 0.9, frameH - 0.2);
 
@@ -294,6 +301,17 @@ function draw(){
   ctx.fillText(player.letter,player.pos.x+0.5,player.pos.y+0.5);
 }
 
+function moveFrameAfterSuccess() {
+  const min = FRAME_MIN_Y;
+  const max = FRAME_MAX_Y;
+  let newY;
+
+  do {
+    newY = Math.floor(Math.random() * (max - min + 1)) + min;
+  } while (newY === frameY);
+
+  frameY = newY;
+}
 /* ===== LOOP ===== */
 let lastTime=0, dropCounter=0, dropInterval=700;
 function update(time=0){
