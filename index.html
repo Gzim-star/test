@@ -42,8 +42,8 @@ canvas {
   background: #000;
   border: 3px solid #444;
   touch-action: none;
-  margin-top: -10px; /* 👈 Wert anpassen: -5, -8, -12 */
 }
+
 .controls {
   margin-top: 10px;
   display: flex;
@@ -293,7 +293,7 @@ function draw(){
     row.forEach((v,x)=>{
       if(v){ 
         ctx.fillStyle = highlights[y][x]||COLORS[(x+y)%COLORS.length]; 
-        ctx.fillText(v,x+0.5,y+0.5); 
+        ctx.fillText(v,x+0.5,y+0.55); 
       }
     });
   });
