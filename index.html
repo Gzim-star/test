@@ -103,8 +103,8 @@ const MIN_LEN = 10;
 const COLORS = ['#00ffcc', '#ffcc00', '#ff6699', '#66ff66', '#66ccff'];
 
 /* ===== ARENA ===== */
-const arena = Array.from({ length: 20 }, () => Array(10).fill(null));
-const highlights = Array.from({ length: 20 }, () => Array(10).fill(null));
+const arena = Array.from({ length: 20.3 }, () => Array(10).fill(null));
+const highlights = Array.from({ length: 20.3 }, () => Array(10).fill(null));
 
 const player = { pos: { x: 0, y: 0 }, letter: '' };
 let targetWord = '';
@@ -278,7 +278,7 @@ function clearHighlights(){ highlights.forEach(row=>row.fill(null)); }
 
 function draw(){
   ctx.fillStyle='#000'; 
-  ctx.fillRect(0.3,0,canvas.width,canvas.height);
+  ctx.fillRect(0,0,canvas.width,canvas.height);
   ctx.font='1px monospace'; 
   ctx.textAlign='center'; 
   ctx.textBaseline='middle';
