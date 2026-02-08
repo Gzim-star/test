@@ -43,7 +43,6 @@ canvas {
   border: 3px solid #444;
   touch-action: none;
 }
-
 .controls {
   margin-top: 10px;
   display: flex;
@@ -54,16 +53,9 @@ canvas {
   background: #222;
   color: #fff;
   border: 1px solid #444;
+  padding: 12px 16px;
   font-size: 18px;
-}
-
-.round-btn {
-  width: 80px;      /* 👈 kleiner */
-  height: 36px;     /* 👈 kleiner */
-  border-radius: 50% !important;
-  padding: 0 !important;
-  font-size: 2px;  /* 👈 Text kleiner */
-  font-weight: bold;
+  border-radius: 6px;
 }
 
 </style>
@@ -76,10 +68,10 @@ canvas {
   <canvas id="wordFallCanvas" width="300" height="600"></canvas>
 
   <div class="controls">
-  <button class="round-btn" onclick="startGame()"></button>
-  <button onclick="move(-1)">◀-</button>
-  <button onclick="move(1)">-▶</button>
-  <button class="round-btn" onclick="restartGame()"></button>
+    <button onclick="startGame()">Start</button>
+    <button onclick="move(-1)">◀</button>
+    <button onclick="move(1)">▶</button>
+    <button onclick="restartGame()">Restart</button>
   </div>
 </div>
 
