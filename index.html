@@ -275,12 +275,18 @@ function draw(){
   ctx.textAlign='center'; 
   ctx.textBaseline='middle';
 
-    for (let y = 5; y <= 14.5; y++) { // Höhe
-    let x = 9; { // Breite (nur die letzte Spalte)
-      ctx.fillStyle = '#fff';
-      ctx.fillRect(x, y, 1, 1); // jedes Feld ist 1x1 in Canvas Grid-Skalierung
-    }
-  }
+// 🔲 WEISSER RAHMEN (mit Innenabstand)
+const frameX = 9;
+const frameY = 4;
+const frameH = 10;
+
+ctx.fillStyle = '#fff';
+ctx.fillRect(
+  frameX + 0.05,     // links etwas Luft
+  frameY + 0.1,      // oben Luft
+  0.9,               // schmaler als 1 Grid
+  frameH - 0.2       // unten Luft
+);
 
   arena.forEach((row,y)=>{
     row.forEach((v,x)=>{
