@@ -43,7 +43,6 @@ canvas {
   border: 3px solid #444;
   touch-action: none;
 }
-
 .controls {
   margin-top: 10px;
   display: flex;
@@ -279,12 +278,11 @@ function clearHighlights(){ highlights.forEach(row=>row.fill(null)); }
 
 function draw(){
   ctx.fillStyle='#000'; 
-  ctx.save();
-  ctx.translate(0, 0.15);
+  ctx.fillRect(0,0,canvas.width,canvas.height);
   ctx.font='1px monospace'; 
   ctx.textAlign='center'; 
   ctx.textBaseline='middle';
-  ctx.restore();
+
   // 🔲 GRAUER RAHMEN
 
   ctx.fillStyle = '#808080';
