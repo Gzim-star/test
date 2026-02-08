@@ -335,6 +335,7 @@ function dropFast() {
   player.pos.y--; // letzte Position zurück
   merge(arena, player);
   checkAndClearWords();
+  clearDiagonalSixByColor();
   resetPlayer();
 }
 
