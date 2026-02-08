@@ -57,7 +57,6 @@ canvas {
   font-size: 18px;
   border-radius: 6px;
 }
-
 </style>
 </head>
 
@@ -68,11 +67,11 @@ canvas {
   <canvas id="wordFallCanvas" width="300" height="600"></canvas>
 
   <div class="controls">
-  <button onclick="startGame()">Start</button>
-  <button onclick="move(-1)">◀</button>
-  <button onclick="dropFast()">▼</button>
-  <button onclick="move(1)">▶</button>
-  <button onclick="restartGame()">Reset</button>
+    <button onclick="startGame()">Start</button>
+    <button onclick="move(-1)">◀</button>
+    <button onclick="dropFast()">▼</button>
+    <button onclick="move(1)">▶</button>
+    <button onclick="restartGame()">Reset</button>
   </div>
 </div>
 
@@ -137,7 +136,7 @@ function drop() {
     player.pos.y--;
     merge(arena, player);
     checkAndClearWords();
-    clearDiagonalSixByColor(); // 👈 HIER GENAU
+    clearDiagonalSixByColor();
     resetPlayer();
   }
 }
@@ -149,12 +148,23 @@ function checkAndClearWords() {
   if (!found.length) return;
 
   let targetFound = false;
+  const frameX = 9;  // X-Koordinate des grauen Rahmens
+  const frameY = 5;  // Y-Koordinate oben
+  const frameH = 10; // Höhe
+
   found.forEach(group => {
     const letters = group.map(([y,x]) => arena[y][x]).join('');
-    if (letters.toUpperCase() === targetWord) targetFound = true;
+    if (letters.toUpperCase() === targetWord) {
+      // Prüfen, ob alle Buchstaben innerhalb des grauen Rahmens liegen
+      const inFrame = group.every(([y,x]) => 
+        x >= frameX && x < frameX + 1 &&
+        y >= frameY && y < frameY + frameH
+      );
+      if (inFrame) targetFound = true;
+    }
 
     const color = COLORS[Math.floor(Math.random()*COLORS.length)];
-    group.forEach(([y,x]) => highlights[y][x]=color);
+    group.forEach(([y,x]) => highlights[y][x] = color);
   });
 
   setTimeout(() => {
@@ -197,20 +207,16 @@ function extract(word,pos,found){
   const upperWord = word.toUpperCase();
   WORDS.forEach(w=>{const i=upperWord.indexOf(w); if(i!==-1) found.push(pos.slice(i,i+w.length)); });
 }
+
 function clearDiagonalSixByColor() {
   const toClear = [];
-
   for (let y = arena.length - 1; y >= 0; y--) {
     for (let x = 0; x < arena[0].length; x++) {
-
       if (!arena[y][x]) continue;
-
       const baseColor = COLORS[(x + y) % COLORS.length];
       const chain = [[y, x]];
-
       let ny = y - 1;
       let nx = x + 1;
-
       while (
         ny >= 0 &&
         nx < arena[0].length &&
@@ -221,27 +227,20 @@ function clearDiagonalSixByColor() {
         ny--;
         nx++;
       }
-
       if (chain.length >= 6) {
         chain.forEach(p => toClear.push(p));
       }
     }
   }
-
   if (!toClear.length) return;
-
-  toClear.forEach(([y, x]) => {
-    highlights[y][x] = '#ff3333';
-  });
-
+  toClear.forEach(([y, x]) => { highlights[y][x] = '#ff3333'; });
   setTimeout(() => {
-    toClear.forEach(([y, x]) => {
-      arena[y][x] = null;
-    });
+    toClear.forEach(([y, x]) => { arena[y][x] = null; });
     applyGravity();
     clearHighlights();
   }, 250);
 }
+
 /* ===== GRAVITY ===== */
 function applyGravity(){
   for(let x=0;x<arena[0].length;x++){
@@ -275,18 +274,12 @@ function draw(){
   ctx.textAlign='center'; 
   ctx.textBaseline='middle';
 
-// 🔲 WEISSER RAHMEN (mit Innenabstand)
-const frameX = 9;
-const frameY = 5;
-const frameH = 10;
-
-ctx.fillStyle = '#808080';
-ctx.fillRect(
-  frameX + 0.05,     // links etwas Luft
-  frameY - 0.3,      // oben Luft
-  0.9,               // schmaler als 1 Grid
-  frameH - 0.2       // unten Luft
-);
+  // 🔲 GRAUER RAHMEN
+  const frameX = 9;
+  const frameY = 5;
+  const frameH = 10;
+  ctx.fillStyle = '#808080';
+  ctx.fillRect(frameX + 0.05, frameY - 0.3, 0.9, frameH - 0.2);
 
   arena.forEach((row,y)=>{
     row.forEach((v,x)=>{
@@ -303,7 +296,6 @@ ctx.fillRect(
 
 /* ===== LOOP ===== */
 let lastTime=0, dropCounter=0, dropInterval=700;
-
 function update(time=0){
   const delta = time - lastTime;
   lastTime=time;
@@ -322,38 +314,13 @@ document.addEventListener('keydown',e=>{
   if(e.key==='ArrowDown') drop();
 });
 
-/* ===== BUTTON FUNCTIONS ===== */
-function startGame(){
-  if(!gameRunning){
-    gameRunning = true;
-    resetPlayer();
-    newTargetWord();
-  }
-}
-
-function restartGame(){
-  arena.forEach(row => row.fill(null));
-  clearHighlights();
-  resetPlayer();
-  newTargetWord();
-  dropCounter = 0;
-  gameRunning = true;
-}
-
-function dropFast() {
-  if (!gameRunning) return;
-  while (!collide(arena, player)) {
-    player.pos.y++;
-  }
-  player.pos.y--; // letzte Position zurück
-  merge(arena, player);
-  checkAndClearWords();
-  clearDiagonalSixByColor();
-  resetPlayer();
-}
+/* ===== BUTTONS ===== */
+function startGame(){ if(!gameRunning){ gameRunning = true; resetPlayer(); newTargetWord(); } }
+function restartGame(){ arena.forEach(row => row.fill(null)); clearHighlights(); resetPlayer(); newTargetWord(); dropCounter = 0; gameRunning = true; }
+function dropFast(){ if(!gameRunning) return; while(!collide(arena, player)){ player.pos.y++; } player.pos.y--; merge(arena, player); checkAndClearWords(); clearDiagonalSixByColor(); resetPlayer(); }
 
 /* ===== INIT ===== */
-update(); // Loop startet, aber Spiel fällt erst nach Start
+update();
 </script>
 
 </body>
