@@ -101,7 +101,10 @@ const WORDS = [
 ];
 const MIN_LEN = 10;
 const COLORS = ['#00ffcc', '#ffcc00', '#ff6699', '#66ff66', '#66ccff'];
-
+function shuffleWords() {
+  wordQueue = [...WORDS].sort(() => Math.random() - 0.5);
+  wordIndex = 0;
+}
 /* ===== ARENA ===== */
 const arena = Array.from({ length: 20 }, () => Array(10).fill(null));
 const highlights = Array.from({ length: 20 }, () => Array(10).fill(null));
@@ -109,10 +112,17 @@ const highlights = Array.from({ length: 20 }, () => Array(10).fill(null));
 const player = { pos: { x: 0, y: 0 }, letter: '' };
 let targetWord = '';
 let gameRunning = false;
-
+let wordQueue = [];
+let wordIndex = 0;
 /* ===== TARGET WORD HINT ===== */
 function newTargetWord() {
-  targetWord = WORDS[Math.floor(Math.random() * WORDS.length)];
+  if (wordQueue.length === 0 || wordIndex >= wordQueue.length) {
+    shuffleWords();
+  }
+
+  targetWord = wordQueue[wordIndex];
+  wordIndex++;
+
   document.getElementById('wordHint').textContent = targetWord;
 }
 
@@ -316,6 +326,7 @@ document.addEventListener('keydown',e=>{
 
 /* ===== BUTTONS ===== */
 function startGame(){ if(!gameRunning){ gameRunning = true; resetPlayer(); newTargetWord(); } }
+if (wordQueue.length === 0) shuffleWords();
 function restartGame(){ arena.forEach(row => row.fill(null)); clearHighlights(); resetPlayer(); newTargetWord(); dropCounter = 0; gameRunning = true; }
 function dropFast(){ if(!gameRunning) return; while(!collide(arena, player)){ player.pos.y++; } player.pos.y--; merge(arena, player); checkAndClearWords(); clearDiagonalSixByColor(); resetPlayer(); }
 
