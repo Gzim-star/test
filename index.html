@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -284,29 +285,26 @@ function draw(){
   ctx.textAlign='center'; 
   ctx.textBaseline='middle';
 
-  // 🧊 GLAS-RAHMEN
-const frameX = 9;
-const frameY = 5;
-const frameH = 10;
+  // 🔲 GRAUER RAHMEN
+  const frameX = 9;
+  const frameY = 5;
+  const frameH = 10;
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(frameX + 0.05, frameY - 0.3, 0.9, frameH - 0.2);
 
-// Glasfläche (transparent)
-ctx.save();
-ctx.globalAlpha = 0.25;
-ctx.fillStyle = '#cccccc';
-ctx.fillRect(frameX + 0.05, frameY - 0.3, 0.9, frameH - 0.2);
-ctx.restore();
+  arena.forEach((row,y)=>{
+    row.forEach((v,x)=>{
+      if(v){ 
+        ctx.fillStyle = highlights[y][x]||COLORS[(x+y)%COLORS.length]; 
+        ctx.fillText(v,x+0.5,y+0.5); 
+      }
+    });
+  });
 
-// helle Glas-Kante links
-ctx.strokeStyle = 'rgba(255,255,255,0.35)';
-ctx.lineWidth = 0.05;
-ctx.strokeRect(frameX + 0.05, frameY - 0.3, 0.9, frameH - 0.2);
-
-// dezenter Glanz-Streifen
-ctx.globalAlpha = 0.15;
-ctx.fillStyle = '#ffffff';
-ctx.fillRect(frameX + 0.08, frameY - 0.25, 0.15, frameH - 0.3);
-ctx.globalAlpha = 1;
+  ctx.fillStyle = COLORS[(player.pos.x+player.pos.y)%COLORS.length];
+  ctx.fillText(player.letter,player.pos.x+0.5,player.pos.y+0.5);
 }
+
 /* ===== LOOP ===== */
 let lastTime=0, dropCounter=0, dropInterval=700;
 function update(time=0){
