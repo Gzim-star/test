@@ -291,7 +291,14 @@ function draw(){
   const frameH = 10;
   ctx.fillStyle = '#fff';
   ctx.fillRect(frameX + 0.05, frameY - 0.3, 0.9, frameH - 0.2);
-
+ 
+  .LiquidGlass-effect {
+  position: absolute; 
+  z-index: 0; 
+  inset: 0;
+  backdrop-filter: blur (3px); filter: url#gLass-distortion);
+  overflow: hidden; isolation: isolate;
+}
   arena.forEach((row,y)=>{
     row.forEach((v,x)=>{
       if(v){ 
