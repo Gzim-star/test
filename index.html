@@ -289,8 +289,32 @@ function draw(){
   const frameX = 9;
   const frameY = 5;
   const frameH = 10;
-  ctx.fillStyle = '#fff';
-  ctx.fillRect(frameX + 0.05, frameY - 0.3, 0.9, frameH - 0.2);
+// Glasfläche
+ctx.save();
+ctx.globalAlpha = 0.22;
+ctx.fillStyle = '#bfc7cc';
+ctx.fillRect(frameX + 0.05, frameY - 0.25, 0.9, frameH - 0.2);
+ctx.restore();
+
+// helle Glas-Kante links
+ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+ctx.lineWidth = 0.05;
+ctx.strokeRect(frameX + 0.05, frameY - 0.25, 0.9, frameH - 0.2);
+
+// Glanz-Streifen
+ctx.save();
+ctx.globalAlpha = 0.18;
+ctx.fillStyle = '#ffffff';
+ctx.fillRect(frameX + 0.1, frameY - 0.2, 0.15, frameH - 0.35);
+ctx.restore();
+
+// leichte Schattenkante rechts
+ctx.strokeStyle = 'rgba(0,0,0,0.35)';
+ctx.lineWidth = 0.04;
+ctx.beginPath();
+ctx.moveTo(frameX + 0.95, frameY - 0.25);
+ctx.lineTo(frameX + 0.95, frameY + frameH - 0.45);
+ctx.stroke();
  
    arena.forEach((row,y)=>{
     row.forEach((v,x)=>{
