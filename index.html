@@ -57,6 +57,18 @@ canvas {
   font-size: 18px;
   border-radius: 6px;
 }
+.glass-frame {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 4px;
+
+  background: rgba(255,255,255,0.015); /* extrem wenig */
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+
+  border-left: 1px solid rgba(255,255,255,0.8);
+  border-right: 1px solid rgba(0,0,0,0.45);
+}
 </style>
 </head>
 
@@ -64,7 +76,13 @@ canvas {
 
 <div class="game">
   <div class="hint"><span id="wordHint">Hint</span></div>
-  <canvas id="wordFallCanvas" width="300" height="600"></canvas>
+
+  <div class="canvas-wrap">
+    <canvas id="wordFallCanvas" width="300" height="600"></canvas>
+
+    <!-- 🧊 GLAS-RAHMEN -->
+    <div class="glass-frame"></div>
+  </div>
 
   <div class="controls">
     <button onclick="startGame()">Start</button>
@@ -285,12 +303,27 @@ function draw(){
   ctx.textBaseline='middle';
 
   // 🔲 GRAUER RAHMEN
-  const frameX = 8;
+function positionGlassFrame() {
+  const glass = document.querySelector('.glass-frame');
+  const canvas = document.getElementById('wordFallCanvas');
+
+  const cols = 10;
+  const rows = 20;
+
+  const cellW = canvas.clientWidth / cols;
+  const cellH = canvas.clientHeight / rows;
+
+  const frameX = 8;   // 9. Spalte
   const frameY = 5;
   const frameH = 10;
-  ctx.fillStyle = '#222';
-  ctx.fillRect(frameX + 0.05, frameY - 0.27, 0.9, frameH - 0.2);
 
+  glass.style.left   = (frameX * cellW) + 'px';
+  glass.style.top    = (frameY * cellH) + 'px';
+  glass.style.width  = cellW + 'px';
+  glass.style.height = (frameH * cellH) + 'px';
+}
+positionGlassFrame();
+  window.addEventListener('resize', positionGlassFrame);
   arena.forEach((row,y)=>{
     row.forEach((v,x)=>{
       if(v){ 
