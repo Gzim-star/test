@@ -279,7 +279,7 @@ function resetPlayer(){
 function clearHighlights(){ highlights.forEach(row=>row.fill(null)); }
 
 function draw(){
-  ctx.fillStyle='#808080'; 
+  ctx.fillStyle='#000'; 
   ctx.fillRect(0,0,canvas.width,canvas.height);
   ctx.font='1px monospace'; 
   ctx.textAlign='center'; 
@@ -309,7 +309,7 @@ ctx.fillRect(frameX + 0.1, frameY - 0.2, 0.15, frameH - 0.35);
 ctx.restore();
 
 // leichte Schattenkante rechts
-ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+ctx.strokeStyle = 'rgba(0,0,0,0.35)';
 ctx.lineWidth = 0.10;
 ctx.beginPath();
 ctx.moveTo(frameX + 0.95, frameY - 0.25);
