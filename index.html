@@ -60,24 +60,19 @@ canvas {
 .canvas-wrap {
   position: relative;
 }
-
 .glass-frame {
   position: absolute;
-  top: 25%;              /* frameY */
-  right: 0;
-  width: 10%;            /* 1 Spalte */
-  height: 50%;           /* frameH */
+  pointer-events: none;
+  border-radius: 4px;
 
-  border-radius: 6px;
+  background: rgba(255,255,255,0.015); /* extrem wenig */
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
 
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-
-  border-left: 1px solid rgba(255,255,255,0.6);
-  border-right: 1px solid rgba(0,0,0,0.4);
-  pointer-events: none; /* wichtig fürs Game */
+  border-left: 1px solid rgba(255,255,255,0.8);
+  border-right: 1px solid rgba(0,0,0,0.45);
 }
+
 </style>
 </head>
 
@@ -380,7 +375,27 @@ ctx.restore();
   ctx.fillStyle = COLORS[(player.pos.x+player.pos.y)%COLORS.length];
   ctx.fillText(player.letter,player.pos.x+0.5,player.pos.y+0.5);
 }
+function positionGlassFrame() {
+  const glass = document.querySelector('.glass-frame');
+  const canvas = document.getElementById('wordFallCanvas');
 
+  const cols = 10;
+  const rows = 20;
+
+  const cellW = canvas.clientWidth / cols;
+  const cellH = canvas.clientHeight / rows;
+
+  const frameX = 8;   // 9. Spalte
+  const frameY = 5;
+  const frameH = 10;
+
+  glass.style.left   = (frameX * cellW) + 'px';
+  glass.style.top    = (frameY * cellH) + 'px';
+  glass.style.width  = cellW + 'px';
+  glass.style.height = (frameH * cellH) + 'px';
+}
+positionGlassFrame();
+ window.addEventListener('resize', positionGlassFrame);
 /* ===== LOOP ===== */
 let lastTime=0, dropCounter=0, dropInterval=700;
 function update(time=0){
