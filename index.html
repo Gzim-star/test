@@ -82,15 +82,16 @@ canvas {
 </head>
 
 <body>
-<div class="canvas-wrap">
 
-
-  <!-- 🧊 GLAS-RAHMEN -->
-  <div class="glass-frame"></div>
-</div>
-<div class="game">
+  <div class="game">
   <div class="hint"><span id="wordHint">Hint</span></div>
-  <canvas id="wordFallCanvas" width="300" height="600"></canvas>
+
+  <div class="canvas-wrap">
+    <canvas id="wordFallCanvas" width="300" height="600"></canvas>
+
+    <!-- 🧊 GLAS-RAHMEN -->
+    <div class="glass-frame"></div>
+  </div>
 
   <div class="controls">
     <button onclick="startGame()">Start</button>
