@@ -290,7 +290,7 @@ function draw(){
   const frameH = 10;
   ctx.fillStyle = '#808080';
   ctx.fillRect(frameX + 0.05, frameY - 0.3, 0.9, frameH - 0.2);
-
+  ctx.border-radius = '10%';
   arena.forEach((row,y)=>{
     row.forEach((v,x)=>{
       if(v){ 
