@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -289,34 +288,10 @@ function draw(){
   const frameX = 8;
   const frameY = 5;
   const frameH = 10;
-// Glasfläche
-ctx.save();
-ctx.globalAlpha = 0.22;
-ctx.fillStyle = '';
-ctx.fillRect(frameX + 0.05, frameY - 0.25, 0.9, frameH - 0.2);
-ctx.restore();
+  ctx.fillStyle = '#808080';
+  ctx.fillRect(frameX + 0.05, frameY - 0.3, 0.9, frameH - 0.2);
 
-// helle Glas-Kante links
-ctx.strokeStyle = 'rgba(255,255,255,0.4)';
-ctx.lineWidth = 0.05;
-ctx.strokeRect(frameX + 0.05, frameY - 0.25, 0.9, frameH - 0.2);
-
-// Glanz-Streifen
-ctx.save();
-ctx.globalAlpha = 0.18;
-ctx.fillStyle = '';
-ctx.fillRect(frameX + 0.1, frameY - 0.2, 0.15, frameH - 0.35);
-ctx.restore();
-
-// leichte Schattenkante rechts
-ctx.strokeStyle = 'rgba(0,0,0,0.35)';
-ctx.lineWidth = 0.10;
-ctx.beginPath();
-ctx.moveTo(frameX + 0.95, frameY - 0.25);
-ctx.lineTo(frameX + 0.95, frameY + frameH - 0.45);
-ctx.stroke();
- 
-   arena.forEach((row,y)=>{
+  arena.forEach((row,y)=>{
     row.forEach((v,x)=>{
       if(v){ 
         ctx.fillStyle = highlights[y][x]||COLORS[(x+y)%COLORS.length]; 
@@ -361,3 +336,4 @@ update();
 
 </body>
 </html>
+
