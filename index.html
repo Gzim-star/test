@@ -83,26 +83,12 @@ canvas {
 .subtitle {
   margin-top: 25px;
   font-family: 'Press Start 2P', monospace;
-  font-size: 14px; /* vorher 14px */
-  color: rgba(255,255,255,0.8); /* optional etwas stärker */
+  font-size: 7px; /* vorher 14px */
+  color: #222;
   opacity: 0;
   animation: fadeSub 1s ease forwards;
   animation-delay: 1.2s;
   letter-spacing: 2px; /* optional, falls es luftiger aussehen soll */
-}
-
-.rainbow {
-  font-size: 14px; /* oder größer, wie du willst */
-  font-weight: bold;
-  background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: rainbowMove 3s linear infinite;
-}
-
-@keyframes rainbowMove {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 100% 50%; }
 }
 
 @keyframes reveal {
@@ -142,9 +128,7 @@ canvas {
     <span class="space"></span>
     <span>F</span><span>@</span><span>L</span><span>L</span>
   </div>
-<div class="subtitle">
-  <span class="rainbow">Logic</span>. 
-</div>
+  <div class="subtitle">Logic Focus Flow</div>
 </div>
 <div class="game">
   <div class="hint"><span id="wordHint">Hint</span></div>
