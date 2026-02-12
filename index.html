@@ -357,7 +357,7 @@ let ballX = introCanvas.width + 50;
 let ballY = introCanvas.height / 2;
 let velocityY = 0;
 let gravity = 0.6;
-let bouncePower = -24;
+let bouncePower = -22;
 let ground = introCanvas.height / 2 + 80;
 
 let phase = 1;
@@ -381,7 +381,7 @@ function introLoop() {
     }
 
     ctxIntro.beginPath();
-    ctxIntro.arc(ballX, ballY, 12, 0, Math.PI * 2);
+    ctxIntro.arc(ballX, ballY, 22, 0, Math.PI * 2);
     ctxIntro.fillStyle = "white";
     ctxIntro.fill();
   }
