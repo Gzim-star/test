@@ -128,7 +128,7 @@ canvas {
     <span class="space"></span>
     <span>F</span><span>A</span><span>L</span><span>L</span>
   </div>
-  <div class="subtitle">Logic Focus Flow®</div>
+  <div class="subtitle">Logic Focus Flow ®</div>
 </div>
 <div class="game">
   <div class="hint"><span id="wordHint">Hint</span></div>
@@ -150,8 +150,8 @@ setTimeout(() => {
   intro.style.opacity = "0";
   setTimeout(() => {
     intro.style.display = "none";
-  }, 1500);
-}, 3000);
+  }, 2500);
+}, 5000);
 /* ===== DOUBLE TAP ZOOM KILLER ===== */
 let lastTouchEnd = 0;
 document.addEventListener('touchend', e => {
@@ -365,7 +365,7 @@ function draw(){
   const frameY = 5;
   const frameH = 10;
   ctx.fillStyle = '#808080';
-  ctx.fillRect(frameX + 0.05, frameY - 0.3, 0.9, frameH - 0.2);
+  ctx.fillRect(frameX + 0.05, frameY - 0.27, 0.9, frameH - 0.2);
 
   arena.forEach((row,y)=>{
     row.forEach((v,x)=>{
