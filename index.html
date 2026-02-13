@@ -250,23 +250,18 @@ function checkAndClearWords() {
   if (!found.length) return;
 
   let targetFound = false;
-const inFrame = group.every(([y,x]) => 
-  x >= frameX && x < frameX + 1 &&
-  y >= frameY && y < frameY + frameH
-);
-const inFrame = group.every(([y,x]) => 
-  x === frameX &&
-  y >= frameY &&
-  y < frameY + frameH
-);
+
   found.forEach(group => {
     const letters = group.map(([y,x]) => arena[y][x]).join('');
+
     if (letters.toUpperCase() === targetWord) {
-      // Prüfen, ob alle Buchstaben innerhalb des grauen Rahmens liegen
-      const inFrame = group.every(([y,x]) => 
-        x >= frameX && x < frameX + 1 &&
-        y >= frameY && y < frameY + frameH
+      // Prüfen ob komplett im grauen Rahmen
+      const inFrame = group.every(([y,x]) =>
+        x === frameX &&
+        y >= frameY &&
+        y < frameY + frameH
       );
+
       if (inFrame) targetFound = true;
     }
 
@@ -282,7 +277,8 @@ const inFrame = group.every(([y,x]) =>
       clearHighlights();
       return;
     }
-    found.flat().forEach(([y,x])=>arena[y][x]=null);
+
+    found.flat().forEach(([y,x]) => arena[y][x] = null);
     applyGravity();
     clearHighlights();
   }, 300);
