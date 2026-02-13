@@ -190,6 +190,10 @@ let targetWord = '';
 let gameRunning = false;
 let wordQueue = [];
 let wordIndex = 0;
+// 🔲 FRAME POSITION (GLOBAL)
+let frameX = 0;
+let frameY = 0;
+const frameH = 10; // Höhe bleibt fix
 /* ===== TARGET WORD HINT ===== */
 function newTargetWord() {
   if (wordQueue.length === 0 || wordIndex >= wordQueue.length) {
@@ -200,7 +204,19 @@ function newTargetWord() {
   wordIndex++;
 
   document.getElementById('wordHint').textContent = targetWord;
+  
+  randomizeFrame();
 }
+// 🔀 Rahmen zufällig platzieren
+function randomizeFrame() {
+  frameX = Math.floor(Math.random() * arena[0].length);
+
+  // arena.length = 20
+  // frameH = 10
+  // maximaler Startpunkt = 20 - 10
+  frameY = Math.floor(Math.random() * (arena.length - frameH));
+}
+
 
 /* ===== GAME LOGIC ===== */
 function collide(arena, player) {
@@ -234,10 +250,15 @@ function checkAndClearWords() {
   if (!found.length) return;
 
   let targetFound = false;
-  const frameX = 8;  // X-Koordinate des grauen Rahmens
-  const frameY = 5;  // Y-Koordinate oben
-  const frameH = 10; // Höhe
-
+const inFrame = group.every(([y,x]) => 
+  x >= frameX && x < frameX + 1 &&
+  y >= frameY && y < frameY + frameH
+);
+const inFrame = group.every(([y,x]) => 
+  x === frameX &&
+  y >= frameY &&
+  y < frameY + frameH
+);
   found.forEach(group => {
     const letters = group.map(([y,x]) => arena[y][x]).join('');
     if (letters.toUpperCase() === targetWord) {
@@ -361,9 +382,7 @@ function draw(){
   ctx.textBaseline='middle';
 
   // 🔲 GRAUER RAHMEN
-  const frameX = 8;
-  const frameY = 5;
-  const frameH = 10;
+
 ctx.strokeStyle = '#808080'; // Farbe des Rahmens
 ctx.lineWidth = 0.05;        // Dicke des Rahmens
 ctx.strokeRect(frameX + 0.05, frameY - 0.27, 0.9, frameH - 0.2);
