@@ -216,25 +216,31 @@ function playSuccessSound() {
   osc.start();
   osc.stop(audioCtx.currentTime + 0.4);
 }
-
 function playChainClearSound() {
-  const osc = audioCtx.createOscillator();
+  const osc1 = audioCtx.createOscillator();
+  const osc2 = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
 
-  osc.type = 'triangle';
-  osc.frequency.setValueAtTime(320, audioCtx.currentTime);
-  osc.frequency.exponentialRampToValueAtTime(480, audioCtx.currentTime + 0.25);
+  osc1.type = 'sine';
+  osc2.type = 'sine';
+
+  osc1.frequency.value = 600;
+  osc2.frequency.value = 900;
 
   gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.1, audioCtx.currentTime + 0.05);
-  gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.35);
+  gain.gain.exponentialRampToValueAtTime(0.12, audioCtx.currentTime + 0.05);
+  gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.4);
 
-  osc.connect(gain);
+  osc1.connect(gain);
+  osc2.connect(gain);
   gain.connect(audioCtx.destination);
 
-  osc.start();
-  osc.stop(audioCtx.currentTime + 0.35);
+  osc1.start();
+  osc2.start();
+  osc1.stop(audioCtx.currentTime + 0.4);
+  osc2.stop(audioCtx.currentTime + 0.4);
 }
+
 /* ===== TARGET WORD HINT ===== */
 function newTargetWord() {
   if (wordQueue.length === 0 || wordIndex >= wordQueue.length) {
