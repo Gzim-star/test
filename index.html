@@ -218,28 +218,22 @@ function playSuccessSound() {
 }
 
 function playChainClearSound() {
-  const osc1 = audioCtx.createOscillator();
-  const osc2 = audioCtx.createOscillator();
+  const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
 
-  osc1.type = 'sine';
-  osc2.type = 'sine';
-
-  osc1.frequency.value = 600;
-  osc2.frequency.value = 900;
+  osc.type = 'triangle';
+  osc.frequency.setValueAtTime(320, audioCtx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(480, audioCtx.currentTime + 0.25);
 
   gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.12, audioCtx.currentTime + 0.05);
-  gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.4);
+  gain.gain.exponentialRampToValueAtTime(0.1, audioCtx.currentTime + 0.05);
+  gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.35);
 
-  osc1.connect(gain);
-  osc2.connect(gain);
+  osc.connect(gain);
   gain.connect(audioCtx.destination);
 
-  osc1.start();
-  osc2.start();
-  osc1.stop(audioCtx.currentTime + 0.4);
-  osc2.stop(audioCtx.currentTime + 0.4);
+  osc.start();
+  osc.stop(audioCtx.currentTime + 0.35);
 }
 /* ===== TARGET WORD HINT ===== */
 function newTargetWord() {
