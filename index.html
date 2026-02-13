@@ -195,6 +195,26 @@ let wordIndex = 0;
 let frameX = 0;
 let frameY = 0;
 const frameH = 10; // Höhe bleibt fix
+// 🔊 Retro Sound (Web Audio)
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function playSuccessSound() {
+  const oscillator = audioCtx.createOscillator();
+  const gainNode = audioCtx.createGain();
+
+  oscillator.type = 'square'; // Retro 8-bit Sound
+  oscillator.frequency.setValueAtTime(440, audioCtx.currentTime); // Startton
+  oscillator.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15);
+
+  gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+  gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
+
+  oscillator.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
+
+  oscillator.start();
+  oscillator.stop(audioCtx.currentTime + 0.2);
+}
 /* ===== TARGET WORD HINT ===== */
 function newTargetWord() {
   if (wordQueue.length === 0 || wordIndex >= wordQueue.length) {
@@ -273,6 +293,9 @@ function checkAndClearWords() {
 
   setTimeout(() => {
     if (targetFound) {
+      
+      playSuccessSound();
+      
       arena.forEach(row => row.fill(null));
       newTargetWord();
       resetPlayer();
