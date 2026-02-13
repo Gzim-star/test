@@ -378,15 +378,18 @@ function draw(){
   ctx.textAlign='center'; 
   ctx.textBaseline='middle';
 
-  // 🔲 GRAUER RAHMEN
+  
+// 🔲 GRAUER RAHMEN (nur wenn Spiel läuft)
+if (gameRunning) {
 
-ctx.strokeStyle = '#808080'; // Farbe des Rahmens
-ctx.lineWidth = 0.05;        // Dicke des Rahmens
-ctx.strokeRect(frameX + 0.05, frameY - 0.27, 0.9, frameH - 0.2);
+  ctx.fillStyle = '#000000';
+  ctx.fillRect(frameX + 0.05, frameY - 0.27, 0.9, frameH - 0.2);
 
-// Innen schwarz füllen (optional, falls du ein dunkles Innere willst)
-ctx.fillStyle = '#000000';
-ctx.fillRect(frameX + 0.05, frameY - 0.27, 0.9, frameH - 0.2);
+  ctx.strokeStyle = '#808080';
+  ctx.lineWidth = 0.05;
+  ctx.strokeRect(frameX + 0.05, frameY - 0.27, 0.9, frameH - 0.2);
+
+}
 
   arena.forEach((row,y)=>{
     row.forEach((v,x)=>{
