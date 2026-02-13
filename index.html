@@ -340,7 +340,7 @@ function checkAndClearWords() {
       clearHighlights();
       return;
     }
-    if (!targetFound && found.length) {
+    if (found.length > 0) {
         playFailSound();
     }
     found.flat().forEach(([y,x]) => arena[y][x] = null);
