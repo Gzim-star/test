@@ -216,31 +216,25 @@ function playSuccessSound() {
   osc.start();
   osc.stop(audioCtx.currentTime + 0.4);
 }
+
 function playChainClearSound() {
-  const osc1 = audioCtx.createOscillator();
-  const osc2 = audioCtx.createOscillator();
+  const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
 
-  osc1.type = 'sine';
-  osc2.type = 'sine';
-
-  osc1.frequency.value = 600;
-  osc2.frequency.value = 900;
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(180, audioCtx.currentTime + 0.35);
 
   gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
   gain.gain.exponentialRampToValueAtTime(0.12, audioCtx.currentTime + 0.05);
   gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.4);
 
-  osc1.connect(gain);
-  osc2.connect(gain);
+  osc.connect(gain);
   gain.connect(audioCtx.destination);
 
-  osc1.start();
-  osc2.start();
-  osc1.stop(audioCtx.currentTime + 0.4);
-  osc2.stop(audioCtx.currentTime + 0.4);
+  osc.start();
+  osc.stop(audioCtx.currentTime + 0.4);
 }
-
 /* ===== TARGET WORD HINT ===== */
 function newTargetWord() {
   if (wordQueue.length === 0 || wordIndex >= wordQueue.length) {
