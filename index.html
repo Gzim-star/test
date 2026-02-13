@@ -199,22 +199,24 @@ const frameH = 10; // Höhe bleibt fix
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 function playSuccessSound() {
-  const oscillator = audioCtx.createOscillator();
-  const gainNode = audioCtx.createGain();
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
 
-  oscillator.type = 'square'; // Retro 8-bit Sound
-  oscillator.frequency.setValueAtTime(440, audioCtx.currentTime); // Startton
-  oscillator.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15);
+  osc.type = 'sine'; // weicher Sound
+  osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(700, audioCtx.currentTime + 0.3);
 
-  gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
-  gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
+  gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.15, audioCtx.currentTime + 0.05);
+  gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.4);
 
-  oscillator.connect(gainNode);
-  gainNode.connect(audioCtx.destination);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
 
-  oscillator.start();
-  oscillator.stop(audioCtx.currentTime + 0.2);
+  osc.start();
+  osc.stop(audioCtx.currentTime + 0.4);
 }
+
 /* ===== TARGET WORD HINT ===== */
 function newTargetWord() {
   if (wordQueue.length === 0 || wordIndex >= wordQueue.length) {
