@@ -217,6 +217,24 @@ function playSuccessSound() {
   osc.stop(audioCtx.currentTime + 0.4);
 }
 
+function playChainClearSound() {
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(180, audioCtx.currentTime + 0.35);
+
+  gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.12, audioCtx.currentTime + 0.05);
+  gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.4);
+
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  osc.start();
+  osc.stop(audioCtx.currentTime + 0.4);
+}
 /* ===== TARGET WORD HINT ===== */
 function newTargetWord() {
   if (wordQueue.length === 0 || wordIndex >= wordQueue.length) {
@@ -363,6 +381,7 @@ function clearDiagonalSixByColor() {
     }
   }
   if (!toClear.length) return;
+  playChainClearSound();
   toClear.forEach(([y, x]) => { highlights[y][x] = '#ff3333'; });
   setTimeout(() => {
     toClear.forEach(([y, x]) => { arena[y][x] = null; });
