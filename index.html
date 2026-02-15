@@ -439,7 +439,7 @@ if (wordQueue.length === 0) shuffleWords();
 function restartGame(){ arena.forEach(row => row.fill(null)); clearHighlights(); resetPlayer(); newTargetWord(); dropCounter = 0; gameRunning = true; }
 function dropFast(){ if(!gameRunning) return; while(!collide(arena, player)){ player.pos.y++; } player.pos.y--; merge(arena, player); checkAndClearWords(); clearDiagonalSixByColor(); resetPlayer(); }
 
-/* ===== MECHANICAL BACKGROUND ===== */
+/* ===== ADVANCED MECHANICAL BACKGROUND ===== */
 
 const bgCanvas = document.getElementById("bgCanvas");
 const bgCtx = bgCanvas.getContext("2d");
@@ -449,42 +449,96 @@ function resizeBG() {
   bgCanvas.height = window.innerHeight;
 }
 resizeBG();
-window.addEventListener("resize", resizeBG);
+window.addEventListener("resize", () => {
+  resizeBG();
+  createResponsiveGears();
+});
 
-function createGear(x, y, radius, teeth, speed, color) {
-  return { x, y, radius, teeth, angle: 0, speed, color };
+/* ---------- GEAR SYSTEM ---------- */
+
+function createGear(x, y, radius, teeth, speed, layer = 0) {
+  return { x, y, radius, teeth, angle: 0, speed, layer };
 }
 
-const gears = [
-  createGear(400, 350, 140, 28, 0.0015, "gold"),
-  createGear(750, 500, 90, 22, -0.002, "steel"),
-  createGear(1000, 250, 160, 32, 0.001, "steel")
-];
+let gears = [];
+
+function createResponsiveGears() {
+  gears = [];
+
+  const w = bgCanvas.width;
+  const h = bgCanvas.height;
+
+  const r1 = 85;   // center
+  const r2 = 60;   // right
+  const r3 = 55;   // top
+  const r4 = 70;   // bottom
+
+  const cx = w * 0.5;
+  const cy = h * 0.5;
+
+  const baseSpeed = 0.001;
+
+  // Zentrum (mittlere Ebene)
+  const g1 = createGear(cx, cy, r1, 28, baseSpeed, 1);
+
+  // Rechts angedockt
+  const g2 = createGear(
+    cx + r1 + r2,
+    cy,
+    r2,
+    22,
+    -baseSpeed * (r1 / r2),
+    2 // vorne
+  );
+
+  // Oben angedockt
+  const g3 = createGear(
+    cx,
+    cy - r1 - r3,
+    r3,
+    20,
+    -baseSpeed * (r1 / r3),
+    0 // hinten
+  );
+
+  // Unten angedockt (4. Zahnrad)
+  const g4 = createGear(
+    cx,
+    cy + r1 + r4,
+    r4,
+    26,
+    -baseSpeed * (r1 / r4),
+    1
+  );
+
+  gears.push(g3, g1, g4, g2);
+}
+
+createResponsiveGears();
+
+/* ---------- DRAW GEAR ---------- */
 
 function drawGear(g) {
-  const { x, y, radius, teeth, angle, color } = g;
+  const { x, y, radius, teeth, angle, layer } = g;
 
   bgCtx.save();
+
   bgCtx.translate(x, y);
   bgCtx.rotate(angle);
 
-  const grad = bgCtx.createRadialGradient(0, 0, radius * 0.2, 0, 0, radius);
+  // Tiefenebenen (Opacity nach Layer)
+  let opacity = 0.15;
+  if (layer === 0) opacity = 0.08; // hinten
+  if (layer === 2) opacity = 0.22; // vorne
 
-  if (color === "gold") {
-    grad.addColorStop(0, "#fff6c2");
-    grad.addColorStop(0.5, "#d4af37");
-    grad.addColorStop(1, "#8c6b1f");
-  } else {
-    grad.addColorStop(0, "#f0f0f0");
-    grad.addColorStop(0.5, "#999");
-    grad.addColorStop(1, "#444");
-  }
+  bgCtx.shadowColor = "rgba(255,255,255,0.04)";
+  bgCtx.shadowBlur = 3;
 
   bgCtx.beginPath();
 
   for (let i = 0; i < teeth; i++) {
     const a = (i * 2 * Math.PI) / teeth;
-    const outer = radius * 1.12;
+    const outer = radius * 1.1;
     const inner = radius;
 
     bgCtx.lineTo(Math.cos(a) * outer, Math.sin(a) * outer);
@@ -495,24 +549,74 @@ function drawGear(g) {
   }
 
   bgCtx.closePath();
-  bgCtx.fillStyle = grad;
-  bgCtx.fill();
 
+  bgCtx.strokeStyle = `rgba(200,200,210,${opacity})`;
+  bgCtx.lineWidth = 1.2;
+  bgCtx.stroke();
+
+  // Innenring
   bgCtx.beginPath();
-  bgCtx.arc(0, 0, radius * 0.4, 0, Math.PI * 2);
-  bgCtx.fillStyle = "#111";
-  bgCtx.fill();
+  bgCtx.arc(0, 0, radius * 0.35, 0, Math.PI * 2);
+  bgCtx.strokeStyle = `rgba(180,180,190,${opacity})`;
+  bgCtx.lineWidth = 1;
+  bgCtx.stroke();
+
+  // Schrauben
+  for (let i = 0; i < 6; i++) {
+    const a = (i * 2 * Math.PI) / 6;
+    bgCtx.beginPath();
+    bgCtx.arc(
+      Math.cos(a) * radius * 0.6,
+      Math.sin(a) * radius * 0.6,
+      2,
+      0,
+      Math.PI * 2
+    );
+    bgCtx.fillStyle = `rgba(160,160,170,${opacity + 0.05})`;
+    bgCtx.fill();
+  }
 
   bgCtx.restore();
 }
 
+/* ---------- CONNECTING AXES ---------- */
+
+function drawConnections() {
+  bgCtx.strokeStyle = "rgba(150,150,160,0.08)";
+  bgCtx.lineWidth = 1;
+
+  gears.forEach(g1 => {
+    gears.forEach(g2 => {
+      if (g1 !== g2) {
+        const dx = g1.x - g2.x;
+        const dy = g1.y - g2.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (Math.abs(dist - (g1.radius + g2.radius)) < 2) {
+          bgCtx.beginPath();
+          bgCtx.moveTo(g1.x, g1.y);
+          bgCtx.lineTo(g2.x, g2.y);
+          bgCtx.stroke();
+        }
+      }
+    });
+  });
+}
+
+/* ---------- ANIMATION ---------- */
+
 function animateBG() {
   bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
 
-  gears.forEach(g => {
-    g.angle += g.speed;
-    drawGear(g);
-  });
+  // erst hintere Ebene
+  gears
+    .sort((a, b) => a.layer - b.layer)
+    .forEach(g => {
+      g.angle += g.speed;
+      drawGear(g);
+    });
+
+  drawConnections();
 
   requestAnimationFrame(animateBG);
 }
