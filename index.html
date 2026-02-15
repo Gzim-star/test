@@ -118,10 +118,19 @@ canvas {
   font-size: 18px;
   border-radius: 6px;
 }
+.bgCanvas {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(circle at center, #111 0%, #000 70%);
+}
 </style>
 </head>
 
 <body>
+
+<canvas id="bgCanvas"></canvas>
+
 <div id="introScreen">
   <div class="title">
     <span>W</span><span>O</span><span>®</span><span>D</span>
@@ -430,6 +439,86 @@ if (wordQueue.length === 0) shuffleWords();
 function restartGame(){ arena.forEach(row => row.fill(null)); clearHighlights(); resetPlayer(); newTargetWord(); dropCounter = 0; gameRunning = true; }
 function dropFast(){ if(!gameRunning) return; while(!collide(arena, player)){ player.pos.y++; } player.pos.y--; merge(arena, player); checkAndClearWords(); clearDiagonalSixByColor(); resetPlayer(); }
 
+/* ===== MECHANICAL BACKGROUND ===== */
+
+const bgCanvas = document.getElementById("bgCanvas");
+const bgCtx = bgCanvas.getContext("2d");
+
+function resizeBG() {
+  bgCanvas.width = window.innerWidth;
+  bgCanvas.height = window.innerHeight;
+}
+resizeBG();
+window.addEventListener("resize", resizeBG);
+
+function createGear(x, y, radius, teeth, speed, color) {
+  return { x, y, radius, teeth, angle: 0, speed, color };
+}
+
+const gears = [
+  createGear(400, 350, 140, 28, 0.0015, "gold"),
+  createGear(750, 500, 90, 22, -0.002, "steel"),
+  createGear(1000, 250, 160, 32, 0.001, "steel")
+];
+
+function drawGear(g) {
+  const { x, y, radius, teeth, angle, color } = g;
+
+  bgCtx.save();
+  bgCtx.translate(x, y);
+  bgCtx.rotate(angle);
+
+  const grad = bgCtx.createRadialGradient(0, 0, radius * 0.2, 0, 0, radius);
+
+  if (color === "gold") {
+    grad.addColorStop(0, "#fff6c2");
+    grad.addColorStop(0.5, "#d4af37");
+    grad.addColorStop(1, "#8c6b1f");
+  } else {
+    grad.addColorStop(0, "#f0f0f0");
+    grad.addColorStop(0.5, "#999");
+    grad.addColorStop(1, "#444");
+  }
+
+  bgCtx.beginPath();
+
+  for (let i = 0; i < teeth; i++) {
+    const a = (i * 2 * Math.PI) / teeth;
+    const outer = radius * 1.12;
+    const inner = radius;
+
+    bgCtx.lineTo(Math.cos(a) * outer, Math.sin(a) * outer);
+    bgCtx.lineTo(
+      Math.cos(a + Math.PI / teeth) * inner,
+      Math.sin(a + Math.PI / teeth) * inner
+    );
+  }
+
+  bgCtx.closePath();
+  bgCtx.fillStyle = grad;
+  bgCtx.fill();
+
+  bgCtx.beginPath();
+  bgCtx.arc(0, 0, radius * 0.4, 0, Math.PI * 2);
+  bgCtx.fillStyle = "#111";
+  bgCtx.fill();
+
+  bgCtx.restore();
+}
+
+function animateBG() {
+  bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+
+  gears.forEach(g => {
+    g.angle += g.speed;
+    drawGear(g);
+  });
+
+  requestAnimationFrame(animateBG);
+}
+
+animateBG();
+  
 /* ===== INIT ===== */
 update();
 </script>
