@@ -412,14 +412,29 @@ document.addEventListener('keydown',e=>{
 });
 
 /* ===== BUTTONS ===== */
-function startGame(){
+function startGame() {
+  // Stoppt die Falling Letters Preview, falls noch aktiv
   if(window.previewAnim){
     cancelAnimationFrame(window.previewAnim);
-    window.previewAnim=null;
+    window.previewAnim = null;
   }
-  gameRunning = true;
+
+  // Startet das Spiel
+  if(!gameRunning){
+    gameRunning = true;
+    resetPlayer();
+    newTargetWord();
+  }
+}
+
+function restartGame() {
+  // Nur Spiel zurücksetzen, nicht Preview
+  arena.forEach(r => r.fill(null));
+  clearHighlights();
   resetPlayer();
   newTargetWord();
+  dropCounter = 0;
+  gameRunning = true;
 }
 function restartGame(){ arena.forEach(r=>r.fill(null)); clearHighlights(); resetPlayer(); newTargetWord(); dropCounter=0; gameRunning=true; }
 function dropFast(){ if(!gameRunning) return; while(!collide(arena,player)){ player.pos.y++; } player.pos.y--; merge(arena,player); checkAndClearWords(); clearDiagonalSixByColor(); resetPlayer(); }
