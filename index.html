@@ -461,12 +461,7 @@ function startGame(){ if(!gameRunning){ gameRunning = true; resetPlayer(); newTa
 if (wordQueue.length === 0) shuffleWords();
 function restartGame(){ arena.forEach(row => row.fill(null)); clearHighlights(); resetPlayer(); newTargetWord(); dropCounter = 0; gameRunning = true; }
 function dropFast(){ if(!gameRunning) return; while(!collide(arena, player)){ player.pos.y++; } player.pos.y--; merge(arena, player); checkAndClearWords(); clearDiagonalSixByColor(); resetPlayer(); }
-function startGame() {
-  clearInterval(window.previewAnim); // Vorschau stoppen
-  gameRunning = true;
-  resetPlayer();
-  newTargetWord();
-}
+
 /* ===== INIT ===== */
 update();
 </script>
