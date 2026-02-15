@@ -465,48 +465,43 @@ let gears = [];
 function createResponsiveGears() {
   gears = [];
 
-  const w = bgCanvas.width;
-  const h = bgCanvas.height;
+  const rect = canvas.getBoundingClientRect();
 
-  const r1 = 85;   // center
-  const r2 = 60;   // right
-  const r3 = 55;   // top
-  const r4 = 70;   // bottom
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
 
-  const cx = w * 0.5;
-  const cy = h * 0.5;
+  const r1 = 70;
+  const r2 = 50;
+  const r3 = 45;
+  const r4 = 60;
 
   const baseSpeed = 0.001;
 
-  // Zentrum (mittlere Ebene)
   const g1 = createGear(cx, cy, r1, 28, baseSpeed, 1);
 
-  // Rechts angedockt
   const g2 = createGear(
     cx + r1 + r2,
     cy,
     r2,
     22,
     -baseSpeed * (r1 / r2),
-    2 // vorne
+    2
   );
 
-  // Oben angedockt
   const g3 = createGear(
     cx,
     cy - r1 - r3,
     r3,
     20,
     -baseSpeed * (r1 / r3),
-    0 // hinten
+    0
   );
 
-  // Unten angedockt (4. Zahnrad)
   const g4 = createGear(
     cx,
     cy + r1 + r4,
     r4,
-    26,
+    24,
     -baseSpeed * (r1 / r4),
     1
   );
