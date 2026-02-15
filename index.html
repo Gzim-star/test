@@ -150,6 +150,10 @@ setTimeout(() => {
   intro.style.opacity = "0";
   setTimeout(() => {
     intro.style.display = "none";
+
+    // Animation der Buchstaben-Vorschau starten
+    startFallingLettersPreview();
+
   }, 800);
 }, 5000);
 /* ===== DOUBLE TAP ZOOM KILLER ===== */
@@ -367,6 +371,34 @@ function resetPlayer(){
   player.pos.x = Math.floor(arena[0].length/2);
   if(collide(arena,player)) arena.forEach(row=>row.fill(null));
 }
+function startFallingLettersPreview() {
+  const previewLetters = [];
+  const columns = arena[0].length; // gleiche Spalten wie Arena
+
+  // Buchstaben initialisieren
+  for(let x=0; x<columns; x++) {
+    previewLetters.push({x:x, y:0, letter:String.fromCharCode(65 + Math.floor(Math.random()*26))});
+  }
+
+  // Animation
+  const anim = setInterval(()=>{
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    previewLetters.forEach(p=>{
+      ctx.fillStyle = '#00ffcc';
+      ctx.font = '1px monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(p.letter, p.x+0.5, p.y+0.5);
+
+      p.y += 0.1; // Geschwindigkeit
+      if(p.y > arena.length) p.y = 0;
+    });
+  }, 30);
+
+  window.previewAnim = anim;
+}
 
 /* ===== DRAW ===== */
 function clearHighlights(){ highlights.forEach(row=>row.fill(null)); }
@@ -429,7 +461,12 @@ function startGame(){ if(!gameRunning){ gameRunning = true; resetPlayer(); newTa
 if (wordQueue.length === 0) shuffleWords();
 function restartGame(){ arena.forEach(row => row.fill(null)); clearHighlights(); resetPlayer(); newTargetWord(); dropCounter = 0; gameRunning = true; }
 function dropFast(){ if(!gameRunning) return; while(!collide(arena, player)){ player.pos.y++; } player.pos.y--; merge(arena, player); checkAndClearWords(); clearDiagonalSixByColor(); resetPlayer(); }
-
+function startGame() {
+  clearInterval(window.previewAnim); // Vorschau stoppen
+  gameRunning = true;
+  resetPlayer();
+  newTargetWord();
+}
 /* ===== INIT ===== */
 update();
 </script>
