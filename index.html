@@ -506,18 +506,18 @@ function playChainClick() {
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
 
-  osc.type = "triangle";
-  osc.frequency.value = 480;
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(520, now);
 
   gain.gain.setValueAtTime(0.001, now);
-  gain.gain.exponentialRampToValueAtTime(0.05, now + 0.01);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.15);
+  gain.gain.exponentialRampToValueAtTime(0.04, now + 0.008);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.09);
 
   osc.connect(gain);
   gain.connect(audioCtx.destination);
 
   osc.start(now);
-  osc.stop(now + 0.15);
+  osc.stop(now + 0.09);
 }
 /* ===== INIT ===== */
 // Intro fade out + start falling letters
