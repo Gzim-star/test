@@ -437,7 +437,7 @@ function restartGame() {
   gameRunning = true;
 }
 function restartGame(){ arena.forEach(r=>r.fill(null)); clearHighlights(); resetPlayer(); newTargetWord(); dropCounter=0; gameRunning=true; }
-function dropFast(){ if(!gameRunning) return; while(!collide(arena,player)){ player.pos.y++; } player.pos.y--; merge(arena,player); playLandSound(); checkAndClearWords(); clearDiagonalSixByColor(); resetPlayer(); }
+function dropFast(){ if(!gameRunning) return; while(!collide(arena,player)){ player.pos.y++; } player.pos.y--; merge(arena,player);  checkAndClearWords(); clearDiagonalSixByColor(); resetPlayer(); }
 
 /* ===== AUDIO SYSTEM ===== */
 let audioCtx = null;
