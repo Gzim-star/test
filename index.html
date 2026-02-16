@@ -236,7 +236,7 @@ function checkAndClearWords() {
   });
 
   setTimeout(()=>{
-    if(targetFound){ playSuccessSound(); arena.forEach(r=>r.fill(null)); newTargetWord(); resetPlayer(); clearHighlights(); return; }
+    if(targetFound){ arena.forEach(r=>r.fill(null)); newTargetWord(); resetPlayer(); clearHighlights(); return; }
     found.flat().forEach(([y,x])=>arena[y][x]=null);
     applyGravity();
     clearHighlights();
@@ -283,7 +283,7 @@ function clearDiagonalSixByColor(){
       if(chain.length>=5) chain.forEach(p=>toClear.push(p));
     }
   }
-  if(!toClear.length) return; playChainClick();
+  if(!toClear.length) return;
   toClear.forEach(([y,x])=>highlights[y][x]='#ff3333');
   setTimeout(()=>{ toClear.forEach(([y,x])=>arena[y][x]=null); applyGravity(); clearHighlights(); },250);
 }
@@ -413,7 +413,6 @@ document.addEventListener('keydown',e=>{
 
 /* ===== BUTTONS ===== */
 function startGame() {
- initAudio(); // 🔊 wichtig!
   // Stoppt die Falling Letters Preview, falls noch aktiv
   if(window.previewAnim){
     cancelAnimationFrame(window.previewAnim);
@@ -438,87 +437,8 @@ function restartGame() {
   gameRunning = true;
 }
 function restartGame(){ arena.forEach(r=>r.fill(null)); clearHighlights(); resetPlayer(); newTargetWord(); dropCounter=0; gameRunning=true; }
-function dropFast(){ if(!gameRunning) return; while(!collide(arena,player)){ player.pos.y++; } player.pos.y--; merge(arena,player); playLandSound(); checkAndClearWords(); clearDiagonalSixByColor(); resetPlayer(); }
+function dropFast(){ if(!gameRunning) return; while(!collide(arena,player)){ player.pos.y++; } player.pos.y--; merge(arena,player); checkAndClearWords(); clearDiagonalSixByColor(); resetPlayer(); }
 
-/* ===== AUDIO SYSTEM ===== */
-let audioCtx = null;
-
-function initAudio() {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-  audioCtx.resume();
-}
-
-/* 🔊 1. LAND – tief */
-function playLandSound() {
-  if (!audioCtx) return;
-
-  const now = audioCtx.currentTime;
-
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-
-  osc.type = "sine";
-  osc.frequency.value = 180;
-
-  gain.gain.setValueAtTime(0.006, now);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
-
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
-
-  osc.start(now);
-  osc.stop(now + 0.05);
-}
-
-/* ✨ 2. ERFOLG – aufsteigend */
-function playSuccessSound() {
-  if (!audioCtx) return;
-
-  const now = audioCtx.currentTime;
-
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-
-  osc.type = "sine";
-
-  osc.frequency.setValueAtTime(320, now);
-  osc.frequency.exponentialRampToValueAtTime(640, now + 0.6);
-
-  gain.gain.setValueAtTime(0.001, now);
-  gain.gain.exponentialRampToValueAtTime(0.08, now + 0.1);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.8);
-
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
-
-  osc.start(now);
-  osc.stop(now + 0.8);
-}
-
-/* 🖱 3. DIAGONAL – kurzer Klick */
-function playChainClick() {
-  if (!audioCtx) return;
-
-  const now = audioCtx.currentTime;
-
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-
-  osc.type = "sine";
-  osc.frequency.setValueAtTime(600, now); // kurz und klar
-
-  gain.gain.setValueAtTime(0.001, now);
-  gain.gain.exponentialRampToValueAtTime(0.03, now + 0.004); // ultrakurzer Attack
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.03); // schnelle Ausblendung
-
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
-
-  osc.start(now);
-  osc.stop(now + 0.03); // extrem kurz
-}
 /* ===== INIT ===== */
 // Intro fade out + start falling letters
 setTimeout(()=>{
