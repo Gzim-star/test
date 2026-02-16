@@ -456,41 +456,24 @@ function playLandSound() {
 
   const now = audioCtx.currentTime;
 
-  // Hauptton (fallend)
-  const osc1 = audioCtx.createOscillator();
-  const gain1 = audioCtx.createGain();
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
 
-  osc1.type = "triangle";
-  osc1.frequency.setValueAtTime(900, now); // startet hoch
-  osc1.frequency.exponentialRampToValueAtTime(180, now + 0.25); // fällt
+  osc.type = "sine";
 
-  gain1.gain.setValueAtTime(0.001, now);
-  gain1.gain.exponentialRampToValueAtTime(0.06, now + 0.02);
-  gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+  // sehr sanfter Start oben
+  osc.frequency.setValueAtTime(500, now);
+  osc.frequency.exponentialRampToValueAtTime(160, now + 0.35);
 
-  osc1.connect(gain1);
-  gain1.connect(audioCtx.destination);
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.exponentialRampToValueAtTime(0.035, now + 0.08);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.4);
 
-  osc1.start(now);
-  osc1.stop(now + 0.3);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
 
-  // leichter Glas-Schimmer oben drauf
-  const osc2 = audioCtx.createOscillator();
-  const gain2 = audioCtx.createGain();
-
-  osc2.type = "sine";
-  osc2.frequency.setValueAtTime(1400, now);
-  osc2.frequency.exponentialRampToValueAtTime(800, now + 0.15);
-
-  gain2.gain.setValueAtTime(0.001, now);
-  gain2.gain.exponentialRampToValueAtTime(0.02, now + 0.01);
-  gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
-
-  osc2.connect(gain2);
-  gain2.connect(audioCtx.destination);
-
-  osc2.start(now);
-  osc2.stop(now + 0.18);
+  osc.start(now);
+  osc.stop(now + 0.4);
 }
 
 /* ✨ 2. ERFOLG – aufsteigend */
