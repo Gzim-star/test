@@ -280,7 +280,7 @@ function clearDiagonalSixByColor(){
         chain.push([ny,nx]);
         ny--; nx++;
       }
-      if(chain.length>=5) chain.forEach(p=>toClear.push(p)); playDiagonalChainSound();
+      if(chain.length>=5) chain.forEach(p=>toClear.push(p));
     }
   }
   if(!toClear.length) return; playChainClick();
@@ -503,7 +503,7 @@ function playChainClick() {
   osc.type = "square";
   osc.frequency.value = 600;
 
-  gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
+  gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
   gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
 
   osc.connect(gain);
