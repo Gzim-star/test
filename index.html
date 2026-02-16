@@ -236,7 +236,7 @@ function checkAndClearWords() {
   });
 
   setTimeout(()=>{
-    if(targetFound){ arena.forEach(r=>r.fill(null)); newTargetWord(); resetPlayer(); clearHighlights(); return; }
+    if(targetFound){ playSuccessSound(); arena.forEach(r=>r.fill(null)); newTargetWord(); resetPlayer(); clearHighlights(); return; }
     found.flat().forEach(([y,x])=>arena[y][x]=null);
     applyGravity();
     clearHighlights();
@@ -283,7 +283,7 @@ function clearDiagonalSixByColor(){
       if(chain.length>=5) chain.forEach(p=>toClear.push(p));
     }
   }
-  if(!toClear.length) return;
+  if(!toClear.length) return; playChainClick();
   toClear.forEach(([y,x])=>highlights[y][x]='#ff3333');
   setTimeout(()=>{ toClear.forEach(([y,x])=>arena[y][x]=null); applyGravity(); clearHighlights(); },250);
 }
