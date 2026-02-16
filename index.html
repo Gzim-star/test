@@ -503,7 +503,7 @@ function playChainClick() {
   osc.type = "square";
   osc.frequency.value = 600;
 
-  gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+  gain.gain.setValueAtTime(0.00, audioCtx.currentTime);
   gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
 
   osc.connect(gain);
