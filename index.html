@@ -419,9 +419,7 @@ function startGame() {
     window.previewAnim = null;
   }
 
-  startAmbientMusic(); // 🎵 HIER
-  
-  // Startet das Spiel
+ // Startet das Spiel
   if(!gameRunning){
     gameRunning = true;
     resetPlayer();
@@ -449,29 +447,6 @@ function initAudio() {
   if (!audioCtx) {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   }
-}
-
-/* 🌊 Ambient Hintergrund */
-function startAmbientMusic() {
-  if (ambientStarted) return;
-  ambientStarted = true;
-  initAudio();
-
-  const notes = [261.63, 329.63, 392.0]; // C E G
-  notes.forEach((freq, i) => {
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-
-    osc.type = 'sine';
-    osc.frequency.value = freq;
-
-    gain.gain.value = 0.015; // EXTREM leise
-
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-
-    osc.start(audioCtx.currentTime + i * 1.5);
-  });
 }
 
 /* 💧 Leiser Pling beim Landen */
