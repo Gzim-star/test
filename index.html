@@ -456,24 +456,43 @@ function playLandSound() {
 
   const now = audioCtx.currentTime;
 
+  // 🌬 Air Noise (Fall)
+  const bufferSize = audioCtx.sampleRate * 0.25;
+  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+  const data = buffer.getChannelData(0);
+
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = (Math.random() * 2 - 1) * 0.15;
+  }
+
+  const noise = audioCtx.createBufferSource();
+  noise.buffer = buffer;
+
+  const noiseGain = audioCtx.createGain();
+  noiseGain.gain.setValueAtTime(0.0001, now);
+  noiseGain.gain.exponentialRampToValueAtTime(0.02, now + 0.05);
+  noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.25);
+
+  noise.connect(noiseGain);
+  noiseGain.connect(audioCtx.destination);
+  noise.start(now);
+
+  // 🔹 Soft Impact
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
 
   osc.type = "sine";
+  osc.frequency.value = 120;
 
-  // sehr sanfter Start oben
-  osc.frequency.setValueAtTime(500, now);
-  osc.frequency.exponentialRampToValueAtTime(160, now + 0.35);
-
-  gain.gain.setValueAtTime(0.0001, now);
-  gain.gain.exponentialRampToValueAtTime(0.035, now + 0.08);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.4);
+  gain.gain.setValueAtTime(0.0001, now + 0.18);
+  gain.gain.exponentialRampToValueAtTime(0.04, now + 0.2);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
 
   osc.connect(gain);
   gain.connect(audioCtx.destination);
 
-  osc.start(now);
-  osc.stop(now + 0.4);
+  osc.start(now + 0.18);
+  osc.stop(now + 0.35);
 }
 
 /* ✨ 2. ERFOLG – aufsteigend */
