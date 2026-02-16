@@ -459,17 +459,17 @@ function playLandSound() {
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
 
-  osc.type = "triangle";
-  osc.frequency.value = 220;
+  osc.type = "sine";
+  osc.frequency.value = 180;
 
-  gain.gain.setValueAtTime(0.015, now);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
+  gain.gain.setValueAtTime(0.006, now);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
 
   osc.connect(gain);
   gain.connect(audioCtx.destination);
 
   osc.start(now);
-  osc.stop(now + 0.08);
+  osc.stop(now + 0.05);
 }
 
 /* ✨ 2. ERFOLG – aufsteigend */
@@ -478,43 +478,46 @@ function playSuccessSound() {
 
   const now = audioCtx.currentTime;
 
-  [440, 660, 880].forEach((freq, i) => {
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
 
-    osc.type = "sine";
-    osc.frequency.value = freq;
+  osc.type = "sine";
 
-    gain.gain.setValueAtTime(0.001, now + i * 0.08);
-    gain.gain.exponentialRampToValueAtTime(0.07, now + i * 0.08 + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.25);
+  osc.frequency.setValueAtTime(320, now);
+  osc.frequency.exponentialRampToValueAtTime(640, now + 0.6);
 
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
+  gain.gain.setValueAtTime(0.001, now);
+  gain.gain.exponentialRampToValueAtTime(0.08, now + 0.1);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.8);
 
-    osc.start(now + i * 0.08);
-    osc.stop(now + i * 0.08 + 0.25);
-  });
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  osc.start(now);
+  osc.stop(now + 0.8);
 }
 
 /* 🖱 3. DIAGONAL – kurzer Klick */
 function playChainClick() {
   if (!audioCtx) return;
 
+  const now = audioCtx.currentTime;
+
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
 
   osc.type = "triangle";
-  osc.frequency.value = 520;
+  osc.frequency.value = 480;
 
-  gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+  gain.gain.setValueAtTime(0.001, now);
+  gain.gain.exponentialRampToValueAtTime(0.05, now + 0.01);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.15);
 
   osc.connect(gain);
   gain.connect(audioCtx.destination);
 
-  osc.start();
-  osc.stop(audioCtx.currentTime + 0.08);
+  osc.start(now);
+  osc.stop(now + 0.15);
 }
 /* ===== INIT ===== */
 // Intro fade out + start falling letters
