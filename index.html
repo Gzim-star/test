@@ -419,7 +419,7 @@ function startGame() {
     window.previewAnim = null;
   }
 
- // Startet das Spiel
+  // Startet das Spiel
   if(!gameRunning){
     gameRunning = true;
     resetPlayer();
@@ -437,36 +437,7 @@ function restartGame() {
   gameRunning = true;
 }
 function restartGame(){ arena.forEach(r=>r.fill(null)); clearHighlights(); resetPlayer(); newTargetWord(); dropCounter=0; gameRunning=true; }
-function dropFast(){ if(!gameRunning) return; while(!collide(arena,player)){ player.pos.y++; } player.pos.y--; merge(arena,player);  checkAndClearWords(); clearDiagonalSixByColor(); resetPlayer(); }
-
-/* ===== AUDIO SYSTEM ===== */
-let audioCtx = null;
-let ambientStarted = false;
-
-function initAudio() {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-}
-
-/* 💧 Leiser Pling beim Landen */
-function playLandSound() {
-  if (!audioCtx) return;
-
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-
-  osc.type = 'triangle';
-  osc.frequency.value = 800;
-
-  gain.gain.value = 0.03;
-
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
-
-  osc.start();
-  osc.stop(audioCtx.currentTime + 0.08);
-}
+function dropFast(){ if(!gameRunning) return; while(!collide(arena,player)){ player.pos.y++; } player.pos.y--; merge(arena,player); checkAndClearWords(); clearDiagonalSixByColor(); resetPlayer(); }
 
 /* ===== INIT ===== */
 // Intro fade out + start falling letters
