@@ -44,47 +44,6 @@ canvas {
   display: block;
 }
 
-/* ===== SAFE SOUND ENGINE ===== */
-let audioCtx = null;
-
-function initAudio(){
-  try {
-    if(!audioCtx){
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    if(audioCtx.state === "suspended"){
-      audioCtx.resume();
-    }
-  } catch(e){
-    console.log("Audio init error:", e);
-  }
-}
-
-function playTone(freq, duration, type="square", volume=0.03){
-  if(!audioCtx) return;
-
-  try {
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-
-    osc.type = type;
-    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-
-    gain.gain.setValueAtTime(volume, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(
-      0.0001,
-      audioCtx.currentTime + duration
-    );
-
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-
-    osc.start();
-    osc.stop(audioCtx.currentTime + duration);
-  } catch(e){
-    console.log("Sound error:", e);
-  }
-}
 #introScreen {
   position: fixed;
   inset: 0;
@@ -252,7 +211,6 @@ function collide(arena, player) {
 }
 
 function merge(arena, player) { arena[player.pos.y][player.pos.x] = player.letter; }
-playTone(180, 0.05, "square", 0.025); // 🔹 Drop Tick
 function move(dir) { player.pos.x += dir; if(collide(arena, player)) player.pos.x -= dir; }
 function drop() { 
   if(!gameRunning) return;
@@ -278,10 +236,6 @@ function checkAndClearWords() {
   });
 
   setTimeout(()=>{
-    // 🟢 WIN Sound (ascending digital)
-playTone(500, 0.1, "square", 0.05);
-setTimeout(()=> playTone(700, 0.1, "square", 0.05), 120);
-setTimeout(()=> playTone(900, 0.15, "square", 0.05), 240);
     if(targetFound){ arena.forEach(r=>r.fill(null)); newTargetWord(); resetPlayer(); clearHighlights(); return; }
     found.flat().forEach(([y,x])=>arena[y][x]=null);
     applyGravity();
@@ -330,9 +284,6 @@ function clearDiagonalSixByColor(){
     }
   }
   if(!toClear.length) return;
-  // 🔺 Digital Destroy
-playTone(320, 0.08, "square", 0.05);
-setTimeout(()=> playTone(160, 0.12, "square", 0.04), 80);
   toClear.forEach(([y,x])=>highlights[y][x]='#ff3333');
   setTimeout(()=>{ toClear.forEach(([y,x])=>arena[y][x]=null); applyGravity(); clearHighlights(); },250);
 }
@@ -462,7 +413,6 @@ document.addEventListener('keydown',e=>{
 
 /* ===== BUTTONS ===== */
 function startGame() {
-  initAudio(); // 🔊 Audio aktivieren
   // Stoppt die Falling Letters Preview, falls noch aktiv
   if(window.previewAnim){
     cancelAnimationFrame(window.previewAnim);
