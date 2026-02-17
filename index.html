@@ -2,7 +2,7 @@
 <html lang="sq">
 <head>
 <meta charset="UTF-8">
-<title>Kosovo Flag</title>
+<title>Gëzuar Pavarësinë</title>
 
 <style>
 body{
@@ -12,82 +12,67 @@ body{
   justify-content:center;
   align-items:center;
   height:100vh;
-  font-family:Arial, sans-serif;
   flex-direction:column;
+  font-family:Arial, sans-serif;
   color:white;
-}
-
-.flag-container{
-  perspective:1000px;
-}
-
-.flag{
-  width:400px;
-  height:260px;
-  background:#1e4fa3;
-  position:relative;
   overflow:hidden;
-  border-radius:6px;
-  animation: wave 4s ease-in-out infinite;
 }
 
-/* Wave Animation */
-@keyframes wave{
-  0% { transform: rotateY(0deg); }
-  25% { transform: rotateY(6deg); }
-  50% { transform: rotateY(0deg); }
-  75% { transform: rotateY(-6deg); }
-  100% { transform: rotateY(0deg); }
+/* Flag container */
+.flag-wrapper{
+  position:relative;
+  width:420px;
+  height:260px;
+  overflow:hidden;
+  border-radius:8px;
 }
 
-/* Gold Map (minimal modern shape) */
-.map{
+/* Emoji flag */
+.flag{
+  font-size:220px;
   position:absolute;
-  top:90px;
-  left:130px;
-  width:140px;
-  height:60px;
-  background:#f6c400;
-  border-radius:40% 60% 50% 50%;
-  filter: blur(1px);
+  top:-20px;
+  left:0;
+  animation: fabric 4s ease-in-out infinite;
+  transform-origin:left center;
 }
 
-/* Stars */
-.star{
+/* Fabric wave animation */
+@keyframes fabric{
+  0%   { transform: perspective(800px) rotateY(0deg); }
+  25%  { transform: perspective(800px) rotateY(8deg); }
+  50%  { transform: perspective(800px) rotateY(0deg); }
+  75%  { transform: perspective(800px) rotateY(-8deg); }
+  100% { transform: perspective(800px) rotateY(0deg); }
+}
+
+/* Soft shadow for depth */
+.flag-wrapper::after{
+  content:"";
   position:absolute;
-  width:16px;
-  height:16px;
-  background:#f6c400;
-  clip-path: polygon(
-    50% 0%, 
-    61% 35%, 
-    98% 35%, 
-    68% 57%, 
-    79% 91%, 
-    50% 70%, 
-    21% 91%, 
-    32% 57%, 
-    2% 35%, 
-    39% 35%
+  inset:0;
+  background:linear-gradient(
+    to right,
+    rgba(0,0,0,0.25),
+    rgba(0,0,0,0.05),
+    rgba(0,0,0,0.25)
   );
+  mix-blend-mode:multiply;
+  pointer-events:none;
 }
 
-.star:nth-child(2){ top:40px; left:80px; }
-.star:nth-child(3){ top:30px; left:140px; }
-.star:nth-child(4){ top:25px; left:200px; }
-.star:nth-child(5){ top:30px; left:260px; }
-.star:nth-child(6){ top:40px; left:320px; }
-
+/* Text */
 .text{
-  margin-top:25px;
-  font-size:28px;
+  margin-top:30px;
+  font-size:30px;
   letter-spacing:3px;
   opacity:0;
   animation: fadeIn 2s ease forwards 1s;
 }
 
 @keyframes fadeIn{
-  to{ opacity:1; }
+  to{ opacity:1; transform:translateY(0); }
+  from{ opacity:0; transform:translateY(15px); }
 }
 
 </style>
@@ -95,15 +80,8 @@ body{
 
 <body>
 
-<div class="flag-container">
-  <div class="flag">
-    <div class="map"></div>
-    <div class="star"></div>
-    <div class="star"></div>
-    <div class="star"></div>
-    <div class="star"></div>
-    <div class="star"></div>
-  </div>
+<div class="flag-wrapper">
+  <div class="flag">🇽🇰</div>
 </div>
 
 <div class="text">Gëzuar Pavarësinë</div>
