@@ -38,19 +38,22 @@ body{
   overflow:hidden;
 }
 
-/* Flaggen */
+/* Flagge */
 .flag{
-  font-size:100px;
+  font-size:220px;
   position:absolute;
-  bottom:-120px; /* Start unten */
+  bottom:-260px; /* Start unten */
   left:0;
+  animation:
+    raise 4s ease-out forwards,
+    wave 4s ease-in-out infinite 4s;
   transform-origin:left center;
 }
 
-/* Hochziehen jeder Flagge */
+/* Hochziehen */
 @keyframes raise{
   to{
-    bottom:0;
+    bottom:0; /* ganz oben am Mast */
   }
 }
 
@@ -85,9 +88,7 @@ body{
 <div class="pole"></div>
 
 <div class="flag-wrapper">
-  <div class="flag" style="animation: raise 4s ease-out forwards, wave 4s ease-in-out infinite 4s;">🇽🇰</div>
-  <div class="flag" style="animation: raise 4.5s ease-out forwards, wave 4s ease-in-out infinite 4.5s; left:50px;">🇽🇰</div>
-  <div class="flag" style="animation: raise 5s ease-out forwards, wave 4s ease-in-out infinite 5s; left:100px;">🇽🇰</div>
+  <div class="flag">🇽🇰</div>
 </div>
 
 <div class="text">Gëzuar Pavarësinë</div>
