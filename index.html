@@ -21,13 +21,29 @@ body{
 /* Mast */
 .pole{
   position:absolute;
-  left:calc(50% - 230px);
+  left:calc(50% - 240px);
   top:50%;
   transform:translateY(-50%);
-  width:6px;
-  height:320px;
-  background:linear-gradient(to bottom,#aaa,#eee,#aaa);
-  border-radius:3px;
+  width:10px;   /* dicker */
+  height:340px;
+  background:linear-gradient(to bottom,#eee,#bbb,#eee);
+  border-radius:5px;
+}
+
+/* Seil */
+.rope{
+  position:absolute;
+  left:calc(50% - 228px);
+  top:calc(50% - 170px);
+  width:2px;
+  height:340px;
+  background:white;
+  animation: ropeMove 4s ease-out forwards;
+}
+
+@keyframes ropeMove{
+  0%{ transform: translateY(0); }
+  100%{ transform: translateY(-260px); }
 }
 
 /* Flag container */
@@ -42,7 +58,7 @@ body{
 .flag{
   font-size:220px;
   position:absolute;
-  bottom:-260px; /* start unten */
+  bottom:-260px;
   left:0;
   animation:
     raise 4s ease-out forwards,
@@ -52,9 +68,7 @@ body{
 
 /* Hochziehen */
 @keyframes raise{
-  to{
-    bottom:0;
-  }
+  to{ bottom:80px; } /* bis ganz oben */
 }
 
 /* Wehen */
@@ -68,7 +82,7 @@ body{
 
 /* Text */
 .text{
-  margin-top:30px;
+  margin-top:40px;
   font-size:30px;
   letter-spacing:3px;
   opacity:0;
@@ -80,18 +94,39 @@ body{
   to{ opacity:1; transform:translateY(0); }
 }
 
+button{
+  position:absolute;
+  bottom:30px;
+  padding:10px 20px;
+  background:#f6c400;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+
 </style>
 </head>
 
 <body>
 
 <div class="pole"></div>
+<div class="rope"></div>
 
 <div class="flag-wrapper">
   <div class="flag">🇽🇰</div>
 </div>
 
 <div class="text">Gëzuar Pavarësinë</div>
+
+<button onclick="playSound()">Start</button>
+
+<script>
+function playSound(){
+  const audio = new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_c8f7a37e1f.mp3");
+  audio.volume = 0.15; // sehr leise
+  audio.play();
+}
+</script>
 
 </body>
 </html>
