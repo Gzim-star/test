@@ -510,7 +510,7 @@ function playChainClick() {
   osc.frequency.value = 480;
 
   gain.gain.setValueAtTime(0.0005, now);
-  gain.gain.exponentialRampToValueAtTime(0.005, now + 0.01);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.01);
   gain.gain.exponentialRampToValueAtTime(0.00005, now + 0.15);
 
   osc.connect(gain);
