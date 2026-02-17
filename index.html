@@ -34,7 +34,7 @@ body{
 .flag-wrapper{
   position:relative;
   width:420px;
-  height:260px;
+  height:320px; /* Höhe = Mast */
   overflow:hidden;
 }
 
@@ -42,7 +42,7 @@ body{
 .flag{
   font-size:220px;
   position:absolute;
-  bottom:-260px; /* start unten */
+  bottom:-220px; /* startet genau unterhalb Mast */
   left:0;
   animation:
     raise 4s ease-out forwards,
@@ -53,7 +53,7 @@ body{
 /* Hochziehen */
 @keyframes raise{
   to{
-    bottom:0;
+    bottom:0; /* Flagge ganz oben */
   }
 }
 
