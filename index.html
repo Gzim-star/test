@@ -21,54 +21,37 @@ body{
 /* Mast */
 .pole{
   position:absolute;
-  left:calc(50% - 240px);
+  left:calc(50% - 230px);
   top:50%;
   transform:translateY(-50%);
-  width:10px;   /* dicker */
-  height:340px;
-  background:linear-gradient(to bottom,#eee,#bbb,#eee);
-  border-radius:5px;
-}
-
-/* Seil */
-.rope{
-  position:absolute;
-  left:calc(50% - 228px);
-  top:calc(50% - 170px);
-  width:2px;
-  height:340px;
-  background:white;
-  animation: ropeMove 4s ease-out forwards;
-}
-
-@keyframes ropeMove{
-  0%{ transform: translateY(0); }
-  100%{ transform: translateY(-260px); }
+  width:6px;
+  height:320px;
+  background:linear-gradient(to bottom,#aaa,#eee,#aaa);
+  border-radius:3px;
 }
 
 /* Flag container */
 .flag-wrapper{
   position:relative;
   width:420px;
-  height:260px;
+  height:320px; /* Masthöhe angepasst */
   overflow:hidden;
 }
 
-/* Flag */
+/* Flaggen */
 .flag{
-  font-size:220px;
+  font-size:100px;
   position:absolute;
-  bottom:-260px;
+  bottom:-120px; /* Start unten */
   left:0;
-  animation:
-    raise 4s ease-out forwards,
-    wave 4s ease-in-out infinite 4s;
   transform-origin:left center;
 }
 
-/* Hochziehen */
+/* Hochziehen jeder Flagge */
 @keyframes raise{
-  to{ bottom:80px; } /* bis ganz oben */
+  to{
+    bottom:0;
+  }
 }
 
 /* Wehen */
@@ -82,7 +65,7 @@ body{
 
 /* Text */
 .text{
-  margin-top:40px;
+  margin-top:30px;
   font-size:30px;
   letter-spacing:3px;
   opacity:0;
@@ -94,39 +77,20 @@ body{
   to{ opacity:1; transform:translateY(0); }
 }
 
-button{
-  position:absolute;
-  bottom:30px;
-  padding:10px 20px;
-  background:#f6c400;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-}
-
 </style>
 </head>
 
 <body>
 
 <div class="pole"></div>
-<div class="rope"></div>
 
 <div class="flag-wrapper">
-  <div class="flag">🇽🇰</div>
+  <div class="flag" style="animation: raise 4s ease-out forwards, wave 4s ease-in-out infinite 4s;">🇽🇰</div>
+  <div class="flag" style="animation: raise 4.5s ease-out forwards, wave 4s ease-in-out infinite 4.5s; left:50px;">🇽🇰</div>
+  <div class="flag" style="animation: raise 5s ease-out forwards, wave 4s ease-in-out infinite 5s; left:100px;">🇽🇰</div>
 </div>
 
 <div class="text">Gëzuar Pavarësinë</div>
-
-<button onclick="playSound()">Start</button>
-
-<script>
-function playSound(){
-  const audio = new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_c8f7a37e1f.mp3");
-  audio.volume = 0.15; // sehr leise
-  audio.play();
-}
-</script>
 
 </body>
 </html>
