@@ -43,34 +43,48 @@ canvas {
   border: none !important;
   display: block;
 }
-/* ===== SOUND ENGINE ===== */
+
+/* ===== SAFE SOUND ENGINE ===== */
 let audioCtx = null;
 
 function initAudio(){
-  if(!audioCtx){
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  try {
+    if(!audioCtx){
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if(audioCtx.state === "suspended"){
+      audioCtx.resume();
+    }
+  } catch(e){
+    console.log("Audio init error:", e);
   }
 }
 
-function playTone(freq, duration, type="square", volume=0.04){
+function playTone(freq, duration, type="square", volume=0.03){
   if(!audioCtx) return;
 
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
+  try {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
 
-  osc.type = type;
-  osc.frequency.value = freq;
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
 
-  gain.gain.setValueAtTime(volume, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+    gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(
+      0.0001,
+      audioCtx.currentTime + duration
+    );
 
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
 
-  osc.start();
-  osc.stop(audioCtx.currentTime + duration);
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
+  } catch(e){
+    console.log("Sound error:", e);
+  }
 }
-
 #introScreen {
   position: fixed;
   inset: 0;
