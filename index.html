@@ -2,7 +2,8 @@
 <html lang="sq">
 <head>
 <meta charset="UTF-8">
-<title>Gëzuar Pavarësinë</title>
+<title>Kosovo Flag</title>
+
 <style>
 body{
   margin:0;
@@ -11,42 +12,100 @@ body{
   justify-content:center;
   align-items:center;
   height:100vh;
-  flex-direction:column;
   font-family:Arial, sans-serif;
+  flex-direction:column;
   color:white;
-  overflow:hidden;
+}
+
+.flag-container{
+  perspective:1000px;
 }
 
 .flag{
-  font-size:120px;
-  animation: wave 2s ease-in-out infinite;
+  width:400px;
+  height:260px;
+  background:#1e4fa3;
+  position:relative;
+  overflow:hidden;
+  border-radius:6px;
+  animation: wave 4s ease-in-out infinite;
 }
+
+/* Wave Animation */
+@keyframes wave{
+  0% { transform: rotateY(0deg); }
+  25% { transform: rotateY(6deg); }
+  50% { transform: rotateY(0deg); }
+  75% { transform: rotateY(-6deg); }
+  100% { transform: rotateY(0deg); }
+}
+
+/* Gold Map (minimal modern shape) */
+.map{
+  position:absolute;
+  top:90px;
+  left:130px;
+  width:140px;
+  height:60px;
+  background:#f6c400;
+  border-radius:40% 60% 50% 50%;
+  filter: blur(1px);
+}
+
+/* Stars */
+.star{
+  position:absolute;
+  width:16px;
+  height:16px;
+  background:#f6c400;
+  clip-path: polygon(
+    50% 0%, 
+    61% 35%, 
+    98% 35%, 
+    68% 57%, 
+    79% 91%, 
+    50% 70%, 
+    21% 91%, 
+    32% 57%, 
+    2% 35%, 
+    39% 35%
+  );
+}
+
+.star:nth-child(2){ top:40px; left:80px; }
+.star:nth-child(3){ top:30px; left:140px; }
+.star:nth-child(4){ top:25px; left:200px; }
+.star:nth-child(5){ top:30px; left:260px; }
+.star:nth-child(6){ top:40px; left:320px; }
 
 .text{
-  margin-top:20px;
+  margin-top:25px;
   font-size:28px;
-  letter-spacing:2px;
-  animation: fadeIn 2s ease forwards;
-}
-
-@keyframes wave{
-  0% { transform: rotate(0deg) scale(1); }
-  25% { transform: rotate(2deg) scale(1.02); }
-  50% { transform: rotate(0deg) scale(1); }
-  75% { transform: rotate(-2deg) scale(1.02); }
-  100% { transform: rotate(0deg) scale(1); }
+  letter-spacing:3px;
+  opacity:0;
+  animation: fadeIn 2s ease forwards 1s;
 }
 
 @keyframes fadeIn{
-  from { opacity:0; transform: translateY(20px); }
-  to { opacity:1; transform: translateY(0); }
+  to{ opacity:1; }
 }
+
 </style>
 </head>
 
 <body>
 
-<div class="flag">🇽🇰</div>
+<div class="flag-container">
+  <div class="flag">
+    <div class="map"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+  </div>
+</div>
+
 <div class="text">Gëzuar Pavarësinë</div>
 
 </body>
