@@ -236,7 +236,7 @@ function checkAndClearWords() {
   });
 
   setTimeout(()=>{
-    if(targetFound){ playSuccessSound(); arena.forEach(r=>r.fill(null)); newTargetWord(); resetPlayer(); clearHighlights(); return; }
+    if(targetFound){ arena.forEach(r=>r.fill(null)); newTargetWord(); resetPlayer(); clearHighlights(); return; }
     found.flat().forEach(([y,x])=>arena[y][x]=null);
     applyGravity();
     clearHighlights();
@@ -438,7 +438,7 @@ function restartGame() {
   gameRunning = true;
 }
 function restartGame(){ arena.forEach(r=>r.fill(null)); clearHighlights(); resetPlayer(); newTargetWord(); dropCounter=0; gameRunning=true; }
-function dropFast(){ if(!gameRunning) return; while(!collide(arena,player)){ player.pos.y++; } player.pos.y--; merge(arena,player);  playLandSound();  checkAndClearWords(); clearDiagonalSixByColor(); resetPlayer(); }
+function dropFast(){ if(!gameRunning) return; while(!collide(arena,player)){ player.pos.y++; } player.pos.y--; merge(arena,player); checkAndClearWords(); clearDiagonalSixByColor(); resetPlayer(); }
 
 /* ===== AUDIO SYSTEM ===== */
 let audioCtx = null;
@@ -448,53 +448,6 @@ function initAudio() {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   }
   audioCtx.resume();
-}
-
-/* 🔊 1. LAND – tief */
-function playLandSound() {
-  if (!audioCtx) return;
-
-  const now = audioCtx.currentTime;
-
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-
-  osc.type = "sine";
-  osc.frequency.value = 180;
-
-  gain.gain.setValueAtTime(0.006, now);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
-
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
-
-  osc.start(now);
-  osc.stop(now + 0.05);
-}
-
-/* ✨ 2. ERFOLG – aufsteigend */
-function playSuccessSound() {
-  if (!audioCtx) return;
-
-  const now = audioCtx.currentTime;
-
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-
-  osc.type = "sine";
-
-  osc.frequency.setValueAtTime(320, now);
-  osc.frequency.exponentialRampToValueAtTime(640, now + 0.6);
-
-  gain.gain.setValueAtTime(0.0006, now);
-  gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
-  gain.gain.exponentialRampToValueAtTime(0.00006, now + 0.8);
-
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
-
-  osc.start(now);
-  osc.stop(now + 0.8);
 }
 
 /* 🖱 3. DIAGONAL – kurzer Klick */
