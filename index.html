@@ -459,18 +459,20 @@ function playChainClick() {
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
 
-  osc.type = "triangle";
-  osc.frequency.value = 480;
+  osc.type = "sine";
 
-  gain.gain.setValueAtTime(0.0005, now);
-  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.01);
-  gain.gain.exponentialRampToValueAtTime(0.00005, now + 0.15);
+  osc.frequency.setValueAtTime(320, now);
+  osc.frequency.exponentialRampToValueAtTime(640, now + 0.6);
+
+  gain.gain.setValueAtTime(0.0006, now);
+  gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+  gain.gain.exponentialRampToValueAtTime(0.00006, now + 0.8);
 
   osc.connect(gain);
   gain.connect(audioCtx.destination);
 
   osc.start(now);
-  osc.stop(now + 0.15);
+  osc.stop(now + 0.8);
 }
 /* ===== INIT ===== */
 // Intro fade out + start falling letters
