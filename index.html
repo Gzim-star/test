@@ -170,6 +170,13 @@ const WORDS = [
 ];
 const MIN_LEN = 10;
 const COLORS = ['#00ffcc', '#ffcc00', '#ff6699', '#66ff66', '#66ccff'];
+// ===== PUZZLE BLOCKS =====
+const PUZZLE_BLOCKS = [
+  [['A','B'],['C','D']],  // 2x2 Block
+  [['E','F','G']],        // 1x3 Block
+  [['H'],['I'],['J']]     // 3x1 Block
+];
+const PUZZLE_CHANCE = 0.2; // 20% Wahrscheinlichkeit, dass ein Block statt Buchstaben fällt
 let wordQueue = [];
 let wordIndex = 0;
 
@@ -475,6 +482,72 @@ function playChainClick() {
   osc.start(now);
   osc.stop(now + 0.8);
 }
+function resetPlayer(){
+  // Zufällig entscheiden, ob Block kommt
+  if(Math.random() < PUZZLE_CHANCE){
+    // Block auswählen
+    const block = PUZZLE_BLOCKS[Math.floor(Math.random()*PUZZLE_BLOCKS.length)];
+    player.block = block; // speichert den Block
+    player.letter = null;  // einzelner Buchstabe fällt weg
+  } else {
+    player.block = null;
+    player.letter = randomLetter();
+  }
+  player.pos.y = 0;
+  player.pos.x = Math.floor(arena[0].length/2);
+  if(collide(arena,player)) arena.forEach(r=>r.fill(null));
+}
+function drop() {
+  if(!gameRunning) return;
+  player.pos.y++;
+  
+  if(collideBlock(arena, player)){ 
+    player.pos.y--;
+    if(player.block){
+      mergeBlock(arena, player);
+    } else {
+      merge(arena, player);
+    }
+    checkAndClearWords();
+    clearDiagonalSixByColor();
+    resetPlayer();
+  }
+}
+function collideBlock(arena, player){
+  if(!player.block) return collide(arena, player);
+  const {x,y} = player.pos;
+  for(let by=0; by<player.block.length; by++){
+    for(let bx=0; bx<player.block[by].length; bx++){
+      if(arena[y+by]?.[x+bx]!==null) return true;
+      if(y+by >= arena.length || x+bx < 0 || x+bx >= arena[0].length) return true;
+    }
+  }
+  return false;
+}
+function mergeBlock(arena, player){
+  const {x,y} = player.pos;
+  for(let by=0; by<player.block.length; by++){
+    for(let bx=0; bx<player.block[by].length; bx++){
+      const letter = player.block[by][bx];
+      if(letter) arena[y+by][x+bx] = letter;
+    }
+  }
+}
+if(player.block){
+  for(let by=0; by<player.block.length; by++){
+    for(let bx=0; bx<player.block[by].length; bx++){
+      const letter = player.block[by][bx];
+      if(letter){
+        ctx.fillStyle = COLORS[(player.pos.x+bx+player.pos.y+by)%COLORS.length];
+        ctx.fillText(letter, player.pos.x+bx+0.5, player.pos.y+by+0.5);
+      }
+    }
+  }
+} else {
+  ctx.fillStyle=COLORS[(player.pos.x+player.pos.y)%COLORS.length];
+  ctx.fillText(player.letter,player.pos.x+0.5,player.pos.y+0.5);
+}
+
 /* ===== INIT ===== */
 // Intro fade out + start falling letters
 setTimeout(()=>{
