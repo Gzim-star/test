@@ -488,9 +488,9 @@ function resetPlayer(){
     // Block auswählen
     const block = PUZZLE_BLOCKS[Math.floor(Math.random()*PUZZLE_BLOCKS.length)];
     player.block = block; // speichert den Block
-    player.letter = null;  // einzelner Buchstabe fällt weg
+    player.letter = ⬜️;  // einzelner Buchstabe fällt weg
   } else {
-    player.block = null;
+    player.block = ⬜️;
     player.letter = randomLetter();
   }
   player.pos.y = 0;
