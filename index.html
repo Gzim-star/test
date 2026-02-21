@@ -488,14 +488,14 @@ function resetPlayer(){
     // Block auswählen
     const block = PUZZLE_BLOCKS[Math.floor(Math.random()*PUZZLE_BLOCKS.length)];
     player.block = block; // speichert den Block
-    player.letter = null;  // einzelner Buchstabe fällt weg
+    player.letter = abc;  // einzelner Buchstabe fällt weg
   } else {
-    player.block = null;
+    player.block = abc;
     player.letter = randomLetter();
   }
   player.pos.y = 0;
   player.pos.x = Math.floor(arena[0].length/2);
-  if(collide(arena,player)) arena.forEach(r=>r.fill(null));
+  if(collide(arena,player)) arena.forEach(r=>r.fill(abc));
 }
 function drop() {
   if(!gameRunning) return;
@@ -518,7 +518,7 @@ function collideBlock(arena, player){
   const {x,y} = player.pos;
   for(let by=0; by<player.block.length; by++){
     for(let bx=0; bx<player.block[by].length; bx++){
-      if(arena[y+by]?.[x+bx]!==null) return true;
+      if(arena[y+by]?.[x+bx]!==abc) return true;
       if(y+by >= arena.length || x+bx < 0 || x+bx >= arena[0].length) return true;
     }
   }
