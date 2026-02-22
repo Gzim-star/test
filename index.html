@@ -224,19 +224,19 @@ function checkAndClearWords(){
   if(round > maxFakeRounds) round = maxFakeRounds;
       
       // Fake-Rahmen generieren nach der ersten Runde
-      fakeFrames = [];
-      if(wordIndex <= maxFakeRounds){
-        const fakeCount = wordIndex-1; 
-        for(let i=0;i<fakeCount;i++){
-          let fx, fy, ok=false;
-          while(!ok){
-            fx = Math.floor(Math.random() * arena[0].length);
-            fy = Math.floor(Math.random() * (arena.length-frameH));
-            if(fx!==frameX || fy!==frameY){ ok=true; }
-          }
-          fakeFrames.push({x:fx, y:fy});
-        }
+  fakeFrames = [];
+  if(round > 1){ // ab Runde 2
+    const fakeCount = round - 1;
+    for(let i=0;i<fakeCount;i++){
+      let fx, fy, ok=false;
+      while(!ok){
+        fx = Math.floor(Math.random() * arena[0].length);
+        fy = Math.floor(Math.random() * (arena.length-frameH));
+        if(fx !== frameX && fy !== frameY) ok=true; // Fake darf nicht auf Original
       }
+      fakeFrames.push({x:fx, y:fy});
+    }
+  }
 
       newTargetWord();
       return;
