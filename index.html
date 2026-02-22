@@ -189,7 +189,6 @@ let gameRunning = false;
 let frameX = 0;
 let frameY = 0;
 const frameH = 10; // Höhe fix
-const fakeFrameH = 9;
 // 🟫 FAKE FRAMES SYSTEM
 let round = 1;
 const maxRounds = 9;
@@ -488,16 +487,10 @@ ctx.globalAlpha = 1;
 
 // 🟫 FAKE FRAMES
 fakeFrames.forEach(f=>{
-  ctx.save(); // Zustand sichern
-
   ctx.fillStyle='#000000';
-  ctx.fillRect(f.x+0.05, f.y-0.27, 0.9, fakeFrameH-0.2);
-
   ctx.strokeStyle = fakeFrameColors[round - 1] || '#00ff00'; // Farbe pro Runde
-  ctx.lineWidth = 0.05;
-  ctx.strokeRect(f.x+0.05, f.y-0.27, 0.9, fakeFrameH-0.2);
-
-  ctx.restore(); // Zustand zurücksetzen
+  ctx.fillRect(f.x+0.05, f.y-0.27, 0.9, frameH-0.2);
+  ctx.strokeRect(f.x+0.05, f.y-0.27, 0.9, frameH-0.2);
  });
 }
 
