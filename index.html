@@ -208,7 +208,7 @@ const originalFrameColors = [
   '#ffffff',  // Runde 8
   '#ff4444'   // Runde 9
 ];
-const fakeFrameColors = [
+ const fakeFrameColors = [
   '#00ff00',  // Runde 1
   '#00aa00',  // Runde 2
   '#008800',  // Runde 3
@@ -218,7 +218,8 @@ const fakeFrameColors = [
   '#002200',  // Runde 7
   '#001100',  // Runde 8
   '#00ff00'   // Runde 9
-];
+]; 
+
 function newTargetWord() {
   if (wordQueue.length === 0 || wordIndex >= wordQueue.length) shuffleWords();
   targetWord = wordQueue[wordIndex++];
@@ -484,21 +485,13 @@ ctx.strokeRect(frameX+0.05, frameY-0.27, 0.9, frameH-0.2);
 
 ctx.globalAlpha = 1;
 
-// 🟫 FAKE FRAMES
-fakeFrames.forEach(f=>{
-  ctx.save(); // 🔒 Zustand sichern
-
-  ctx.globalAlpha = 1; // immer normal
-  ctx.lineWidth = 0.05;
-
-  ctx.fillStyle='#000000';
-  ctx.fillRect(f.x+0.05, f.y-0.27, 0.9, frameH-0.2);
-
-  ctx.strokeStyle = fakeFrameColors[round - 1] || '#00ff00';
-  ctx.strokeRect(f.x+0.05, f.y-0.27, 0.9, frameH-0.2);
-
-  ctx.restore(); // 🔓 Zustand zurücksetzen
-});
+  // 🟫 FAKE FRAMES
+  fakeFrames.forEach(f=>{
+    ctx.fillStyle='#000000';
+    ctx.fillRect(f.x+0.05, f.y-0.27, 0.9, frameH-0.2);
+    ctx.strokeRect(f.x+0.05, f.y-0.27, 0.9, frameH-0.2);
+  });
+}
 
   arena.forEach((row,y)=>{
     row.forEach((v,x)=>{
