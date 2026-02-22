@@ -171,7 +171,9 @@ const MIN_LEN = 10;
 const COLORS = ['#00ffcc', '#ffcc00', '#ff6699', '#66ff66', '#66ccff'];
 let wordQueue = [];
 let wordIndex = 0;
-
+let fakeFrames = []; // Array für Fake-Frames
+const maxFakeRounds = 9; // maximale Runden mit Fake
+  
 function shuffleWords() {
   wordQueue = [...WORDS].sort(() => Math.random() - 0.5);
   wordIndex = 0;
@@ -268,6 +270,27 @@ function extract(word,pos,found){
   WORDS.forEach(w=>{ const i=upperWord.indexOf(w); if(i!==-1) found.push(pos.slice(i,i+w.length)); });
 }
 
+    // Fake-Rahmen für nächste Runde
+    fakeFrames = [];
+    if(wordIndex <= maxFakeRounds){ // nur bis Runde 9
+        const fakeCount = wordIndex - 1; // 1. Runde keine Fake, 2. Runde 1 Fake, etc.
+        for(let i=0;i<fakeCount;i++){
+            let fx, fy, ok=false;
+            while(!ok){
+                fx = Math.floor(Math.random() * arena[0].length);
+                fy = Math.floor(Math.random() * (arena.length - frameH));
+                // Fake darf nicht auf Original-Frame sein
+                if(fx !== frameX || fy !== frameY){
+                    ok = true;
+                }
+            }
+            fakeFrames.push({x: fx, y: fy});
+        }
+    }
+
+    newTargetWord(); 
+    return; 
+}
 function clearDiagonalSixByColor(){
   const toClear=[];
   for(let y=arena.length-1;y>=0;y--){
@@ -378,6 +401,12 @@ function draw(){
     ctx.strokeRect(frameX+0.05, frameY-0.27, 0.9, frameH-0.2);
   }
 
+  // Fake-Rahmen
+fakeFrames.forEach(f=>{
+    ctx.strokeStyle = '#555'; // dunkleres Grau für Fake
+    ctx.lineWidth = 0.05;
+    ctx.strokeRect(f.x+0.05, f.y-0.27, 0.9, frameH-0.2);
+});
   arena.forEach((row,y)=>{
     row.forEach((v,x)=>{
       if(v){ 
