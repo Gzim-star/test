@@ -214,16 +214,19 @@ function checkAndClearWords(){
   });
 
   setTimeout(()=>{
-    if(targetFound){
-      arena.forEach(r=>r.fill(null));
-      clearHighlights();
-      resetPlayer();
+if(targetFound){
+  arena.forEach(r=>r.fill(null));
+  clearHighlights();
+  resetPlayer();
 
-        // Runde erhöhen
+  // 1️⃣ Neues Wort generieren → Original-Rahmen setzen
+  newTargetWord();
+
+  // 2️⃣ Runde erhöhen
   round++;
   if(round > maxFakeRounds) round = maxFakeRounds;
-      
-      // Fake-Rahmen generieren nach der ersten Runde
+
+  // 3️⃣ Fake-Rahmen erzeugen
   fakeFrames = [];
   if(round > 1){ // ab Runde 2
     const fakeCount = round - 1;
@@ -232,15 +235,14 @@ function checkAndClearWords(){
       while(!ok){
         fx = Math.floor(Math.random() * arena[0].length);
         fy = Math.floor(Math.random() * (arena.length-frameH));
-        if(fx !== frameX && fy !== frameY) ok=true; // Fake darf nicht auf Original
+        // Fake darf nicht auf Original
+        if(fx !== frameX || fy !== frameY) ok=true;
       }
       fakeFrames.push({x:fx, y:fy});
     }
   }
-
-      newTargetWord();
-      return;
-    }
+  return;
+}
     found.flat().forEach(([y,x])=>arena[y][x]=null);
     applyGravity();
     clearHighlights();
