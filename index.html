@@ -156,7 +156,7 @@ let wordQueue = [];
 let wordIndex = 0;
 let fakeFrames = []; // Fake-Rahmen
 const maxFakeRounds = 9;
-
+let round = 0; // zählt die aktuelle Runde
 function shuffleWords() { wordQueue = [...WORDS].sort(()=>Math.random()-0.5); wordIndex=0; }
 
 /* ===== ARENA ===== */
@@ -219,6 +219,10 @@ function checkAndClearWords(){
       clearHighlights();
       resetPlayer();
 
+        // Runde erhöhen
+  round++;
+  if(round > maxFakeRounds) round = maxFakeRounds;
+      
       // Fake-Rahmen generieren nach der ersten Runde
       fakeFrames = [];
       if(wordIndex <= maxFakeRounds){
