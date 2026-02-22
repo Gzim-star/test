@@ -255,25 +255,34 @@ function checkAndClearWords() {
   newTargetWord();
 
   // Fake Frames neu erzeugen
-  fakeFrames = [];
-  let fakeCount = round - 1;
+fakeFrames = [];
+let fakeCount = round - 1;
 
-  for(let i=0;i<fakeCount;i++){
-    let fx, fy, valid = false;
+for(let i=0;i<fakeCount;i++){
 
-    while(!valid){
-      fx = Math.floor(Math.random() * arena[0].length);
-      const minY = 5;
-      const maxY = arena.length - frameH;
-      fy = Math.floor(Math.random() * (maxY - minY)) + minY;
+  let fx, fy;
+  let valid = false;
 
-      if(!(fx === frameX && fy === frameY)){
-        valid = true;
-      }
+  while(!valid){
+
+    fx = Math.floor(Math.random() * arena[0].length);
+
+    const minY = 5;
+    const maxY = arena.length - frameH;
+    fy = Math.floor(Math.random() * (maxY - minY)) + minY;
+
+    // Prüfen ob Position schon benutzt wird
+    const overlapsOriginal = (fx === frameX && fy === frameY);
+
+    const overlapsFake = fakeFrames.some(f => f.x === fx && f.y === fy);
+
+    if(!overlapsOriginal && !overlapsFake){
+      valid = true;
     }
-
-    fakeFrames.push({x: fx, y: fy});
   }
+
+  fakeFrames.push({x: fx, y: fy});
+}
 
   return;
 }
