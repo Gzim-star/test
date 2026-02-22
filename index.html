@@ -193,6 +193,9 @@ const frameH = 10; // Höhe fix
 let round = 1;
 const maxRounds = 9;
 let fakeFrames = [];
+let pulseActive = false;
+let pulseTime = 0;
+let pulseDuration = 600; // Millisekunden
 // 🎨 Farben für Original Rahmen (deine bestehenden Farben benutzen)
 const originalFrameColors = [
   '#00ff00',  // Runde 1 (grün)
@@ -262,7 +265,11 @@ function checkAndClearWords() {
   // Runde erhöhen (max 9)
   round++;
   if(round > maxRounds) round = maxRounds;
-
+// Pulse nur ab Runde 2
+if(round > 1){
+  pulseActive = true;
+  pulseTime = 0;
+}
   // Neues Wort erzeugt auch neuen Original Frame
   newTargetWord();
 
@@ -434,16 +441,41 @@ function draw(){
 if(gameRunning){
 
 
-// 🟩 ORIGINAL FRAME
-ctx.fillStyle='#000000';
+
+// 🟩 ORIGINAL FRAME MIT PULSE
+ctx.save();
+
+let scale = 1;
+
+if(pulseActive){
+  pulseTime += 16; // einfache Zeit (kein deltaTime nötig)
+
+  let progress = pulseTime / pulseDuration;
+
+  if(progress >= 1){
+    pulseActive = false;
+  } else {
+    scale = 1 + Math.sin(progress * Math.PI) * 0.25;
+  }
+}
+
+// Mittelpunkt berechnen
+let centerX = frameX + 0.5;
+let centerY = frameY + frameH/2;
+
+ctx.translate(centerX, centerY);
+ctx.scale(scale, scale);
+ctx.translate(-centerX, -centerY);
+
+ctx.fillStyle = '#000000';
 ctx.fillRect(frameX+0.05, frameY-0.27, 0.9, frameH-0.2);
 
-// Farbe abhängig von Runde
 let currentColor = originalFrameColors[round - 1] || '#00ff00';
-
 ctx.strokeStyle = currentColor;
-ctx.lineWidth=0.05;
+ctx.lineWidth = 0.05;
 ctx.strokeRect(frameX+0.05, frameY-0.27, 0.9, frameH-0.2);
+
+ctx.restore();
 
   // 🟫 FAKE FRAMES
   fakeFrames.forEach(f=>{
