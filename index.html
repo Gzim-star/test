@@ -193,6 +193,18 @@ const frameH = 10; // Höhe fix
 let round = 1;
 const maxRounds = 9;
 let fakeFrames = [];
+// 🎨 Farben für Original Rahmen (deine bestehenden Farben benutzen)
+const originalFrameColors = [
+  '#00ff00',  // Runde 1 (grün)
+  '#ff0000',  // Runde 2
+  '#00ffff',  // Runde 3
+  '#ff00ff',  // Runde 4
+  '#ffff00',  // Runde 5
+  '#ff8800',  // Runde 6
+  '#8888ff',  // Runde 7
+  '#ffffff',  // Runde 8
+  '#ff4444'   // Runde 9
+];
   
 function newTargetWord() {
   if (wordQueue.length === 0 || wordIndex >= wordQueue.length) shuffleWords();
@@ -421,18 +433,23 @@ function draw(){
 
 if(gameRunning){
 
-  // 🟩 ORIGINAL FRAME
-  ctx.fillStyle='#000000';
-  ctx.fillRect(frameX+0.05, frameY-0.27, 0.9, frameH-0.2);
-  ctx.strokeStyle='#00ff00';
-  ctx.lineWidth=0.05;
-  ctx.strokeRect(frameX+0.05, frameY-0.27, 0.9, frameH-0.2);
+
+// 🟩 ORIGINAL FRAME
+ctx.fillStyle='#000000';
+ctx.fillRect(frameX+0.05, frameY-0.27, 0.9, frameH-0.2);
+
+// Farbe abhängig von Runde
+let currentColor = originalFrameColors[round - 1] || '#00ff00';
+
+ctx.strokeStyle = currentColor;
+ctx.lineWidth=0.05;
+ctx.strokeRect(frameX+0.05, frameY-0.27, 0.9, frameH-0.2);
 
   // 🟫 FAKE FRAMES
   fakeFrames.forEach(f=>{
     ctx.fillStyle='#000000';
     ctx.fillRect(f.x+0.05, f.y-0.27, 0.9, frameH-0.2);
-    ctx.strokeStyle='#555555';
+    ctx.strokeStyle='#00ff00';
     ctx.strokeRect(f.x+0.05, f.y-0.27, 0.9, frameH-0.2);
   });
 }
