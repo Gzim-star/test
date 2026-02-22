@@ -302,8 +302,16 @@ for(let i=0;i<fakeCount;i++){
     const maxY = arena.length - frameH;
     fy = Math.floor(Math.random() * (maxY - minY)) + minY;
 
-    const overlapsOriginal = (fx === frameX && fy === frameY);
-    const overlapsFake = fakeFrames.some(f => f.x === fx && f.y === fy);
+    const overlapsOriginal =
+  fx === frameX &&
+  fy < frameY + frameH &&
+  fy + frameH > frameY;
+
+const overlapsFake = fakeFrames.some(f =>
+  f.x === fx &&
+  fy < f.y + frameH &&
+  fy + frameH > f.y
+);
 
     if(!overlapsOriginal && !overlapsFake){
       valid = true;
