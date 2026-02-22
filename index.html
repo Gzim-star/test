@@ -21,7 +21,6 @@ html, body {
   overscroll-behavior: none;
   font-family: system-ui, sans-serif;
 }
-
 .game {
   position: fixed;
   inset: 0;
@@ -30,20 +29,17 @@ html, body {
   justify-content: center;
   align-items: center;
 }
-
 .hint {
   color: #fff;
   font-size: 24px;
   margin-bottom: 10px;
   font-family: monospace;
 }
-
 canvas {
   background: #000;
   border: none !important;
   display: block;
 }
-
 #introScreen {
   position: fixed;
   inset: 0;
@@ -56,7 +52,6 @@ canvas {
   opacity: 1;
   transition: opacity 0.8s ease;
 }
-
 .title {
   font-family: 'Press Start 2P', monospace;
   font-size: 32px;
@@ -64,13 +59,11 @@ canvas {
   display: flex;
   gap: 6px;
 }
-
 .title span {
   opacity: 0;
   transform: translateY(20px);
   animation: reveal 0.6s ease forwards;
 }
-
 .title span:nth-child(1) { animation-delay: 0.1s; }
 .title span:nth-child(2) { animation-delay: 0.2s; }
 .title span:nth-child(3) { animation-delay: 0.3s; }
@@ -79,7 +72,6 @@ canvas {
 .title span:nth-child(7) { animation-delay: 0.7s; }
 .title span:nth-child(8) { animation-delay: 0.8s; }
 .title span:nth-child(9) { animation-delay: 0.9s; }
-
 .subtitle {
   margin-top: 25px;
   font-family: 'Press Start 2P', monospace;
@@ -90,26 +82,20 @@ canvas {
   animation-delay: 1.2s;
   letter-spacing: 2px;
 }
-
 @keyframes reveal {
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
-
 @keyframes fadeSub {
-  to {
-    opacity: 1;
-  }
+  to { opacity: 1; }
 }  
-
 .controls {
   margin-top: 10px;
   display: flex;
   gap: 10px;
 }
-
 .controls button {
   background: #222;
   color: #fff;
@@ -120,7 +106,6 @@ canvas {
 }
 </style>
 </head>
-
 <body>
 <div id="introScreen">
   <div class="title">
@@ -133,7 +118,6 @@ canvas {
 <div class="game">
   <div class="hint"><span id="wordHint">Hint</span></div>
   <canvas id="wordFallCanvas" width="300" height="600"></canvas>
-
   <div class="controls">
     <button onclick="startGame()">START</button>
     <button onclick="move(-1)">◀</button>
@@ -142,7 +126,6 @@ canvas {
     <button onclick="restartGame()">RESET</button>
   </div>
 </div>
-
 <script>
 // ===== DOUBLE TAP ZOOM KILLER =====
 let lastTouchEnd = 0;
@@ -171,66 +154,59 @@ const MIN_LEN = 10;
 const COLORS = ['#00ffcc', '#ffcc00', '#ff6699', '#66ff66', '#66ccff'];
 let wordQueue = [];
 let wordIndex = 0;
-let fakeFrames = []; // Array für Fake-Frames
-const maxFakeRounds = 9; // maximale Runden mit Fake
-  
-function shuffleWords() {
-  wordQueue = [...WORDS].sort(() => Math.random() - 0.5);
-  wordIndex = 0;
-}
+let fakeFrames = []; // Fake-Rahmen
+const maxFakeRounds = 9;
+
+function shuffleWords() { wordQueue = [...WORDS].sort(()=>Math.random()-0.5); wordIndex=0; }
 
 /* ===== ARENA ===== */
-const arena = Array.from({ length: 20 }, () => Array(10).fill(null));
-const highlights = Array.from({ length: 20 }, () => Array(10).fill(null));
-
-const player = { pos: { x: 0, y: 0 }, letter: '' };
+const arena = Array.from({length:20},()=>Array(10).fill(null));
+const highlights = Array.from({length:20},()=>Array(10).fill(null));
+const player = {pos:{x:0,y:0},letter:''};
 let targetWord = '';
 let gameRunning = false;
 
-// 🔲 FRAME POSITION (GLOBAL)
-let frameX = 0;
-let frameY = 0;
-const frameH = 10; // Höhe fix
+// 🔲 FRAME POSITION
+let frameX=0, frameY=0;
+const frameH=10;
 
-function newTargetWord() {
-  if (wordQueue.length === 0 || wordIndex >= wordQueue.length) shuffleWords();
+function newTargetWord(){
+  if(wordQueue.length===0 || wordIndex>=wordQueue.length) shuffleWords();
   targetWord = wordQueue[wordIndex++];
   document.getElementById('wordHint').textContent = targetWord;
   randomizeFrame();
 }
 
-function randomizeFrame() {
+function randomizeFrame(){
   frameX = Math.floor(Math.random() * arena[0].length);
-  const minY = 5;
-  const maxY = arena.length - frameH;
-  frameY = Math.floor(Math.random() * (maxY - minY)) + minY;
+  const minY=5, maxY=arena.length-frameH;
+  frameY = Math.floor(Math.random()*(maxY-minY))+minY;
 }
 
 /* ===== GAME LOGIC ===== */
-function collide(arena, player) {
-  const { x, y } = player.pos;
-  return y >= arena.length || x < 0 || x >= arena[0].length || arena[y][x] !== null;
+function collide(arena, player){
+  const {x,y}=player.pos;
+  return y>=arena.length || x<0 || x>=arena[0].length || arena[y][x]!==null;
 }
-
-function merge(arena, player) { arena[player.pos.y][player.pos.x] = player.letter; }
-function move(dir) { player.pos.x += dir; if(collide(arena, player)) player.pos.x -= dir; }
-function drop() { 
+function merge(arena,player){ arena[player.pos.y][player.pos.x]=player.letter; }
+function move(dir){ player.pos.x+=dir; if(collide(arena,player)) player.pos.x-=dir; }
+function drop(){ 
   if(!gameRunning) return;
   player.pos.y++;
   if(collide(arena,player)){ player.pos.y--; merge(arena,player); checkAndClearWords(); clearDiagonalSixByColor(); resetPlayer(); }
 }
 
-/* ===== WORD DETECTION ===== */
-function checkAndClearWords() {
+/* ===== WORD DETECTION + Fake Frames ===== */
+function checkAndClearWords(){
   clearHighlights();
-  const found = findWords();
+  const found=findWords();
   if(!found.length) return;
-  let targetFound = false;
+  let targetFound=false;
 
   found.forEach(group=>{
     const letters = group.map(([y,x])=>arena[y][x]).join('');
-    if(letters.toUpperCase() === targetWord){
-      const inFrame = group.every(([y,x])=> x===frameX && y>=frameY && y<frameY+frameH );
+    if(letters.toUpperCase()===targetWord){
+      const inFrame = group.every(([y,x])=>x===frameX && y>=frameY && y<frameY+frameH);
       if(inFrame) targetFound=true;
     }
     const color = COLORS[Math.floor(Math.random()*COLORS.length)];
@@ -238,7 +214,29 @@ function checkAndClearWords() {
   });
 
   setTimeout(()=>{
-    if(targetFound){ arena.forEach(r=>r.fill(null)); newTargetWord(); resetPlayer(); clearHighlights(); return; }
+    if(targetFound){
+      arena.forEach(r=>r.fill(null));
+      clearHighlights();
+      resetPlayer();
+
+      // Fake-Rahmen generieren nach der ersten Runde
+      fakeFrames = [];
+      if(wordIndex <= maxFakeRounds){
+        const fakeCount = wordIndex-1; 
+        for(let i=0;i<fakeCount;i++){
+          let fx, fy, ok=false;
+          while(!ok){
+            fx = Math.floor(Math.random() * arena[0].length);
+            fy = Math.floor(Math.random() * (arena.length-frameH));
+            if(fx!==frameX || fy!==frameY){ ok=true; }
+          }
+          fakeFrames.push({x:fx, y:fy});
+        }
+      }
+
+      newTargetWord();
+      return;
+    }
     found.flat().forEach(([y,x])=>arena[y][x]=null);
     applyGravity();
     clearHighlights();
@@ -257,7 +255,7 @@ function findWords(){
   for(let x=0;x<arena[0].length;x++){
     let word='', pos=[];
     for(let y=0;y<=arena.length;y++){
-      const c = arena[y]?.[x];
+      const c=arena[y]?.[x];
       if(c){ word+=c; pos.push([y,x]); } else { extract(word,pos,found); word=''; pos=[]; }
     }
   }
@@ -266,31 +264,10 @@ function findWords(){
 
 function extract(word,pos,found){
   if(word.length<MIN_LEN) return;
-  const upperWord = word.toUpperCase();
+  const upperWord=word.toUpperCase();
   WORDS.forEach(w=>{ const i=upperWord.indexOf(w); if(i!==-1) found.push(pos.slice(i,i+w.length)); });
 }
 
-    // Fake-Rahmen für nächste Runde
-    fakeFrames = [];
-    if(wordIndex <= maxFakeRounds){ // nur bis Runde 9
-        const fakeCount = wordIndex - 1; // 1. Runde keine Fake, 2. Runde 1 Fake, etc.
-        for(let i=0;i<fakeCount;i++){
-            let fx, fy, ok=false;
-            while(!ok){
-                fx = Math.floor(Math.random() * arena[0].length);
-                fy = Math.floor(Math.random() * (arena.length - frameH));
-                // Fake darf nicht auf Original-Frame sein
-                if(fx !== frameX || fy !== frameY){
-                    ok = true;
-                }
-            }
-            fakeFrames.push({x: fx, y: fy});
-        }
-    }
-
-    newTargetWord(); 
-    return; 
-}
 function clearDiagonalSixByColor(){
   const toClear=[];
   for(let y=arena.length-1;y>=0;y--){
@@ -326,66 +303,15 @@ function applyGravity(){
 
 /* ===== PLAYER ===== */
 function randomLetter(){ return String.fromCharCode(65+Math.floor(Math.random()*26)); }
-
 function resetPlayer(){
-  player.letter = randomLetter();
-  player.pos.y = 0;
-  player.pos.x = Math.floor(arena[0].length/2);
+  player.letter=randomLetter();
+  player.pos.y=0;
+  player.pos.x=Math.floor(arena[0].length/2);
   if(collide(arena,player)) arena.forEach(r=>r.fill(null));
 }
 
-/* ===== FALLING LETTERS PREVIEW ===== */
-function startFallingLettersPreview() {
-  const letters = [];
-  const columns = arena[0].length;
-  const rows = Math.floor(arena.length/2); // Bis Mitte füllen
-  const colors = COLORS;
-
-  // Initial viele Buchstaben generieren
-  for(let x=0; x<columns; x++) {
-    for(let y=0; y<rows; y++) {
-      letters.push({
-        x: x,
-        y: -Math.random()*rows, // Start oberhalb
-        letter: String.fromCharCode(65 + Math.floor(Math.random()*26)),
-        color: colors[Math.floor(Math.random()*colors.length)],
-        speed: 0.05 + Math.random()*0.15,
-        scale: 1 + Math.random()*0.5
-      });
-    }
-  }
-
-  function animFrame() {
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0,0,canvas.width,canvas.height);
-
-    letters.forEach(l=>{
-      // Swollen Pop-Effekt
-      const scale = 1 + 0.3 * Math.sin(Date.now()*0.005 + l.x);
-      ctx.save();
-      ctx.translate(l.x+0.5, l.y+0.5);
-      ctx.scale(scale, scale);
-      ctx.fillStyle = l.color;
-      ctx.font='1px monospace';
-      ctx.textAlign='center';
-      ctx.textBaseline='middle';
-      ctx.fillText(l.letter,0,0);
-      ctx.restore();
-
-      // Fallen
-      l.y += l.speed;
-
-      // Unten auf Grid anhalten
-      if(l.y >= arena.length/1) l.y = arena.length/1;
-    });
-
-    window.previewAnim = requestAnimationFrame(animFrame);
-  }
-  animFrame();
-}
 /* ===== DRAW ===== */
 function clearHighlights(){ highlights.forEach(r=>r.fill(null)); }
-
 function draw(){
   ctx.fillStyle='#000'; 
   ctx.fillRect(0,0,canvas.width,canvas.height);
@@ -401,12 +327,13 @@ function draw(){
     ctx.strokeRect(frameX+0.05, frameY-0.27, 0.9, frameH-0.2);
   }
 
-  // Fake-Rahmen
-fakeFrames.forEach(f=>{
-    ctx.strokeStyle = '#555'; // dunkleres Grau für Fake
-    ctx.lineWidth = 0.05;
+  // Fake-Rahmen zeichnen
+  fakeFrames.forEach(f=>{
+    ctx.strokeStyle = '#555';
+    ctx.lineWidth=0.05;
     ctx.strokeRect(f.x+0.05, f.y-0.27, 0.9, frameH-0.2);
-});
+  });
+
   arena.forEach((row,y)=>{
     row.forEach((v,x)=>{
       if(v){ 
@@ -442,34 +369,36 @@ document.addEventListener('keydown',e=>{
 
 /* ===== BUTTONS ===== */
 function startGame() {
-  // Stoppt die Falling Letters Preview, falls noch aktiv
   if(window.previewAnim){
     cancelAnimationFrame(window.previewAnim);
-    window.previewAnim = null;
+    window.previewAnim=null;
   }
-
-  // Startet das Spiel
   if(!gameRunning){
-    gameRunning = true;
+    gameRunning=true;
     resetPlayer();
     newTargetWord();
   }
 }
 
-function restartGame() {
-  // Nur Spiel zurücksetzen, nicht Preview
-  arena.forEach(r => r.fill(null));
+function restartGame(){
+  arena.forEach(r=>r.fill(null));
   clearHighlights();
   resetPlayer();
   newTargetWord();
-  dropCounter = 0;
-  gameRunning = true;
+  dropCounter=0;
+  gameRunning=true;
 }
-function restartGame(){ arena.forEach(r=>r.fill(null)); clearHighlights(); resetPlayer(); newTargetWord(); dropCounter=0; gameRunning=true; }
-function dropFast(){ if(!gameRunning) return; while(!collide(arena,player)){ player.pos.y++; } player.pos.y--; merge(arena,player); checkAndClearWords(); clearDiagonalSixByColor(); resetPlayer(); }
+function dropFast(){
+  if(!gameRunning) return;
+  while(!collide(arena,player)){ player.pos.y++; }
+  player.pos.y--;
+  merge(arena,player);
+  checkAndClearWords();
+  clearDiagonalSixByColor();
+  resetPlayer();
+}
 
 /* ===== INIT ===== */
-// Intro fade out + start falling letters
 setTimeout(()=>{
   const intro=document.getElementById('introScreen');
   intro.style.opacity='0';
@@ -481,6 +410,50 @@ setTimeout(()=>{
 
 if(wordQueue.length===0) shuffleWords();
 update();
+
+/* ===== FALLING LETTERS PREVIEW ===== */
+function startFallingLettersPreview() {
+  const letters = [];
+  const columns = arena[0].length;
+  const rows = Math.floor(arena.length/2); // Bis Mitte füllen
+  const colors = COLORS;
+
+  for(let x=0;x<columns;x++){
+    for(let y=0;y<rows;y++){
+      letters.push({
+        x:x,
+        y:-Math.random()*rows,
+        letter:String.fromCharCode(65+Math.floor(Math.random()*26)),
+        color:colors[Math.floor(Math.random()*colors.length)],
+        speed:0.05+Math.random()*0.15,
+        scale:1+Math.random()*0.5
+      });
+    }
+  }
+
+  function animFrame(){
+    ctx.fillStyle='#000';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    letters.forEach(l=>{
+      const scale=1+0.3*Math.sin(Date.now()*0.005+l.x);
+      ctx.save();
+      ctx.translate(l.x+0.5,l.y+0.5);
+      ctx.scale(scale,scale);
+      ctx.fillStyle=l.color;
+      ctx.font='1px monospace';
+      ctx.textAlign='center';
+      ctx.textBaseline='middle';
+      ctx.fillText(l.letter,0,0);
+      ctx.restore();
+      l.y+=l.speed;
+      if(l.y>=arena.length/1) l.y=arena.length/1;
+    });
+
+    window.previewAnim=requestAnimationFrame(animFrame);
+  }
+  animFrame();
+}
 </script>
 </body>
 </html>
