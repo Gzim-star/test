@@ -285,25 +285,24 @@ if(round > 1){
   newTargetWord();
 
   // Fake Frames neu erzeugen
+// Fake Frames neu erzeugen
 fakeFrames = [];
 let fakeCount = round - 1;
 
-for(let i=0;i<fakeCount;i++){
+// Array mit verfügbaren Farben kopieren
+let availableColors = [...COLORS];
 
+for(let i=0;i<fakeCount;i++){
   let fx, fy;
   let valid = false;
 
   while(!valid){
-
     fx = Math.floor(Math.random() * arena[0].length);
-
     const minY = 5;
     const maxY = arena.length - frameH;
     fy = Math.floor(Math.random() * (maxY - minY)) + minY;
 
-    // Prüfen ob Position schon benutzt wird
     const overlapsOriginal = (fx === frameX && fy === frameY);
-
     const overlapsFake = fakeFrames.some(f => f.x === fx && f.y === fy);
 
     if(!overlapsOriginal && !overlapsFake){
@@ -311,7 +310,11 @@ for(let i=0;i<fakeCount;i++){
     }
   }
 
-  fakeFrames.push({x: fx, y: fy});
+  // Zufällige Farbe auswählen und aus availableColors entfernen
+  let colorIndex = Math.floor(Math.random() * availableColors.length);
+  let color = availableColors.splice(colorIndex, 1)[0];
+
+  fakeFrames.push({x: fx, y: fy, color: color});
 }
 
   return;
@@ -488,7 +491,8 @@ ctx.globalAlpha = 1;
 // 🟫 FAKE FRAMES
 fakeFrames.forEach(f=>{
   ctx.fillStyle='#000000';
-  ctx.strokeStyle = fakeFrameColors[round - 1] || '#00ff00'; // Farbe pro Runde
+  ctx.strokeStyle = f.color || '#00ff00'; // benutze die individuelle Farbe
+  ctx.lineWidth = 0.05;
   ctx.fillRect(f.x+0.05, f.y-0.27, 0.9, frameH-0.2);
   ctx.strokeRect(f.x+0.05, f.y-0.27, 0.9, frameH-0.2);
  });
