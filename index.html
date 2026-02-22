@@ -440,42 +440,39 @@ function draw(){
 
 if(gameRunning){
 
+// 🟩 ORIGINAL FRAME MIT SAFE PULSE
 
-
-// 🟩 ORIGINAL FRAME MIT PULSE
-ctx.save();
-
-let scale = 1;
+let borderWidth = 0.05;
+let alpha = 1;
 
 if(pulseActive){
-  pulseTime += 16; // einfache Zeit (kein deltaTime nötig)
 
+  pulseTime += 16;
   let progress = pulseTime / pulseDuration;
 
   if(progress >= 1){
     pulseActive = false;
   } else {
-    scale = 1 + Math.sin(progress * Math.PI) * 0.25;
+    // Pulse Effekt
+    borderWidth = 0.05 + Math.sin(progress * Math.PI) * 0.08;
+    alpha = 1 + Math.sin(progress * Math.PI) * 0.5;
   }
 }
 
-// Mittelpunkt berechnen
-let centerX = frameX + 0.5;
-let centerY = frameY + frameH/2;
-
-ctx.translate(centerX, centerY);
-ctx.scale(scale, scale);
-ctx.translate(-centerX, -centerY);
-
+// Hintergrund
 ctx.fillStyle = '#000000';
 ctx.fillRect(frameX+0.05, frameY-0.27, 0.9, frameH-0.2);
 
+// Farbe
 let currentColor = originalFrameColors[round - 1] || '#00ff00';
+
+// Glow Effekt nur während Pulse
+ctx.globalAlpha = alpha;
 ctx.strokeStyle = currentColor;
-ctx.lineWidth = 0.05;
+ctx.lineWidth = borderWidth;
 ctx.strokeRect(frameX+0.05, frameY-0.27, 0.9, frameH-0.2);
 
-ctx.restore();
+ctx.globalAlpha = 1;
 
   // 🟫 FAKE FRAMES
   fakeFrames.forEach(f=>{
