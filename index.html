@@ -189,7 +189,11 @@ let gameRunning = false;
 let frameX = 0;
 let frameY = 0;
 const frameH = 10; // Höhe fix
-
+// 🟫 FAKE FRAMES SYSTEM
+let round = 1;
+const maxRounds = 9;
+let fakeFrames = [];
+  
 function newTargetWord() {
   if (wordQueue.length === 0 || wordIndex >= wordQueue.length) shuffleWords();
   targetWord = wordQueue[wordIndex++];
@@ -236,7 +240,43 @@ function checkAndClearWords() {
   });
 
   setTimeout(()=>{
-    if(targetFound){ arena.forEach(r=>r.fill(null)); newTargetWord(); resetPlayer(); clearHighlights(); return; }
+    if(targetFound){
+
+  // Spielfeld leeren
+  arena.forEach(r=>r.fill(null));
+  clearHighlights();
+  resetPlayer();
+
+  // Runde erhöhen (max 9)
+  round++;
+  if(round > maxRounds) round = maxRounds;
+
+  // Neues Wort erzeugt auch neuen Original Frame
+  newTargetWord();
+
+  // Fake Frames neu erzeugen
+  fakeFrames = [];
+  let fakeCount = round - 1;
+
+  for(let i=0;i<fakeCount;i++){
+    let fx, fy, valid = false;
+
+    while(!valid){
+      fx = Math.floor(Math.random() * arena[0].length);
+      const minY = 5;
+      const maxY = arena.length - frameH;
+      fy = Math.floor(Math.random() * (maxY - minY)) + minY;
+
+      if(!(fx === frameX && fy === frameY)){
+        valid = true;
+      }
+    }
+
+    fakeFrames.push({x: fx, y: fy});
+  }
+
+  return;
+}
     found.flat().forEach(([y,x])=>arena[y][x]=null);
     applyGravity();
     clearHighlights();
@@ -370,13 +410,23 @@ function draw(){
   ctx.textAlign='center'; 
   ctx.textBaseline='middle';
 
-  if(gameRunning){
+if(gameRunning){
+
+  // 🟩 ORIGINAL FRAME
+  ctx.fillStyle='#000000';
+  ctx.fillRect(frameX+0.05, frameY-0.27, 0.9, frameH-0.2);
+  ctx.strokeStyle='#00ff00';
+  ctx.lineWidth=0.05;
+  ctx.strokeRect(frameX+0.05, frameY-0.27, 0.9, frameH-0.2);
+
+  // 🟫 FAKE FRAMES
+  fakeFrames.forEach(f=>{
     ctx.fillStyle='#000000';
-    ctx.fillRect(frameX+0.05, frameY-0.27, 0.9, frameH-0.2);
-    ctx.strokeStyle='#808080';
-    ctx.lineWidth=0.05;
-    ctx.strokeRect(frameX+0.05, frameY-0.27, 0.9, frameH-0.2);
-  }
+    ctx.fillRect(f.x+0.05, f.y-0.27, 0.9, frameH-0.2);
+    ctx.strokeStyle='#555555';
+    ctx.strokeRect(f.x+0.05, f.y-0.27, 0.9, frameH-0.2);
+  });
+}
 
   arena.forEach((row,y)=>{
     row.forEach((v,x)=>{
