@@ -276,7 +276,9 @@ function checkAndClearWords() {
   // Runde erhöhen (max 9)
   round++;
   if(round > maxRounds) round = maxRounds;
-// Pulse nur ab Runde 2
+  // 🧠 Geschwindigkeit pro Runde erhöhen
+dropInterval = Math.max(200, 700 - (round * 60));
+  // Pulse nur ab Runde 2
 if(round > 1){
   pulseActive = true;
   pulseTime = 0;
