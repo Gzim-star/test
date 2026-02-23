@@ -249,18 +249,7 @@ function triggerFrameLettersFall() {
     }
   }
 }
-
-// 💨 Buchstaben vom Original-Rahmen fallen lassen
-lettersFallingFromFrame.forEach(l => {
-  l.speed += 0.1; 
-  l.y += l.speed;
-  const gridY = Math.floor(l.y);
-  if (gridY >= arena.length || arena[gridY][l.x] !== null) {
-    arena[gridY-1][l.x] = l.letter; 
-    lettersFallingFromFrame = lettersFallingFromFrame.filter(f => f !== l);
-  }
-});
-  
+ 
 function newTargetWord() {
   if (wordQueue.length === 0 || wordIndex >= wordQueue.length) shuffleWords();
   targetWord = wordQueue[wordIndex++];
@@ -595,6 +584,17 @@ function update(time=0){
     dropCounter+=delta;
     if(dropCounter>dropInterval){ drop(); dropCounter=0; }
   }
+    // 💨 Buchstaben vom Original-Rahmen fallen lassen
+  lettersFallingFromFrame.forEach((l, index) => {
+    l.speed += 0.1; 
+    l.y += l.speed;
+    const gridY = Math.floor(l.y);
+    if (gridY >= arena.length || arena[gridY][l.x] !== null) {
+      arena[gridY-1][l.x] = l.letter; 
+      lettersFallingFromFrame.splice(index, 1); // aus Array entfernen
+    }
+  });
+  
   draw();
   requestAnimationFrame(update);
 }
