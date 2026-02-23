@@ -282,10 +282,19 @@ function checkAndClearWords() {
 
   found.forEach(group=>{
     const letters = group.map(([y,x])=>arena[y][x]).join('');
-    if(letters.toUpperCase() === targetWord){
-      const inFrame = group.every(([y,x])=> x===frameX && y>=frameY && y<frameY+frameH );
-      if(inFrame) targetFound=true;
-    }
+const inFrame = group.every(([y,x])=> 
+  x===frameX && y>=frameY && y<frameY+frameH );
+
+if(inFrame){
+
+  if(letters.toUpperCase() === targetWord){
+    targetFound = true;
+  } else {
+    // 💥 CHAOS
+    slideFrameLettersDown();
+  }
+
+}
     const color = COLORS[Math.floor(Math.random()*COLORS.length)];
     group.forEach(([y,x])=>highlights[y][x]=color);
   });
