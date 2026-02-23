@@ -197,6 +197,8 @@ let fakeFrames = [];
 let pulseActive = false;
 let pulseTime = 0;
 let pulseDuration = 300; // Millisekunden
+// 📐 Buchstaben vom Original-Rahmen, die fallen
+let lettersFallingFromFrame = [];
 // 🎨 Farben für Original Rahmen (deine bestehenden Farben benutzen)
 const originalFrameColors = [
   '#00ff00',  // Runde 1 (grün)
@@ -221,6 +223,44 @@ const originalFrameColors = [
   '#00ff00'   // Runde 9
 ]; 
 
+/* ===== ORIENTATION EVENT ===== */
+window.addEventListener('deviceorientation', (event) => {
+  const gamma = event.gamma; 
+  const tiltThreshold = 5; // ab 5 Grad kippen
+
+  if (gamma > tiltThreshold || gamma < -tiltThreshold) {
+    triggerFrameLettersFall();
+  }
+});
+
+/* ===== FRAME FALL FUNCTION ===== */
+function triggerFrameLettersFall() {
+  if (lettersFallingFromFrame.length > 0) return; // nicht mehrfach gleichzeitig
+
+  for (let y = frameY; y < frameY + frameH; y++) {
+    if (arena[y][frameX]) {
+      lettersFallingFromFrame.push({
+        x: frameX,
+        y: y,
+        letter: arena[y][frameX],
+        speed: 0
+      });
+      arena[y][frameX] = null; // aus Originalrahmen entfernen
+    }
+  }
+}
+
+// 💨 Buchstaben vom Original-Rahmen fallen lassen
+lettersFallingFromFrame.forEach(l => {
+  l.speed += 0.1; 
+  l.y += l.speed;
+  const gridY = Math.floor(l.y);
+  if (gridY >= arena.length || arena[gridY][l.x] !== null) {
+    arena[gridY-1][l.x] = l.letter; 
+    lettersFallingFromFrame = lettersFallingFromFrame.filter(f => f !== l);
+  }
+});
+  
 function newTargetWord() {
   if (wordQueue.length === 0 || wordIndex >= wordQueue.length) shuffleWords();
   targetWord = wordQueue[wordIndex++];
