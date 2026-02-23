@@ -602,13 +602,41 @@ document.addEventListener('keydown',e=>{
   if(e.key==='ArrowDown') drop();
 });
 
+/* ===== TILT PERMISSION ===== */
+async function enableTilt() {
+
+  if (typeof DeviceOrientationEvent !== "undefined" &&
+      typeof DeviceOrientationEvent.requestPermission === "function") {
+
+    try {
+      const response = await DeviceOrientationEvent.requestPermission();
+      if (response === "granted") {
+        console.log("Tilt aktiviert");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+
+  } else {
+    console.log("Kein iOS Permission nötig");
+  }
+}
 /* ===== BUTTONS ===== */
-function startGame() {
-  // Stoppt die Falling Letters Preview, falls noch aktiv
+async function startGame() {
+
+  await enableTilt(); // 🔥 ganz wichtig
+
   if(window.previewAnim){
     cancelAnimationFrame(window.previewAnim);
     window.previewAnim = null;
   }
+
+  if(!gameRunning){
+    gameRunning = true;
+    resetPlayer();
+    newTargetWord();
+  }
+}
 
   // Startet das Spiel
   if(!gameRunning){
