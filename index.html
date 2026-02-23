@@ -591,6 +591,20 @@ function startGame() {
   }
 }
 
+function checkWrongFrameWord() {
+
+  let letters = '';
+
+  for (let y = frameY; y < frameY + frameH; y++) {
+    if (!arena[y][frameX]) return; // Frame noch nicht voll
+    letters += arena[y][frameX];
+  }
+
+  if (letters.toUpperCase() !== targetWord) {
+    slideFrameLettersDown();
+  }
+}  
+
 function restartGame() {
   // Nur Spiel zurücksetzen, nicht Preview
   arena.forEach(r => r.fill(null));
@@ -601,7 +615,7 @@ function restartGame() {
   gameRunning = true;
 }
 function restartGame(){ arena.forEach(r=>r.fill(null)); clearHighlights(); resetPlayer(); newTargetWord(); dropCounter=0; gameRunning=true; }
-function dropFast(){ if(!gameRunning) return; while(!collide(arena,player)){ player.pos.y++; } player.pos.y--; merge(arena,player); checkAndClearWords(); clearDiagonalSixByColor(); resetPlayer(); }
+function dropFast(){ if(!gameRunning) return; while(!collide(arena,player)){ player.pos.y++; } player.pos.y--; merge(arena,player); checkWrongFrameWord(); checkAndClearWords(); clearDiagonalSixByColor(); resetPlayer(); }
 
 /* ===== INIT ===== */
 // Intro fade out + start falling letters
