@@ -418,6 +418,42 @@ function applyGravity(){
   }
 }
 
+function slideFrameLettersDown() {
+
+  for (let y = frameY; y < frameY + frameH; y++) {
+
+    if (arena[y][frameX] !== null) {
+
+      let letter = arena[y][frameX];
+      arena[y][frameX] = null;
+
+      // nach unten suchen wo Platz ist
+      let dropY = y;
+
+      while (
+        dropY + 1 < arena.length &&
+        arena[dropY + 1][frameX] === null
+      ) {
+        dropY++;
+      }
+
+      arena[dropY][frameX] = letter;
+    }
+  }
+
+  applyGravity(); // extra Sicherheit
+}
+  
+window.addEventListener("deviceorientation", (event) => {
+
+  const beta = event.beta; // vorne/hinten kippen
+
+  // Fast komplett gekippt
+  if (Math.abs(beta) > 85) {
+    slideFrameLettersDown();
+  }
+
+});
 /* ===== PLAYER ===== */
 function randomLetter(){ return String.fromCharCode(65+Math.floor(Math.random()*26)); }
 
