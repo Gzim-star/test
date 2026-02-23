@@ -164,9 +164,9 @@ const WORDS = [
   'EVERYTHING', 'FASCINATOR', 'REFRESHING', 'HEARTBEATS',
   'IMMEDIATES', 'JOURNALISM', 'KNIGHTHOOD', 'LANDSCAPER',
   'MASTERMIND', 'NIGHTSTAND', 'OPERATIONS', 'POPULATION',
-  'ZOOLOGISTS', 'RENDEZVOUS', 'SCRATCHING', 'LEGENDARYS',
+  'RENDEZVOUS', 'SCRATCHING', 'LEGENDARYS',
   'UNDERTAKER', 'VOLUNTEERS', 'WATERMELON', 'XENOPHOBIC',
-  'YELLOWHAZE', 
+  'YELLOWHAZE', 'ZOOLOGISTS'
 ];
 const MIN_LEN = 10;
 const COLORS = ['#00ffcc', '#ffcc00', '#ff6699', '#66ff66', '#66ccff'];
@@ -418,42 +418,6 @@ function applyGravity(){
   }
 }
 
-function slideFrameLettersDown() {
-
-  for (let y = frameY; y < frameY + frameH; y++) {
-
-    if (arena[y][frameX] !== null) {
-
-      let letter = arena[y][frameX];
-      arena[y][frameX] = null;
-
-      // nach unten suchen wo Platz ist
-      let dropY = y;
-
-      while (
-        dropY + 1 < arena.length &&
-        arena[dropY + 1][frameX] === null
-      ) {
-        dropY++;
-      }
-
-      arena[dropY][frameX] = letter;
-    }
-  }
-
-  applyGravity(); // extra Sicherheit
-}
-  
-window.addEventListener("deviceorientation", (event) => {
-
-  const beta = event.beta; // vorne/hinten kippen
-
-  // Fast komplett gekippt
-  if (Math.abs(beta) > 85) {
-    slideFrameLettersDown();
-  }
-
-});
 /* ===== PLAYER ===== */
 function randomLetter(){ return String.fromCharCode(65+Math.floor(Math.random()*26)); }
 
@@ -602,37 +566,15 @@ document.addEventListener('keydown',e=>{
   if(e.key==='ArrowDown') drop();
 });
 
-/* ===== TILT PERMISSION ===== */
-async function enableTilt() {
-
-  if (typeof DeviceOrientationEvent !== "undefined" &&
-      typeof DeviceOrientationEvent.requestPermission === "function") {
-
-    try {
-      const response = await DeviceOrientationEvent.requestPermission();
-      if (response === "granted") {
-        console.log("Tilt aktiviert");
-      }
-    } catch (err) {
-      console.log(err);
-    }
-
-  } else {
-    console.log("Kein iOS Permission nötig");
-  }
-}
 /* ===== BUTTONS ===== */
-/* ===== BUTTONS ===== */
-
-async function startGame() {
-
-  await enableTilt();
-
+function startGame() {
+  // Stoppt die Falling Letters Preview, falls noch aktiv
   if(window.previewAnim){
     cancelAnimationFrame(window.previewAnim);
     window.previewAnim = null;
   }
 
+  // Startet das Spiel
   if(!gameRunning){
     gameRunning = true;
     resetPlayer();
@@ -640,28 +582,17 @@ async function startGame() {
   }
 }
 
-function restartGame(){
-  arena.forEach(r=>r.fill(null));
+function restartGame() {
+  // Nur Spiel zurücksetzen, nicht Preview
+  arena.forEach(r => r.fill(null));
   clearHighlights();
   resetPlayer();
   newTargetWord();
   dropCounter = 0;
   gameRunning = true;
 }
-
-function dropFast(){
-  if(!gameRunning) return;
-
-  while(!collide(arena,player)){
-    player.pos.y++;
-  }
-
-  player.pos.y--;
-  merge(arena,player);
-  checkAndClearWords();
-  clearDiagonalSixByColor();
-  resetPlayer();
-}
+function restartGame(){ arena.forEach(r=>r.fill(null)); clearHighlights(); resetPlayer(); newTargetWord(); dropCounter=0; gameRunning=true; }
+function dropFast(){ if(!gameRunning) return; while(!collide(arena,player)){ player.pos.y++; } player.pos.y--; merge(arena,player); checkAndClearWords(); clearDiagonalSixByColor(); resetPlayer(); }
 
 /* ===== INIT ===== */
 // Intro fade out + start falling letters
