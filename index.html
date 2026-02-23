@@ -229,7 +229,7 @@ function newTargetWord() {
 
 function randomizeFrame() {
   frameX = Math.floor(Math.random() * arena[0].length);
-  const minY = 4;
+  const minY = 5;
   const maxY = arena.length - frameH;
   frameY = Math.floor(Math.random() * (maxY - minY)) + minY;
 }
@@ -298,7 +298,7 @@ for(let i=0;i<fakeCount;i++){
 
   while(!valid){
     fx = Math.floor(Math.random() * arena[0].length);
-    const minY = 4;
+    const minY = 5;
     const maxY = arena.length - frameH;
     fy = Math.floor(Math.random() * (maxY - minY)) + minY;
 
@@ -370,7 +370,7 @@ function clearDiagonalSixByColor(){
         chain.push([ny,nx]);
         ny--; nx++;
       }
-      if(chain.length>=5) chain.forEach(p=>toClear.push(p));
+      if(chain.length>=4) chain.forEach(p=>toClear.push(p));
     }
   }
   if(!toClear.length) return;
