@@ -223,8 +223,32 @@ const originalFrameColors = [
 function newTargetWord() {
   if (wordQueue.length === 0 || wordIndex >= wordQueue.length) shuffleWords();
   targetWord = wordQueue[wordIndex++];
-  document.getElementById('wordHint').textContent = targetWord;
+  document.getElementById('wordHint').textContent =
+  getMaskedWord(targetWord, round);
   randomizeFrame();
+}
+
+function getMaskedWord(word, round){
+
+  if(round <= 1) return word;
+
+  let letters = word.split('');
+  let hideCount = Math.min(round - 1, letters.length - 2);
+
+  let indexes = [];
+
+  while(indexes.length < hideCount){
+    let i = Math.floor(Math.random() * letters.length);
+    if(!indexes.includes(i)){
+      indexes.push(i);
+    }
+  }
+
+  indexes.forEach(i=>{
+    letters[i] = '_';
+  });
+
+  return letters.join('');
 }
 
 function randomizeFrame() {
