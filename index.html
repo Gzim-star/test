@@ -622,9 +622,11 @@ async function enableTilt() {
   }
 }
 /* ===== BUTTONS ===== */
+/* ===== BUTTONS ===== */
+
 async function startGame() {
 
-  await enableTilt(); // 🔥 ganz wichtig
+  await enableTilt();
 
   if(window.previewAnim){
     cancelAnimationFrame(window.previewAnim);
@@ -638,25 +640,28 @@ async function startGame() {
   }
 }
 
-  // Startet das Spiel
-  if(!gameRunning){
-    gameRunning = true;
-    resetPlayer();
-    newTargetWord();
-  }
-}
-
-function restartGame() {
-  // Nur Spiel zurücksetzen, nicht Preview
-  arena.forEach(r => r.fill(null));
+function restartGame(){
+  arena.forEach(r=>r.fill(null));
   clearHighlights();
   resetPlayer();
   newTargetWord();
   dropCounter = 0;
   gameRunning = true;
 }
-function restartGame(){ arena.forEach(r=>r.fill(null)); clearHighlights(); resetPlayer(); newTargetWord(); dropCounter=0; gameRunning=true; }
-function dropFast(){ if(!gameRunning) return; while(!collide(arena,player)){ player.pos.y++; } player.pos.y--; merge(arena,player); checkAndClearWords(); clearDiagonalSixByColor(); resetPlayer(); }
+
+function dropFast(){
+  if(!gameRunning) return;
+
+  while(!collide(arena,player)){
+    player.pos.y++;
+  }
+
+  player.pos.y--;
+  merge(arena,player);
+  checkAndClearWords();
+  clearDiagonalSixByColor();
+  resetPlayer();
+}
 
 /* ===== INIT ===== */
 // Intro fade out + start falling letters
