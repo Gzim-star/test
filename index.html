@@ -190,124 +190,170 @@ let gameRunning = false;
 let frameX = 0;
 let frameY = 0;
 const frameH = 10; // Höhe fix
+// 🟫 FAKE FRAMES SYSTEM
 let round = 1;
 const maxRounds = 9;
 let fakeFrames = [];
 let pulseActive = false;
 let pulseTime = 0;
-let pulseDuration = 300; // ms
-let lettersFallingFromFrame = [];
+let pulseDuration = 300; // Millisekunden
+// 🎨 Farben für Original Rahmen (deine bestehenden Farben benutzen)
 const originalFrameColors = [
-  '#00ff00','#ff0000','#00ffff','#ff00ff','#ffff00','#ff8800','#8888ff','#ffffff','#ff4444'
+  '#00ff00',  // Runde 1 (grün)
+  '#ff0000',  // Runde 2
+  '#00ffff',  // Runde 3
+  '#ff00ff',  // Runde 4
+  '#ffff00',  // Runde 5
+  '#ff8800',  // Runde 6
+  '#8888ff',  // Runde 7
+  '#ffffff',  // Runde 8
+  '#ff4444'   // Runde 9
+];
+ const fakeFrameColors = [
+  '#ff4444',  // Runde 1
+  '#ffffff',  // Runde 2
+  '#8888ff',  // Runde 3
+  '#ff8800',  // Runde 4
+  '#ffff00',  // Runde 5
+  '#ff00ff',  // Runde 6
+  '#00ffff',  // Runde 7
+  '#ff0000',  // Runde 8
+  '#00ff00'   // Runde 9
 ]; 
 
-/* ===== ORIENTATION EVENT ===== */
-window.addEventListener('deviceorientation', (event) => {
-  const gamma = event.gamma; 
-  const tiltThreshold = 5;
-  if (gamma > tiltThreshold || gamma < -tiltThreshold) {
-    triggerFrameLettersFall();
-  }
-});
-
-/* ===== FRAME FALL ===== */
-function triggerFrameLettersFall() {
-  if (lettersFallingFromFrame.length > 0) return;
-  for (let y = frameY; y < frameY + frameH; y++) {
-    lettersFallingFromFrame.push({ x: frameX, y: y, letter: arena[y][frameX] || randomLetter(), speed: 0 });
-    arena[y][frameX] = null;
-  }
-}
-
-/* ===== GAME FUNCTIONS ===== */
 function newTargetWord() {
-  if (!wordQueue.length || wordIndex >= wordQueue.length) shuffleWords();
+  if (wordQueue.length === 0 || wordIndex >= wordQueue.length) shuffleWords();
   targetWord = wordQueue[wordIndex++];
-  document.getElementById('wordHint').textContent = getMaskedWord(targetWord, round);
+  document.getElementById('wordHint').textContent =
+  getMaskedWord(targetWord, round);
   randomizeFrame();
 }
 
 function getMaskedWord(word, round){
+
   if(round <= 1) return word;
+
   let letters = word.split('');
-  let hideCount = Math.min(round-1, letters.length-2);
+  let hideCount = Math.min(round - 1, letters.length - 2);
+
   let indexes = [];
+
   while(indexes.length < hideCount){
-    let i=Math.floor(Math.random()*letters.length);
-    if(!indexes.includes(i)) indexes.push(i);
+    let i = Math.floor(Math.random() * letters.length);
+    if(!indexes.includes(i)){
+      indexes.push(i);
+    }
   }
-  indexes.forEach(i=>letters[i]='_');
+
+  indexes.forEach(i=>{
+    letters[i] = '_';
+  });
+
   return letters.join('');
 }
 
 function randomizeFrame() {
-  frameX = Math.floor(Math.random()*arena[0].length);
-  const minY=5, maxY=arena.length-frameH;
-  frameY = Math.floor(Math.random()*(maxY-minY))+minY;
+  frameX = Math.floor(Math.random() * arena[0].length);
+  const minY = 5;
+  const maxY = arena.length - frameH;
+  frameY = Math.floor(Math.random() * (maxY - minY)) + minY;
 }
 
-/* ===== PLAYER ===== */
+/* ===== GAME LOGIC ===== */
 function collide(arena, player) {
-  const {x,y}=player.pos;
-  return y>=arena.length||x<0||x>=arena[0].length||arena[y][x]!==null;
+  const { x, y } = player.pos;
+  return y >= arena.length || x < 0 || x >= arena[0].length || arena[y][x] !== null;
 }
-function merge(arena, player){ arena[player.pos.y][player.pos.x] = player.letter; }
-function move(dir){ player.pos.x+=dir; if(collide(arena,player)) player.pos.x-=dir; }
-function drop(){ 
+
+function merge(arena, player) { arena[player.pos.y][player.pos.x] = player.letter; }
+function move(dir) { player.pos.x += dir; if(collide(arena, player)) player.pos.x -= dir; }
+function drop() { 
   if(!gameRunning) return;
   player.pos.y++;
   if(collide(arena,player)){ player.pos.y--; merge(arena,player); checkAndClearWords(); clearDiagonalSixByColor(); resetPlayer(); }
 }
-function randomLetter(){ return String.fromCharCode(65+Math.floor(Math.random()*26)); }
-function resetPlayer(){
-  player.letter = randomLetter();
-  player.pos.y = 0;
-  player.pos.x = Math.floor(arena[0].length/2);
-  if(collide(arena,player)) arena.forEach(r=>r.fill(null));
-}
 
 /* ===== WORD DETECTION ===== */
-function checkAndClearWords(){
+function checkAndClearWords() {
   clearHighlights();
-  const found=findWords();
+  const found = findWords();
   if(!found.length) return;
-  let targetFound=false;
+  let targetFound = false;
+
   found.forEach(group=>{
     const letters = group.map(([y,x])=>arena[y][x]).join('');
-    if(letters.toUpperCase()===targetWord){
+    if(letters.toUpperCase() === targetWord){
       const inFrame = group.every(([y,x])=> x===frameX && y>=frameY && y<frameY+frameH );
       if(inFrame) targetFound=true;
     }
     const color = COLORS[Math.floor(Math.random()*COLORS.length)];
     group.forEach(([y,x])=>highlights[y][x]=color);
   });
+
   setTimeout(()=>{
     if(targetFound){
-      arena.forEach(r=>r.fill(null));
-      clearHighlights();
-      resetPlayer();
-      round++; if(round>maxRounds) round=maxRounds;
-      dropInterval = Math.max(200,700-(round*60));
-      if(round>1){ pulseActive=true; pulseTime=0; }
-      newTargetWord();
-      fakeFrames=[];
-      let availableColors=[...COLORS];
-      for(let i=0;i<round-1;i++){
-        let fx,fy,valid=false;
-        while(!valid){
-          fx=Math.floor(Math.random()*arena[0].length);
-          const minY=5,maxY=arena.length-frameH;
-          fy=Math.floor(Math.random()*(maxY-minY))+minY;
-          const overlapsOriginal=fx===frameX && fy<frameY+frameH && fy+frameH>frameY;
-          const overlapsFake=fakeFrames.some(f=>f.x===fx && fy<f.y+frameH && fy+frameH>f.y);
-          if(!overlapsOriginal && !overlapsFake) valid=true;
-        }
-        let colorIndex=Math.floor(Math.random()*availableColors.length);
-        let color = availableColors.splice(colorIndex,1)[0];
-        fakeFrames.push({x:fx,y:fy,color});
-      }
-      return;
+
+  // Spielfeld leeren
+  arena.forEach(r=>r.fill(null));
+  clearHighlights();
+  resetPlayer();
+
+  // Runde erhöhen (max 9)
+  round++;
+  if(round > maxRounds) round = maxRounds;
+  // 🧠 Geschwindigkeit pro Runde erhöhen
+dropInterval = Math.max(200, 700 - (round * 60));
+  // Pulse nur ab Runde 2
+if(round > 1){
+  pulseActive = true;
+  pulseTime = 0;
+}
+  // Neues Wort erzeugt auch neuen Original Frame
+  newTargetWord();
+
+  // Fake Frames neu erzeugen
+// Fake Frames neu erzeugen
+fakeFrames = [];
+let fakeCount = round - 1;
+
+// Array mit verfügbaren Farben kopieren
+let availableColors = [...COLORS];
+
+for(let i=0;i<fakeCount;i++){
+  let fx, fy;
+  let valid = false;
+
+  while(!valid){
+    fx = Math.floor(Math.random() * arena[0].length);
+    const minY = 5;
+    const maxY = arena.length - frameH;
+    fy = Math.floor(Math.random() * (maxY - minY)) + minY;
+
+    const overlapsOriginal =
+  fx === frameX &&
+  fy < frameY + frameH &&
+  fy + frameH > frameY;
+
+const overlapsFake = fakeFrames.some(f =>
+  f.x === fx &&
+  fy < f.y + frameH &&
+  fy + frameH > f.y
+);
+
+    if(!overlapsOriginal && !overlapsFake){
+      valid = true;
     }
+  }
+
+  // Zufällige Farbe auswählen und aus availableColors entfernen
+  let colorIndex = Math.floor(Math.random() * availableColors.length);
+  let color = availableColors.splice(colorIndex, 1)[0];
+
+  fakeFrames.push({x: fx, y: fy, color: color});
+}
+
+  return;
+}
     found.flat().forEach(([y,x])=>arena[y][x]=null);
     applyGravity();
     clearHighlights();
@@ -317,25 +363,25 @@ function checkAndClearWords(){
 function findWords(){
   const found=[];
   for(let y=0;y<arena.length;y++){
-    let word='',pos=[];
+    let word='', pos=[];
     for(let x=0;x<=arena[0].length;x++){
-      const c=arena[y][x];
+      const c = arena[y][x];
       if(c){ word+=c; pos.push([y,x]); } else { extract(word,pos,found); word=''; pos=[]; }
     }
   }
   for(let x=0;x<arena[0].length;x++){
-    let word='',pos=[];
+    let word='', pos=[];
     for(let y=0;y<=arena.length;y++){
-      const c=arena[y]?.[x];
+      const c = arena[y]?.[x];
       if(c){ word+=c; pos.push([y,x]); } else { extract(word,pos,found); word=''; pos=[]; }
     }
   }
   return found;
 }
 
-function extract(word,pos,found){ 
-  if(word.length<MIN_LEN) return; 
-  const upperWord=word.toUpperCase();
+function extract(word,pos,found){
+  if(word.length<MIN_LEN) return;
+  const upperWord = word.toUpperCase();
   WORDS.forEach(w=>{ const i=upperWord.indexOf(w); if(i!==-1) found.push(pos.slice(i,i+w.length)); });
 }
 
@@ -344,11 +390,12 @@ function clearDiagonalSixByColor(){
   for(let y=arena.length-1;y>=0;y--){
     for(let x=0;x<arena[0].length;x++){
       if(!arena[y][x]) continue;
-      const baseColor=COLORS[(x+y)%COLORS.length];
+      const baseColor = COLORS[(x+y)%COLORS.length];
       const chain=[[y,x]];
       let ny=y-1,nx=x+1;
       while(ny>=0 && nx<arena[0].length && arena[ny][nx] && COLORS[(nx+ny)%COLORS.length]===baseColor){
-        chain.push([ny,nx]); ny--; nx++;
+        chain.push([ny,nx]);
+        ny--; nx++;
       }
       if(chain.length>=4) chain.forEach(p=>toClear.push(p));
     }
@@ -358,6 +405,7 @@ function clearDiagonalSixByColor(){
   setTimeout(()=>{ toClear.forEach(([y,x])=>arena[y][x]=null); applyGravity(); clearHighlights(); },250);
 }
 
+/* ===== GRAVITY ===== */
 function applyGravity(){
   for(let x=0;x<arena[0].length;x++){
     for(let y=arena.length-1;y>=0;y--){
@@ -370,85 +418,143 @@ function applyGravity(){
   }
 }
 
+/* ===== PLAYER ===== */
+function randomLetter(){ return String.fromCharCode(65+Math.floor(Math.random()*26)); }
+
+function resetPlayer(){
+  player.letter = randomLetter();
+  player.pos.y = 0;
+  player.pos.x = Math.floor(arena[0].length/2);
+  if(collide(arena,player)) arena.forEach(r=>r.fill(null));
+}
+
 /* ===== FALLING LETTERS PREVIEW ===== */
-function startFallingLettersPreview(){
-  const letters=[];
-  const columns=arena[0].length;
-  const rows=Math.floor(arena.length/2);
-  const colors=COLORS;
-  for(let x=0;x<columns;x++){
-    for(let y=0;y<rows;y++){
-      letters.push({ x:x, y:-Math.random()*rows, letter:randomLetter(), color:colors[Math.floor(Math.random()*colors.length)], speed:0.05+Math.random()*0.15 });
+function startFallingLettersPreview() {
+  const letters = [];
+  const columns = arena[0].length;
+  const rows = Math.floor(arena.length/2); // Bis Mitte füllen
+  const colors = COLORS;
+
+  // Initial viele Buchstaben generieren
+  for(let x=0; x<columns; x++) {
+    for(let y=0; y<rows; y++) {
+      letters.push({
+        x: x,
+        y: -Math.random()*rows, // Start oberhalb
+        letter: String.fromCharCode(65 + Math.floor(Math.random()*26)),
+        color: colors[Math.floor(Math.random()*colors.length)],
+        speed: 0.05 + Math.random()*0.15,
+        scale: 1 + Math.random()*0.5
+      });
     }
   }
-  function animFrame(){
-    ctx.fillStyle='#000';
+
+  function animFrame() {
+    ctx.fillStyle = '#000';
     ctx.fillRect(0,0,canvas.width,canvas.height);
+
     letters.forEach(l=>{
-      const scale = 1 + 0.3 * Math.sin(Date.now()*0.005+l.x);
-      ctx.save(); ctx.translate(l.x+0.5,l.y+0.5); ctx.scale(scale,scale);
-      ctx.fillStyle=l.color; ctx.font='1px monospace'; ctx.textAlign='center'; ctx.textBaseline='middle';
-      ctx.fillText(l.letter,0,0); ctx.restore();
+      // Swollen Pop-Effekt
+      const scale = 1 + 0.3 * Math.sin(Date.now()*0.005 + l.x);
+      ctx.save();
+      ctx.translate(l.x+0.5, l.y+0.5);
+      ctx.scale(scale, scale);
+      ctx.fillStyle = l.color;
+      ctx.font='1px monospace';
+      ctx.textAlign='center';
+      ctx.textBaseline='middle';
+      ctx.fillText(l.letter,0,0);
+      ctx.restore();
+
+      // Fallen
       l.y += l.speed;
+
+      // Unten auf Grid anhalten
       if(l.y >= arena.length/1) l.y = arena.length/1;
     });
-    window.previewAnim=requestAnimationFrame(animFrame);
+
+    window.previewAnim = requestAnimationFrame(animFrame);
   }
   animFrame();
 }
-
 /* ===== DRAW ===== */
 function clearHighlights(){ highlights.forEach(r=>r.fill(null)); }
 
 function draw(){
-  ctx.fillStyle='#000'; ctx.fillRect(0,0,canvas.width,canvas.height);
-  ctx.font='1px monospace'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillStyle='#000'; 
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.font='1px monospace'; 
+  ctx.textAlign='center'; 
+  ctx.textBaseline='middle';
 
-  if(gameRunning){
-    // ORIGINAL FRAME
-    let borderWidth=0.05, alpha=1;
-    if(pulseActive){ pulseTime+=16; let progress=pulseTime/pulseDuration;
-      if(progress>=1) pulseActive=false;
-      else{ borderWidth=0.05+Math.sin(progress*Math.PI)*0.08; alpha=1+Math.sin(progress*Math.PI)*0.5; } }
-    ctx.fillStyle='#000000'; ctx.fillRect(frameX+0.05,frameY-0.27,0.9,frameH-0.2);
-    let currentColor=originalFrameColors[round-1]||'#00ff00';
-    ctx.globalAlpha=alpha; ctx.strokeStyle=currentColor; ctx.lineWidth=borderWidth;
-    ctx.strokeRect(frameX+0.05,frameY-0.27,0.9,frameH-0.2); ctx.globalAlpha=1;
+if(gameRunning){
 
-    // FAKE FRAMES
-    fakeFrames.forEach(f=>{
-      ctx.fillStyle='#000000'; ctx.strokeStyle=f.color||'#00ff00'; ctx.lineWidth=0.05;
-      ctx.fillRect(f.x+0.05,f.y-0.27,0.9,frameH-0.2); ctx.strokeRect(f.x+0.05,f.y-0.27,0.9,frameH-0.2);
-    });
+// 🟩 ORIGINAL FRAME MIT SAFE PULSE
+
+let borderWidth = 0.05;
+let alpha = 1;
+
+if(pulseActive){
+
+  pulseTime += 16;
+  let progress = pulseTime / pulseDuration;
+
+  if(progress >= 1){
+    pulseActive = false;
+  } else {
+    // Pulse Effekt
+    borderWidth = 0.05 + Math.sin(progress * Math.PI) * 0.08;
+    alpha = 1 + Math.sin(progress * Math.PI) * 0.5;
   }
-
-  // ARENA
-  arena.forEach((row,y)=>row.forEach((v,x)=>{ if(v){ ctx.fillStyle=highlights[y][x]||COLORS[(x+y)%COLORS.length]; ctx.fillText(v,x+0.5,y+0.5); } }));
-
-  // PLAYER
-  ctx.fillStyle=COLORS[(player.pos.x+player.pos.y)%COLORS.length]; ctx.fillText(player.letter,player.pos.x+0.5,player.pos.y+0.5);
 }
 
-/* ===== UPDATE LOOP ===== */
+// Hintergrund
+ctx.fillStyle = '#000000';
+ctx.fillRect(frameX+0.05, frameY-0.27, 0.9, frameH-0.2);
+
+// Farbe
+let currentColor = originalFrameColors[round - 1] || '#00ff00';
+
+// Glow Effekt nur während Pulse
+ctx.globalAlpha = alpha;
+ctx.strokeStyle = currentColor;
+ctx.lineWidth = borderWidth;
+ctx.strokeRect(frameX+0.05, frameY-0.27, 0.9, frameH-0.2);
+
+ctx.globalAlpha = 1;
+
+// 🟫 FAKE FRAMES
+fakeFrames.forEach(f=>{
+  ctx.fillStyle='#000000';
+  ctx.strokeStyle = f.color || '#00ff00'; // benutze die individuelle Farbe
+  ctx.lineWidth = 0.05;
+  ctx.fillRect(f.x+0.05, f.y-0.27, 0.9, frameH-0.2);
+  ctx.strokeRect(f.x+0.05, f.y-0.27, 0.9, frameH-0.2);
+ });
+}
+
+  arena.forEach((row,y)=>{
+    row.forEach((v,x)=>{
+      if(v){ 
+        ctx.fillStyle = highlights[y][x]||COLORS[(x+y)%COLORS.length]; 
+        ctx.fillText(v,x+0.5,y+0.5); 
+      }
+    });
+  });
+
+  ctx.fillStyle=COLORS[(player.pos.x+player.pos.y)%COLORS.length];
+  ctx.fillText(player.letter,player.pos.x+0.5,player.pos.y+0.5);
+}
+
+/* ===== LOOP ===== */
 let lastTime=0, dropCounter=0, dropInterval=700;
 function update(time=0){
-  const delta=time-lastTime; lastTime=time;
-  if(gameRunning) { dropCounter+=delta; if(dropCounter>dropInterval){ drop(); dropCounter=0; } }
-
-  // FALLING LETTERS
-    // 💨 Buchstaben vom Original-Rahmen fallen lassen – immer, auch wenn Spiel noch nicht läuft
-  for(let i = lettersFallingFromFrame.length - 1; i >= 0; i--){
-    const l = lettersFallingFromFrame[i];
-    l.speed += 0.1;
-    l.y += l.speed;
-    const gridY = Math.floor(l.y);
-
-    if(gridY >= arena.length || arena[gridY][l.x] !== null){
-      arena[gridY-1][l.x] = l.letter;
-      lettersFallingFromFrame.splice(i, 1); // zuverlässig aus Array entfernen
-    }
+  const delta = time - lastTime;
+  lastTime=time;
+  if(gameRunning){
+    dropCounter+=delta;
+    if(dropCounter>dropInterval){ drop(); dropCounter=0; }
   }
-
   draw();
   requestAnimationFrame(update);
 }
