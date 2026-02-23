@@ -579,22 +579,26 @@ fakeFrames.forEach(f=>{
 let lastTime=0, dropCounter=0, dropInterval=700;
 function update(time=0){
   const delta = time - lastTime;
-  lastTime=time;
+  lastTime = time;
+
   if(gameRunning){
-    dropCounter+=delta;
-    if(dropCounter>dropInterval){ drop(); dropCounter=0; }
+    dropCounter += delta;
+    if(dropCounter > dropInterval){ drop(); dropCounter = 0; }
   }
-    // 💨 Buchstaben vom Original-Rahmen fallen lassen
-  lettersFallingFromFrame.forEach((l, index) => {
-    l.speed += 0.1; 
+
+  // 💨 Buchstaben vom Original-Rahmen fallen lassen – immer, auch wenn Spiel noch nicht läuft
+  for(let i = lettersFallingFromFrame.length - 1; i >= 0; i--){
+    const l = lettersFallingFromFrame[i];
+    l.speed += 0.1;
     l.y += l.speed;
     const gridY = Math.floor(l.y);
-    if (gridY >= arena.length || arena[gridY][l.x] !== null) {
-      arena[gridY-1][l.x] = l.letter; 
-      lettersFallingFromFrame.splice(index, 1); // aus Array entfernen
+
+    if(gridY >= arena.length || arena[gridY][l.x] !== null){
+      arena[gridY-1][l.x] = l.letter;
+      lettersFallingFromFrame.splice(i, 1); // zuverlässig aus Array entfernen
     }
-  });
-  
+  }
+
   draw();
   requestAnimationFrame(update);
 }
