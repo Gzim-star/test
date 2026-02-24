@@ -202,8 +202,6 @@ let colorShiftTriggered = false;
 let colorShiftTimeout = null;
 let pulseTime = 0;
 let pulseDuration = 300; // Millisekunden
-// 🎨 aktuelle Farbe des Original-Rahmens
-let frameColor = originalFrameColors[round - 1];
 // 🎨 Farben für Original Rahmen (deine bestehenden Farben benutzen)
 const originalFrameColors = [
   '#00ff00',  // Runde 1 (grün)
@@ -216,7 +214,10 @@ const originalFrameColors = [
   '#ffffff',  // Runde 8
   '#ff4444'   // Runde 9
 ];
- const fakeFrameColors = [
+// 🎨 aktuelle Farbe des Original-Rahmens
+let frameColor = originalFrameColors[round - 1];
+
+const fakeFrameColors = [
   '#ff4444',  // Runde 1
   '#ffffff',  // Runde 2
   '#8888ff',  // Runde 3
