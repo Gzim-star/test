@@ -242,7 +242,11 @@ function newTargetWord() {
 
   randomizeFrame();
 }
-
+if(round >= 2){
+  setTimeout(() => {
+    triggerColorShift();
+  }, 5000); // 5 Sekunden nach Rundebeginn
+}
 function getMaskedWord(word, round){
 
   if(round <= 1) return word;
