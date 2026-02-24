@@ -286,14 +286,13 @@ function randomizeFrame() {
 }
 function triggerColorShift(){
 
-  if(round < 2) return;
+  if(round < 6) return;
   if(colorShiftTriggered) return;
 
   colorShiftTriggered = true;
 
   // Farben der Fake Frames mischen
-  const allFrames = [...fakeFrames, {x: frameX, y: frameY, color: frameColor}];
-  const colors = allFrames.map(f => f.color);
+  const colors = fakeFrames.map(f => f.color);
 
   // Shuffle
   for(let i = colors.length - 1; i > 0; i--){
