@@ -198,6 +198,8 @@ let round = 1;
 const maxRounds = 9;
 let fakeFrames = [];
 let pulseActive = false;
+let colorShiftTriggered = false;
+let colorShiftTimeout = null;
 let pulseTime = 0;
 let pulseDuration = 300; // Millisekunden
 // 🎨 Farben für Original Rahmen (deine bestehenden Farben benutzen)
@@ -282,6 +284,28 @@ function randomizeFrame() {
   const maxY = arena.length - frameH;
   frameY = Math.floor(Math.random() * (maxY - minY)) + minY;
 }
+function triggerColorShift(){
+
+  if(round < 6) return;
+  if(colorShiftTriggered) return;
+
+  colorShiftTriggered = true;
+
+  // Farben der Fake Frames mischen
+  const colors = fakeFrames.map(f => f.color);
+
+  // Shuffle
+  for(let i = colors.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [colors[i], colors[j]] = [colors[j], colors[i]];
+  }
+
+  // Neue Farben zuweisen
+  fakeFrames.forEach((f, index)=>{
+    f.color = colors[index];
+  });
+
+}
 
 /* ===== GAME LOGIC ===== */
 function collide(arena, player) {
@@ -335,7 +359,6 @@ if(round > 1){
   // Neues Wort erzeugt auch neuen Original Frame
   newTargetWord();
 
-  // Fake Frames neu erzeugen
 // Fake Frames neu erzeugen
 fakeFrames = [];
 let fakeCount = round - 1;
@@ -375,8 +398,14 @@ const overlapsFake = fakeFrames.some(f =>
 
   fakeFrames.push({x: fx, y: fy, color: color});
 }
+// 🔥 Color Shift nach 5 Sekunden (nur 1x pro Runde)
+colorShiftTriggered = false;
 
-  return;
+setTimeout(() => {
+  triggerColorShift();
+}, 5000);
+  
+return;
 }
     found.flat().forEach(([y,x])=>arena[y][x]=null);
     applyGravity();
