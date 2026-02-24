@@ -198,7 +198,6 @@ let round = 1;
 const maxRounds = 9;
 let fakeFrames = [];
 let pulseActive = false;
-let frameColor = originalFrameColors[round - 1]; // aktuelle Farbe vom Original-Rahmen
 let colorShiftTriggered = false;
 let colorShiftTimeout = null;
 let pulseTime = 0;
@@ -231,10 +230,7 @@ function newTargetWord() {
   if (wordQueue.length === 0 || wordIndex >= wordQueue.length) shuffleWords();
 
   targetWord = wordQueue[wordIndex++];
-  
-  frameColor = originalFrameColors[round - 1] || '#00ff00'; // Original-Rahmenfarbe setzen
-  colorShiftTriggered = false; // Color Shift zurücksetzen
-  
+
   if(!hintRevealed){
     document.getElementById('wordHint').textContent =
       getMaskedWord(targetWord, round);
@@ -242,11 +238,7 @@ function newTargetWord() {
 
   randomizeFrame();
 }
-if(round >= 2){
-  setTimeout(() => {
-    triggerColorShift();
-  }, 5000); // 5 Sekunden nach Rundebeginn
-}
+
 function getMaskedWord(word, round){
 
   if(round <= 1) return word;
@@ -293,12 +285,13 @@ function randomizeFrame() {
   frameY = Math.floor(Math.random() * (maxY - minY)) + minY;
 }
 function triggerColorShift(){
-  if(round < 2) return;          // nur ab Runde 6
-  if(colorShiftTriggered) return; // nur einmal pro Runde
+
+  if(round < 2) return;
+  if(colorShiftTriggered) return;
 
   colorShiftTriggered = true;
 
-  // Alle Farben sammeln (Fake + Original)
+  // Farben der Fake Frames mischen
   const allFrames = [...fakeFrames, {x: frameX, y: frameY, color: frameColor}];
   const colors = allFrames.map(f => f.color);
 
@@ -313,8 +306,6 @@ function triggerColorShift(){
     f.color = colors[index];
   });
 
-  // Original-Rahmen Farbe setzen und **bleibt so**
-  frameColor = colors[colors.length - 1];
 }
 
 /* ===== GAME LOGIC ===== */
@@ -580,7 +571,7 @@ let currentColor = originalFrameColors[round - 1] || '#00ff00';
 
 // Glow Effekt nur während Pulse
 ctx.globalAlpha = alpha;
-ctx.strokeStyle = frameColor;
+ctx.strokeStyle = currentColor;
 ctx.lineWidth = borderWidth;
 ctx.strokeRect(frameX+0.05, frameY-0.27, 0.9, frameH-0.2);
 
