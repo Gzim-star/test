@@ -289,7 +289,7 @@ function randomizeFrame() {
 }
 function triggerColorShift(){
 
-  
+  if(round < 1) return;
   if(colorShiftTriggered) return;
 
   colorShiftTriggered = true;
