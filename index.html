@@ -369,75 +369,87 @@ function checkAndClearWords() {
   });
 
   setTimeout(()=>{
-    if(targetFound){
+if(targetFound){
 
-  // Spielfeld leeren
-  arena.forEach(r=>r.fill(null));
-  clearHighlights();
-  resetPlayer();
-
-  // Runde erhöhen (max 9)
-  round++;
-  if(round > maxRounds) round = maxRounds;
-  // Original-Farbe für den aktuellen Frame aktualisieren
-frameColor = originalFrameColors[round - 1] || '#00ff00';
-  // 🧠 Geschwindigkeit pro Runde erhöhen
-dropInterval = Math.max(200, 700 - (round * 60));
-  // Pulse nur ab Runde 2
-if(round > 1){
-  pulseActive = true;
-  pulseTime = 0;
-}
-  // Neues Wort erzeugt auch neuen Original Frame
-  newTargetWord();
-
-// Fake Frames neu erzeugen
-fakeFrames = [];
-let fakeCount = round - 1;
-
-// Array mit verfügbaren Farben kopieren
-let availableColors = [...COLORS];
-
-for(let i=0;i<fakeCount;i++){
-  let fx, fy;
-  let valid = false;
-
-  while(!valid){
-    fx = Math.floor(Math.random() * arena[0].length);
-    const minY = 5;
-    const maxY = arena.length - frameH;
-    fy = Math.floor(Math.random() * (maxY - minY)) + minY;
-
-    const overlapsOriginal =
-  fx === frameX &&
-  fy < frameY + frameH &&
-  fy + frameH > frameY;
-
-const overlapsFake = fakeFrames.some(f =>
-  f.x === fx &&
-  fy < f.y + frameH &&
-  fy + frameH > f.y
-);
-
-    if(!overlapsOriginal && !overlapsFake){
-      valid = true;
-    }
+  // Alte Color-Shift Timer stoppen
+  if(colorShiftTimer){
+    clearTimeout(colorShiftTimer);
+    colorShiftTimer = null;
   }
 
-  // Zufällige Farbe auswählen und aus availableColors entfernen
-  let colorIndex = Math.floor(Math.random() * availableColors.length);
-  let color = availableColors.splice(colorIndex, 1)[0];
+  // 300ms warten (Highlight sichtbar lassen)
+  setTimeout(()=>{
 
-  fakeFrames.push({x: fx, y: fy, color: color});
-}
-// 🔥 Color Shift nach 5 Sekunden (nur 1x pro Runde)
-colorShiftTriggered = false;
+    // Spielfeld leeren
+    arena.forEach(r=>r.fill(null));
+    clearHighlights();
+    resetPlayer();
 
-setTimeout(() => {
-  triggerColorShiftIllusion();
-}, 5000);
-  
-return;
+    // Runde erhöhen
+    round++;
+    if(round > maxRounds) round = maxRounds;
+
+    // Frame-Farbe setzen
+    frameColor = originalFrameColors[round - 1] || '#00ff00';
+
+    // Geschwindigkeit erhöhen
+    dropInterval = Math.max(200, 700 - (round * 60));
+
+    // Pulse aktivieren
+    if(round > 1){
+      pulseActive = true;
+      pulseTime = 0;
+    }
+
+    // Neues Wort erzeugen
+    newTargetWord();
+
+    // Fake Frames neu erzeugen
+    fakeFrames = [];
+    let fakeCount = round - 1;
+    let availableColors = [...COLORS];
+
+    for(let i=0;i<fakeCount;i++){
+      let fx, fy, valid=false;
+
+      while(!valid){
+        fx = Math.floor(Math.random() * arena[0].length);
+        const minY = 5;
+        const maxY = arena.length - frameH;
+        fy = Math.floor(Math.random() * (maxY - minY)) + minY;
+
+        const overlapsOriginal =
+          fx === frameX &&
+          fy < frameY + frameH &&
+          fy + frameH > frameY;
+
+        const overlapsFake = fakeFrames.some(f =>
+          f.x === fx &&
+          fy < f.y + frameH &&
+          fy + frameH > f.y
+        );
+
+        if(!overlapsOriginal && !overlapsFake){
+          valid = true;
+        }
+      }
+
+      let colorIndex = Math.floor(Math.random() * availableColors.length);
+      let color = availableColors.splice(colorIndex, 1)[0];
+
+      fakeFrames.push({x: fx, y: fy, color: color});
+    }
+
+    // 🔥 Color Shift immer zuverlässig
+    colorShiftTriggered = false;
+
+    colorShiftTimer = setTimeout(()=>{
+      triggerColorShiftIllusion();
+    }, 5000);
+
+  },300);
+
+  return;
 }
     found.flat().forEach(([y,x])=>arena[y][x]=null);
     applyGravity();
