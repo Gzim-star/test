@@ -285,32 +285,27 @@ function randomizeFrame() {
   frameY = Math.floor(Math.random() * (maxY - minY)) + minY;
 }
 function triggerColorShift(){
-  if(round < 1) return;           // nur ab Runde 6
-  if(colorShiftTriggered) return;  // nur einmal pro Runde
+
+  if(round < 1) return;
+  if(colorShiftTriggered) return;
+
   colorShiftTriggered = true;
 
-  // Alle Rahmen zusammenfassen
-  const allFrames = [...fakeFrames, {x: frameX, y: frameY, color: frameColor}];
+  // Farben der Fake Frames mischen
+  const colors = fakeFrames.map(f => f.color);
 
-  // Farben mischen
-  const colors = allFrames.map(f => f.color);
-  for(let i = colors.length-1; i>0; i--){
-    const j = Math.floor(Math.random()*(i+1));
+  // Shuffle
+  for(let i = colors.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
     [colors[i], colors[j]] = [colors[j], colors[i]];
   }
 
-  // Farben kurz zuweisen (Illusion)
-  allFrames.forEach((f,i)=>{
-    f.color = colors[i];
+  // Neue Farben zuweisen
+  fakeFrames.forEach((f, index)=>{
+    f.color = colors[index];
   });
-  frameColor = colors[colors.length-1];
 
-  // Nach 3 Sekunden Illusion beenden → bleiben so
-  setTimeout(()=>{
-    // nichts zurücksetzen, bleiben wie sie sind
-  },3000);
 }
-
 
 /* ===== GAME LOGIC ===== */
 function collide(arena, player) {
