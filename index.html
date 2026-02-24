@@ -132,7 +132,9 @@ canvas {
   <div class="subtitle">LOGIC</div>
 </div>
 <div class="game">
-  <div class="hint"><span id="wordHint">Hint</span></div>
+  <div class="hint">
+  <span id="wordHint" onclick="revealHint()" style="cursor:pointer;">Hint</span>
+</div>
   <canvas id="wordFallCanvas" width="300" height="600"></canvas>
 
   <div class="controls">
@@ -185,7 +187,8 @@ const highlights = Array.from({ length: 20 }, () => Array(10).fill(null));
 const player = { pos: { x: 0, y: 0 }, letter: '' };
 let targetWord = '';
 let gameRunning = false;
-
+let hintRevealed = false;
+let revealTimeout = null;
 // 🔲 FRAME POSITION (GLOBAL)
 let frameX = 0;
 let frameY = 0;
@@ -223,9 +226,14 @@ const originalFrameColors = [
 
 function newTargetWord() {
   if (wordQueue.length === 0 || wordIndex >= wordQueue.length) shuffleWords();
+
   targetWord = wordQueue[wordIndex++];
-  document.getElementById('wordHint').textContent =
-  getMaskedWord(targetWord, round);
+
+  if(!hintRevealed){
+    document.getElementById('wordHint').textContent =
+      getMaskedWord(targetWord, round);
+  }
+
   randomizeFrame();
 }
 
@@ -252,6 +260,22 @@ function getMaskedWord(word, round){
   return letters.join('');
 }
 
+function revealHint(){
+
+  if(hintRevealed) return;
+
+  hintRevealed = true;
+
+  // Ganzes Wort anzeigen
+  document.getElementById('wordHint').textContent = targetWord;
+
+  // Nach 2 Sekunden wieder maskieren
+  revealTimeout = setTimeout(() => {
+    hintRevealed = false;
+    document.getElementById('wordHint').textContent =
+      getMaskedWord(targetWord, round);
+  }, 2000);
+}
 function randomizeFrame() {
   frameX = Math.floor(Math.random() * arena[0].length);
   const minY = 5;
