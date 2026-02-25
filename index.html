@@ -304,7 +304,7 @@ function randomizeFrame() {
 
 function triggerColorShift(){
 
-  if(round < 1) return;
+  if(round <= 1) return;
   if(colorShiftFakeTriggered) return;
 
   colorShiftFakeTriggered = true;
@@ -324,7 +324,7 @@ function triggerColorShift(){
 
 function triggerColorShiftIllusion(){
 
-  if(round < 1) return;
+  if(round <= 1) return;
   if(colorShiftIllusionTriggered) return;
 
   colorShiftIllusionTriggered = true;
