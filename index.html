@@ -298,7 +298,7 @@ function triggerColorShift(){
   const colors = fakeFrames.map(f => f.color);
 
   // Shuffle
-  for(let i = colors.length - 1; i > 0; i--){
+  for(let i = colors.length 1; i > 0; i--){
     const j = Math.floor(Math.random() * (i + 1));
     [colors[i], colors[j]] = [colors[j], colors[i]];
   }
@@ -311,7 +311,7 @@ function triggerColorShift(){
 }
 
 function triggerColorShiftIllusion(){
-  if(round < 1) return;       // Nur ab Runde 6
+  if(round < 1) return;       
   if(colorShiftTriggered) return;
   colorShiftTriggered = true;
 
@@ -320,7 +320,7 @@ function triggerColorShiftIllusion(){
 
   // Farben mischen
   const colors = allFrames.map(f => f.color);
-  for(let i = colors.length - 1; i > 0; i--){
+  for(let i = colors.length 1; i > 0; i--){
     const j = Math.floor(Math.random() * (i + 1));
     [colors[i], colors[j]] = [colors[j], colors[i]];
   }
