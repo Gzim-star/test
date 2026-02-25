@@ -240,6 +240,13 @@ function newTargetWord() {
   }
 
   randomizeFrame();
+
+  // Color Shift Timer neu starten
+  colorShiftIllusionTriggered = false;
+
+  setTimeout(() => {
+    triggerColorShiftIllusion();
+  }, 5000);
 }
 
 function getMaskedWord(word, round){
@@ -433,11 +440,7 @@ const overlapsFake = fakeFrames.some(f =>
   fakeFrames.push({x: fx, y: fy, color: color});
 }
 
-setTimeout(() => {
-  triggerColorShiftIllusion();
-}, 5000);
-  
-return;
+  return;
 }
     found.flat().forEach(([y,x])=>arena[y][x]=null);
     applyGravity();
