@@ -287,23 +287,21 @@ function randomizeFrame() {
   const maxY = arena.length - frameH;
   frameY = Math.floor(Math.random() * (maxY - minY)) + minY;
 }
+
 function triggerColorShift(){
 
   if(round < 1) return;
-  if(colorShiftTriggered) return;
+  if(colorShiftFakeTriggered) return;
 
-  colorShiftTriggered = true;
+  colorShiftFakeTriggered = true;
 
-  // Farben der Fake Frames mischen
   const colors = fakeFrames.map(f => f.color);
 
-  // Shuffle
   for(let i = colors.length - 1; i > 0; i--){
     const j = Math.floor(Math.random() * (i + 1));
     [colors[i], colors[j]] = [colors[j], colors[i]];
   }
 
-  // Neue Farben zuweisen
   fakeFrames.forEach((f, index)=>{
     f.color = colors[index];
   });
@@ -324,7 +322,6 @@ function triggerColorShiftIllusion(){
 
   const colors = allFrames.map(f => f.color);
 
-  // Shuffle
   for(let i = colors.length - 1; i > 0; i--){
     const j = Math.floor(Math.random() * (i + 1));
     [colors[i], colors[j]] = [colors[j], colors[i]];
@@ -437,8 +434,6 @@ const overlapsFake = fakeFrames.some(f =>
 
   fakeFrames.push({x: fx, y: fy, color: color});
 }
-// 🔥 Color Shift nach 5 Sekunden (nur 1x pro Runde)
-colorShiftTriggered = false;
 
 setTimeout(() => {
   triggerColorShiftIllusion();
