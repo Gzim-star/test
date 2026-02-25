@@ -433,7 +433,13 @@ const overlapsFake = fakeFrames.some(f =>
 // 🔥 Color Shift nach 5 Sekunden (nur 1x pro Runde)
 colorShiftTriggered = false;
 
-setTimeout(() => {
+// Alten Timer stoppen falls vorhanden
+if(colorShiftTimeout){
+  clearTimeout(colorShiftTimeout);
+}
+
+// Neuen Timer speichern
+colorShiftTimeout = setTimeout(() => {
   triggerColorShiftIllusion();
 }, 5000);
   
@@ -668,6 +674,10 @@ function startGame() {
 }
 
 function restartGame() {
+ if(colorShiftTimeout){
+  clearTimeout(colorShiftTimeout);
+  colorShiftTimeout = null;
+}
   // Nur Spiel zurücksetzen, nicht Preview
   arena.forEach(r => r.fill(null));
   clearHighlights();
