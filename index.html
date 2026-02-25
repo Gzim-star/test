@@ -289,7 +289,7 @@ function randomizeFrame() {
 }
 function triggerColorShift(){
 
-  if(round < 1) return;
+  if(round < 2) return;
   if(colorShiftTriggered) return;
 
   colorShiftTriggered = true;
@@ -311,7 +311,7 @@ function triggerColorShift(){
 }
 
 function triggerColorShiftIllusion(){
-  if(round < 1) return;       // Nur ab Runde 6
+  if(round < 2) return;       // Nur ab Runde 6
   if(colorShiftTriggered) return;
   colorShiftTriggered = true;
 
@@ -433,13 +433,7 @@ const overlapsFake = fakeFrames.some(f =>
 // 🔥 Color Shift nach 5 Sekunden (nur 1x pro Runde)
 colorShiftTriggered = false;
 
-// Alten Timer stoppen falls vorhanden
-if(colorShiftTimeout){
-  clearTimeout(colorShiftTimeout);
-}
-
-// Neuen Timer speichern
-colorShiftTimeout = setTimeout(() => {
+setTimeout(() => {
   triggerColorShiftIllusion();
 }, 5000);
   
@@ -674,24 +668,15 @@ function startGame() {
 }
 
 function restartGame() {
- if(colorShiftTimeout){
-  clearTimeout(colorShiftTimeout);
-  colorShiftTimeout = null;
-}
   // Nur Spiel zurücksetzen, nicht Preview
   arena.forEach(r => r.fill(null));
   clearHighlights();
   resetPlayer();
- 
-  round = 1;                         // 🔥 Reset Runde
-  frameColor = originalFrameColors[0]; // 🔥 Reset Frame Farbe
-  fakeFrames = [];                   // 🔥 Fake Frames löschen
-  colorShiftTriggered = false;       // 🔥 DAS IST DER WICHTIGE FIX
-  
   newTargetWord();
   dropCounter = 0;
   gameRunning = true;
 }
+function restartGame(){ arena.forEach(r=>r.fill(null)); clearHighlights(); resetPlayer(); newTargetWord(); dropCounter=0; gameRunning=true; }
 function dropFast(){ if(!gameRunning) return; while(!collide(arena,player)){ player.pos.y++; } player.pos.y--; merge(arena,player); checkAndClearWords(); clearDiagonalSixByColor(); resetPlayer(); }
 
 /* ===== INIT ===== */
