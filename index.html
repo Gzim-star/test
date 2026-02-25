@@ -302,60 +302,69 @@ function randomizeFrame() {
   frameY = Math.floor(Math.random() * (maxY - minY)) + minY;
 }
 
-function triggerColorShift() {
+function triggerColorShift(){
+
   if(round <= 1) return;
   if(colorShiftFakeTriggered) return;
 
   colorShiftFakeTriggered = true;
 
-  // 🟢 Original-Farbe merken
-  let oldColor = frameColor;
-  let newColor;
+  const colors = fakeFrames.map(f => f.color);
 
-  // Neue Farbe wählen, die nicht gleich der alten ist
-  do {
-    newColor = originalFrameColors[Math.floor(Math.random() * originalFrameColors.length)];
-  } while(newColor === oldColor);
-
-  frameColor = newColor;
-
-  // 🟫 Fake-Frames mischen, ohne die Original-Farbe zu nehmen
-  let availableColors = FRAME_COLORS.filter(c => c !== frameColor);
-
-  fakeFrames.forEach(f => {
-    if(availableColors.length === 0) availableColors = FRAME_COLORS.filter(c => c !== frameColor);
-    let index = Math.floor(Math.random() * availableColors.length);
-    f.color = availableColors.splice(index, 1)[0];
-  });
-}
-
-function triggerColorShiftIllusion() {
-  if(round <= 1) return;
-  if(colorShiftIllusionTriggered) return;
-
-  colorShiftIllusionTriggered = true;
-
-  // Kombiniere alle Frames (Original + Fake)
-  const allFrames = [
-    ...fakeFrames,
-    { x: frameX, y: frameY, isOriginal: true, color: frameColor }
-  ];
-
-  // Shuffle Farben
-  const colors = allFrames.map(f => f.color);
   for(let i = colors.length - 1; i > 0; i--){
     const j = Math.floor(Math.random() * (i + 1));
     [colors[i], colors[j]] = [colors[j], colors[i]];
   }
 
-  // Farben zurücksetzen
-  allFrames.forEach((f, i) => {
+  fakeFrames.forEach((f, index)=>{
+    f.color = colors[index];
+  });
+
+}
+
+function triggerColorShiftIllusion(){
+
+  if(round <= 1) return;
+  if(colorShiftIllusionTriggered) return;
+
+  colorShiftIllusionTriggered = true;
+
+  const oldColor = frameColor;
+
+  const allFrames = [
+    ...fakeFrames,
+    {x: frameX, y: frameY, isOriginal:true, color: frameColor}
+  ];
+
+  let colors = allFrames.map(f => f.color);
+
+  // Shuffle so lange bis Original eine andere Farbe bekommt
+  let validShift = false;
+
+  while(!validShift){
+
+    for(let i = colors.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [colors[i], colors[j]] = [colors[j], colors[i]];
+    }
+
+    // Prüfen ob Original neue Farbe bekommt
+    const originalIndex = allFrames.findIndex(f => f.isOriginal);
+
+    if(colors[originalIndex] !== oldColor){
+      validShift = true;
+    }
+  }
+
+  // Farben anwenden
+  allFrames.forEach((f,i)=>{
     if(f.isOriginal){
       frameColor = colors[i];
     } else {
       f.color = colors[i];
     }
   });
+
 }
 
 /* ===== GAME LOGIC ===== */
