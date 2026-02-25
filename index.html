@@ -672,6 +672,12 @@ function restartGame() {
   arena.forEach(r => r.fill(null));
   clearHighlights();
   resetPlayer();
+ 
+  round = 1;                         // 🔥 Reset Runde
+  frameColor = originalFrameColors[0]; // 🔥 Reset Frame Farbe
+  fakeFrames = [];                   // 🔥 Fake Frames löschen
+  colorShiftTriggered = false;       // 🔥 DAS IST DER WICHTIGE FIX
+  
   newTargetWord();
   dropCounter = 0;
   gameRunning = true;
