@@ -198,9 +198,8 @@ let round = 1;
 const maxRounds = 9;
 let fakeFrames = [];
 let pulseActive = false;
-let colorShiftTriggered = false;
+let colorShiftFakeTriggered = false;
 let colorShiftIllusionTriggered = false;
-let colorShiftTimeout = null;
 let pulseTime = 0;
 let pulseDuration = 300; // Millisekunden
 // 🎨 Farben für Original Rahmen (deine bestehenden Farben benutzen)
@@ -312,30 +311,35 @@ function triggerColorShift(){
 }
 
 function triggerColorShiftIllusion(){
-  if(round < 1) return;       // Nur ab Runde 1
-  if(colorShiftTriggered) return;
-  colorShiftTriggered = true;
 
-  // Alle Rahmen zusammenfassen (Fake + Original)
-  const allFrames = [...fakeFrames, {x: frameX, y: frameY, isOriginal:true, color: frameColor}];
+  if(round < 1) return;
+  if(colorShiftIllusionTriggered) return;
 
-  // Farben mischen
+  colorShiftIllusionTriggered = true;
+
+  const allFrames = [
+    ...fakeFrames,
+    {x: frameX, y: frameY, isOriginal:true, color: frameColor}
+  ];
+
   const colors = allFrames.map(f => f.color);
+
+  // Shuffle
   for(let i = colors.length - 1; i > 0; i--){
     const j = Math.floor(Math.random() * (i + 1));
     [colors[i], colors[j]] = [colors[j], colors[i]];
   }
 
-  // Farben zuweisen
   allFrames.forEach((f,i)=>{
     if(f.isOriginal){
-      frameColor = colors[i]; // Original Frame
+      frameColor = colors[i];
     } else {
-      f.color = colors[i];    // Fake Frames
+      f.color = colors[i];
     }
   });
 
-  // Illusion bleibt 3 Sekunden, danach einfach so bleiben
+}
+// Illusion bleibt 3 Sekunden, danach einfach so bleiben
   setTimeout(()=>{}, 3000);
 }
 /* ===== GAME LOGIC ===== */
@@ -380,10 +384,12 @@ function checkAndClearWords() {
   // Runde erhöhen (max 9)
   round++;
   if(round > maxRounds) round = maxRounds;
+    colorShiftFakeTriggered = false;
+    colorShiftIllusionTriggered = false;
   // Original-Farbe für den aktuellen Frame aktualisieren
-frameColor = originalFrameColors[round - 1] || '#00ff00';
+    frameColor = originalFrameColors[round - 1] || '#00ff00';
   // 🧠 Geschwindigkeit pro Runde erhöhen
-dropInterval = Math.max(200, 700 - (round * 60));
+    dropInterval = Math.max(200, 700 - (round * 60));
   // Pulse nur ab Runde 2
 if(round > 1){
   pulseActive = true;
@@ -435,7 +441,7 @@ const overlapsFake = fakeFrames.some(f =>
 colorShiftTriggered = false;
 
 setTimeout(() => {
-  triggerColorShift();
+  triggerColorShiftIllusion();
 }, 5000);
   
 return;
