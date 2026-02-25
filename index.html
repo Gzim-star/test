@@ -198,6 +198,7 @@ let round = 1;
 const maxRounds = 9;
 let fakeFrames = [];
 let pulseActive = false;
+let colorShiftTimeout = null;
 let colorShiftFakeTriggered = false;
 let colorShiftIllusionTriggered = false;
 let pulseTime = 0;
@@ -241,12 +242,18 @@ function newTargetWord() {
 
   randomizeFrame();
 
-  // Color Shift Timer neu starten
-  colorShiftIllusionTriggered = false;
+// Alten Timer stoppen
+if(colorShiftTimeout){
+  clearTimeout(colorShiftTimeout);
+}
 
-  setTimeout(() => {
-    triggerColorShiftIllusion();
-  }, 5000);
+// Flag zurücksetzen
+colorShiftIllusionTriggered = false;
+
+// Neuen Timer speichern
+colorShiftTimeout = setTimeout(() => {
+  triggerColorShiftIllusion();
+ }, 5000);
 }
 
 function getMaskedWord(word, round){
@@ -670,15 +677,6 @@ function startGame() {
   }
 }
 
-function restartGame() {
-  // Nur Spiel zurücksetzen, nicht Preview
-  arena.forEach(r => r.fill(null));
-  clearHighlights();
-  resetPlayer();
-  newTargetWord();
-  dropCounter = 0;
-  gameRunning = true;
-}
 function restartGame(){ arena.forEach(r=>r.fill(null)); clearHighlights(); resetPlayer(); newTargetWord(); dropCounter=0; gameRunning=true; }
 function dropFast(){ if(!gameRunning) return; while(!collide(arena,player)){ player.pos.y++; } player.pos.y--; merge(arena,player); checkAndClearWords(); clearDiagonalSixByColor(); resetPlayer(); }
 
