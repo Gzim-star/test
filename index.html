@@ -38,6 +38,16 @@ html, body {
   font-family: monospace;
 }
 
+#roundDisplay {
+  position: absolute;
+  top: 70px;              /* Höhe anpassen wenn nötig */
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 28px;
+  color: white;
+  font-family: monospace;
+}
+
 canvas {
   background: #000;
   border: none !important;
@@ -133,7 +143,7 @@ canvas {
 </div>
 <div class="game">
   <div class="hint">
-  <div id="roundDisplay">0/9</div>
+  <div id="roundDisplay" style="display:none;">0/10</div>
   <span id="wordHint" onclick="revealHint()" style="cursor:pointer;">Hint</span>
 </div>
   <canvas id="wordFallCanvas" width="300" height="600"></canvas>
@@ -196,7 +206,7 @@ let frameY = 0;
 const frameH = 10; // Höhe fix
 // 🟫 FAKE FRAMES SYSTEM
 let round = 0;
-const maxRounds = 9;
+const maxRounds = 10;
 let fakeFrames = [];
 let pulseActive = false;
 let colorShiftTimeout = null;
@@ -694,6 +704,7 @@ function startGame() {
   // Startet das Spiel
   if(!gameRunning){
     gameRunning = true;
+    document.getElementById("roundDisplay").style.display = "block";
     resetPlayer();
     newTargetWord();
   }
