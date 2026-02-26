@@ -40,7 +40,7 @@ html, body {
 
 #roundDisplay {
   position: absolute;
-  top: 10px;      /* Feintuning */
+  top: calc(10px + env(safe-area-inset-top));
   left: 50%;
   transform: translateX(-50%);
   font-size: 14px;
