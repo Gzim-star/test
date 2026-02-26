@@ -40,12 +40,13 @@ html, body {
 
 #roundDisplay {
   position: absolute;
-  top: 70px;              /* Höhe anpassen wenn nötig */
+  top: 120px;      /* Feintuning */
   left: 50%;
   transform: translateX(-50%);
   font-size: 28px;
   color: white;
   font-family: monospace;
+  pointer-events: none;
 }
 
 canvas {
@@ -142,8 +143,10 @@ canvas {
   <div class="subtitle">LOGIC</div>
 </div>
 <div class="game">
-  <div class="hint">
+  
   <div id="roundDisplay" style="display:none;">0/10</div>
+  
+  <div class="hint">
   <span id="wordHint" onclick="revealHint()" style="cursor:pointer;">Hint</span>
 </div>
   <canvas id="wordFallCanvas" width="300" height="600"></canvas>
