@@ -38,16 +38,6 @@ html, body {
   font-family: monospace;
 }
 
-#roundDisplay {
-  top: 10px
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 14px;
-  color: white;
-  font-family: monospace;
-  pointer-events: none;
-}
-
 canvas {
   background: #000;
   border: none !important;
@@ -142,9 +132,6 @@ canvas {
   <div class="subtitle">LOGIC</div>
 </div>
 <div class="game">
-  
-  <div id="roundDisplay" style="display:none;">0/10</div>
-  
   <div class="hint">
   <span id="wordHint" onclick="revealHint()" style="cursor:pointer;">Hint</span>
 </div>
@@ -207,8 +194,8 @@ let frameX = 0;
 let frameY = 0;
 const frameH = 10; // Höhe fix
 // 🟫 FAKE FRAMES SYSTEM
-let round = 0;
-const maxRounds = 10;
+let round = 1;
+const maxRounds = 9;
 let fakeFrames = [];
 let pulseActive = false;
 let colorShiftTimeout = null;
@@ -229,7 +216,7 @@ const originalFrameColors = [
   '#ff4444'   // Runde 9
 ];
 // 🎨 aktuelle Farbe des Original-Rahmens
-let frameColor = originalFrameColors[round] || '#00ff00';
+let frameColor = originalFrameColors[round - 1];
 
 const fakeFrameColors = [
   '#ff4444',  // Runde 1
@@ -242,10 +229,6 @@ const fakeFrameColors = [
   '#ff0000',  // Runde 8
   '#00ff00'   // Runde 9
 ]; 
-function updateRoundDisplay(){
-  document.getElementById("roundDisplay").textContent =
-    round + "/" + maxRounds;
-}
 
 function newTargetWord() {
   if (wordQueue.length === 0 || wordIndex >= wordQueue.length) shuffleWords();
@@ -426,7 +409,6 @@ function checkAndClearWords() {
   // Runde erhöhen (max 9)
   round++;
   if(round > maxRounds) round = maxRounds;
-    updateRoundDisplay();
     colorShiftFakeTriggered = false;
     colorShiftIllusionTriggered = false;
   // Original-Farbe für den aktuellen Frame aktualisieren
@@ -706,7 +688,6 @@ function startGame() {
   // Startet das Spiel
   if(!gameRunning){
     gameRunning = true;
-    document.getElementById("roundDisplay").style.display = "block";
     resetPlayer();
     newTargetWord();
   }
@@ -727,7 +708,6 @@ setTimeout(()=>{
 },5000);
 
 if(wordQueue.length===0) shuffleWords();
-updateRoundDisplay();
 update();
 </script>
 </body>
