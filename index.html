@@ -334,8 +334,7 @@ function generateFakeFrames() {
     }
 
     // Zufällige Farbe auswählen
-        let colorIndex = Math.floor(Math.random() * COLORS.length);
-        let color = COLORS[colorIndex];
+    let color = COLORS[Math.floor(Math.random() * COLORS.length)];
 
     fakeFrames.push({x: fx, y: fy, color: color});
   }
@@ -496,9 +495,7 @@ const overlapsFake = fakeFrames.some(f =>
   }
 
   // Zufällige Farbe auswählen und aus availableColors entfernen
-let colorIndex = Math.floor(Math.random() * COLORS.length);
-let color = COLORS[colorIndex];
-
+  let color = COLORS[Math.floor(Math.random() * COLORS.length)];
   fakeFrames.push({x: fx, y: fy, color: color});
 }
 
