@@ -272,6 +272,14 @@ const fakeFrameColors = [
   '#ff3b3b'   // 1
 ]; 
 
+let shuffledFrameColors = [];
+let colorIndex = 0;
+
+function shuffleFrameColors() {
+  shuffledFrameColors = [...fakeFrameColors].sort(() => Math.random() - 0.5);
+  colorIndex = 0;
+}
+  
 function newTargetWord() {
   if (wordQueue.length === 0 || wordIndex >= wordQueue.length) shuffleWords();
 
@@ -376,7 +384,12 @@ function generateFakeFrames() {
     }
 
     // Zufällige Farbe auswählen
-    let color = fakeFrameColors[Math.floor(Math.random() * fakeFrameColors.length)];
+    let color = shuffledFrameColors[colorIndex];
+    colorIndex++;
+
+   if(colorIndex >= shuffledFrameColors.length){
+  shuffleFrameColors();
+}
 
     fakeFrames.push({x: fx, y: fy, color: color});
   }
@@ -531,7 +544,12 @@ const overlapsFake = fakeFrames.some(f =>
   }
 
   // Zufällige Farbe auswählen und aus availableColors entfernen
-  let color = COLORS[Math.floor(Math.random() * COLORS.length)];
+  let color = shuffledFrameColors[colorIndex];
+  colorIndex++;
+
+  if(colorIndex >= shuffledFrameColors.length){
+  shuffleFrameColors();
+}
   fakeFrames.push({x: fx, y: fy, color: color});
 }
 
@@ -756,9 +774,11 @@ function startGame() {
     cancelAnimationFrame(window.previewAnim);
     window.previewAnim = null;
   }
-
   // Startet das Spiel
   if(!gameRunning){
+    
+    shuffleFrameColors();   // 👈 HIER EINFÜGEN
+    
     gameRunning = true;
     resetPlayer();
     newTargetWord();
