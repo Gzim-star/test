@@ -403,29 +403,33 @@ function triggerColorShift(){
 }
 
 function triggerColorShiftIllusion(){
+
   if(round <= 1) return;
   if(colorShiftIllusionTriggered) return;
   colorShiftIllusionTriggered = true;
 
-  const oldColor = frameColor;
-
-  // Alle Farben zusammenstellen: Original + Fake Frames
+  // Alle Frames sammeln
   const allFrames = [
     ...fakeFrames,
     {x: frameX, y: frameY, isOriginal:true, color: frameColor}
   ];
 
-  // Farben der Frames
+  // Farben extrahieren
   let colors = allFrames.map(f => f.color);
 
-  // Index des Originalrahmens finden
+  // Shuffle (Fisher-Yates)
+  for(let i = colors.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [colors[i], colors[j]] = [colors[j], colors[i]];
+  }
+
+  // Falls Original gleiche Farbe behalten würde → einmal tauschen
   const originalIndex = allFrames.findIndex(f => f.isOriginal);
-
-  // Liste aller Farben, die nicht die aktuelle Originalfarbe sind
-  const otherColors = originalFrameColors.filter(c => c !== oldColor);
-
-  // Neue Farbe für Original-Rahmen zufällig auswählen
-  colors[originalIndex] = otherColors[Math.floor(Math.random() * otherColors.length)];
+  if(colors[originalIndex] === frameColor && colors.length > 1){
+    const swapIndex = (originalIndex + 1) % colors.length;
+    [colors[originalIndex], colors[swapIndex]] =
+    [colors[swapIndex], colors[originalIndex]];
+  }
 
   // Farben anwenden
   allFrames.forEach((f,i)=>{
