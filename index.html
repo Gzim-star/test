@@ -389,6 +389,7 @@ function generateFakeFrames() {
 
    if(colorIndex >= shuffledFrameColors.length){
   shuffleFrameColors();
+ colorIndex = 0;
 }
 
     fakeFrames.push({x: fx, y: fy, color: color});
@@ -785,7 +786,7 @@ function startGame() {
   }
 }
 
-function restartGame(){ arena.forEach(r=>r.fill(null)); clearHighlights(); resetPlayer(); newTargetWord(); generateFakeFrames(); dropCounter=0; gameRunning=true; }
+function restartGame(){ arena.forEach(r=>r.fill(null)); clearHighlights(); resetPlayer(); shuffleFrameColors(); colorIndex = 0; newTargetWord(); generateFakeFrames(); dropCounter=0; gameRunning=true; }
 function dropFast(){ if(!gameRunning) return; while(!collide(arena,player)){ player.pos.y++; } player.pos.y--; merge(arena,player); checkAndClearWords(); clearDiagonalSixByColor(); resetPlayer(); }
 
 /* ===== INIT ===== */
