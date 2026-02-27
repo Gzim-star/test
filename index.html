@@ -431,30 +431,31 @@ function triggerColorShiftIllusion(){
   // Farben extrahieren
   let colors = allFrames.map(f => f.color);
 
-  // Shuffle (Fisher-Yates)
-  for(let i = colors.length - 1; i > 0; i--){
-    const j = Math.floor(Math.random() * (i + 1));
-    [colors[i], colors[j]] = [colors[j], colors[i]];
+// Alle Frames neu färben (Fake + Original)
+const allFrames = [
+  ...fakeFrames,
+  { isOriginal: true }
+];
+
+allFrames.forEach((f, index) => {
+
+  let oldColor = f.isOriginal ? frameColor : fakeFrames[index]?.color;
+  let newColor;
+
+  do {
+    newColor = fakeFrameColors[
+      Math.floor(Math.random() * fakeFrameColors.length)
+    ];
+  } while(newColor === oldColor);
+
+  if(f.isOriginal){
+    frameColor = newColor;
+  } else {
+    fakeFrames[index].color = newColor;
   }
 
-  // Falls Original gleiche Farbe behalten würde → einmal tauschen
-  const originalIndex = allFrames.findIndex(f => f.isOriginal);
-  if(colors[originalIndex] === frameColor && colors.length > 1){
-    const swapIndex = (originalIndex + 1) % colors.length;
-    [colors[originalIndex], colors[swapIndex]] =
-    [colors[swapIndex], colors[originalIndex]];
-  }
-
-  // Farben anwenden
-  allFrames.forEach((f, i) => {
-    if(f.isOriginal){
-      frameColor = colors[i];
-    } else {
-      f.color = colors[i];
-    }
-  });
+});
 }
-
 /* ===== GAME LOGIC ===== */
 function collide(arena, player) {
   const { x, y } = player.pos;
