@@ -334,8 +334,8 @@ function generateFakeFrames() {
     }
 
     // Zufällige Farbe auswählen
-    let colorIndex = Math.floor(Math.random() * availableColors.length);
-    let color = availableColors.splice(colorIndex, 1)[0];
+        let colorIndex = Math.floor(Math.random() * COLORS.length);
+        let color = COLORS[colorIndex];
 
     fakeFrames.push({x: fx, y: fy, color: color});
   }
