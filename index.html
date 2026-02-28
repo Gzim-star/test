@@ -288,35 +288,31 @@ function shuffleFrameColors() {
 }
   
 function adjustOriginalFrame(){
-  const wordLength = targetWord.length;
+  const frameW = targetWord.length;
 
-  // Originalrahmen-Breite = Wortlänge
-  const frameW = wordLength; 
-
-  // X zufällig aber innerhalb Arena
-  frameX = Math.floor(Math.random() * (arena[0].length - frameW + 1));
+  // X zufällig innerhalb Arena
+  frameX = Math.floor(Math.random() * Math.max(1, arena[0].length - frameW + 1));
 
   // Y zufällig innerhalb Arena
   const minY = 5;
   const maxY = arena.length - frameH;
-  frameY = Math.floor(Math.random() * (maxY - minY)) + minY;
+  frameY = Math.floor(Math.random() * (maxY - minY + 1)) + minY;
 
-  // Fake Frames anpassen
-  fakeFrames.forEach(f=>{
-    f.width = frameW;
-    f.x = Math.floor(Math.random() * (arena[0].length - frameW + 1));
-    const minFY = 5;
-    const maxFY = arena.length - frameH;
-    f.y = Math.floor(Math.random() * (maxFY - minFY)) + minFY;
-  });
+  // Originalrahmen-Farbe aktualisieren
+  frameColor = originalFrameColors[round - 1] || '#00ff00';
 }
 
 function newTargetWord() {
   if (wordQueue.length === 0 || wordIndex >= wordQueue.length) shuffleWords();
   targetWord = wordQueue[wordIndex++];
 
-  adjustOriginalFrame(); // 👈 Hier die neue Funktion ausführen
-  
+  // ✅ Original Frame anpassen
+  adjustOriginalFrame();
+
+  // ✅ Fake Frames erzeugen
+  generateFakeFrames();
+
+  // ✅ Hinweis setzen
   if(!hintRevealed){
     document.getElementById('wordHint').textContent =
       getMaskedWord(targetWord, round);
@@ -324,18 +320,15 @@ function newTargetWord() {
 
   randomizeFrame();
 
-// Alten Timer stoppen
-if(colorShiftTimeout){
-  clearTimeout(colorShiftTimeout);
-}
+  // Alten Timer stoppen
+  if(colorShiftTimeout){
+    clearTimeout(colorShiftTimeout);
+  }
+  colorShiftIllusionTriggered = false;
 
-// Flag zurücksetzen
-colorShiftIllusionTriggered = false;
-
-// Neuen Timer speichern
-colorShiftTimeout = setTimeout(() => {
-  triggerColorShiftIllusion();
- }, 5000);
+  colorShiftTimeout = setTimeout(() => {
+    triggerColorShiftIllusion();
+  }, 5000);
 }
 
 function getMaskedWord(word, round){
