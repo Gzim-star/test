@@ -368,19 +368,28 @@ function randomizeFrame() {
   frameY = Math.floor(Math.random() * (maxY - minY)) + minY;
 }
 
-function generateFakeFrames() {
+  function generateFakeFrames() {
   fakeFrames = [];
   let fakeCount = round - 1;
-  let availableColors = [...COLORS];
 
-  for(let i=0;i<fakeCount;i++){
+  for(let i = 0; i < fakeCount; i++){
     let fx, fy;
     let valid = false;
 
-    while(!valid){
+    let attempts = 0;
+    const maxAttempts = 50; // 🔥 Schutz gegen Endlosschleife
+
+    while(!valid && attempts < maxAttempts){
+      attempts++;
+
       fx = Math.floor(Math.random() * arena[0].length);
+
       const minY = 5;
       const maxY = arena.length - frameH;
+
+      // Falls kein Platz möglich ist → abbrechen
+      if(maxY <= minY) break;
+
       fy = Math.floor(Math.random() * (maxY - minY)) + minY;
 
       const overlapsOriginal =
@@ -399,19 +408,22 @@ function generateFakeFrames() {
       }
     }
 
-    // Zufällige Farbe auswählen
+    // Wenn nach 50 Versuchen kein Platz gefunden → überspringen
+    if(!valid) continue;
+
+    // Farbe holen
     let color = shuffledFrameColors[colorIndex];
     colorIndex++;
 
-   if(colorIndex >= shuffledFrameColors.length){
-  shuffleFrameColors();
- colorIndex = 0;
-}
+    if(colorIndex >= shuffledFrameColors.length){
+      shuffleFrameColors();
+      colorIndex = 0;
+    }
 
-    fakeFrames.push({x: fx, y: fy, color: color});
+    fakeFrames.push({ x: fx, y: fy, color: color });
   }
 }
-  
+
 function triggerColorShift(){
 
   if(round <= 1) return;
