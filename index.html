@@ -162,13 +162,6 @@ ctx.scale(30, 30);
 
 /* ===== DICTIONARY ===== */
 const WORDS = [
-  // 4 Buchstaben
-  'WORD', 'GAME', 'PLAY', 'CODE', 'TEST', 'HINT', 'FALL', 'NODE', 'TEXT',
-  // 6 Buchstaben
-  'PUZZLE', 'LETTER', 'BOTTLE', 'ORANGE', 'PYTHON', 'SCRIPT', 'FRAME',
-  // 8 Buchstaben
-  'EVERYDAY', 'DYNAMICS', 'COMPILER', 'KEYBOARD', 'SOFTWARE', 'FUNCTION',
-  // 10+ Buchstaben (deine bisherigen)
   'ABOMINABLE', 'REPOSITORY', 'CROSSBREED', 'DISASTROUS',
   'EVERYTHING', 'FASCINATOR', 'REFRESHING', 'HEARTBEATS',
   'IMMEDIATES', 'JOURNALISM', 'KNIGHTHOOD', 'LANDSCAPER',
@@ -177,7 +170,7 @@ const WORDS = [
   'UNDERTAKER', 'VOLUNTEERS', 'WATERMELON', 'XENOPHOBIC',
   'YELLOWHAZE', 'ZOOLOGISTS'
 ];
-const MIN_LEN = 4;
+const MIN_LEN = 10;
 const COLORS = ['#00ffcc', '#ffcc00', '#ff6699', '#66ff66', '#66ccff'];
 let wordQueue = [];
 let wordIndex = 0;
@@ -199,7 +192,7 @@ let revealTimeout = null;
 // 🔲 FRAME POSITION (GLOBAL)
 let frameX = 0;
 let frameY = 0;
-const frameH = adjustOriginalFrame(); // Höhe fix
+const frameH = 10; // Höhe fix
 // 🟫 FAKE FRAMES SYSTEM
 let round = 1;
 const maxRounds = 9;
@@ -287,47 +280,11 @@ function shuffleFrameColors() {
   colorIndex = 0;
 }
   
-function adjustOriginalFrame() {
-  const wordLength = targetWord.length;
-
-  // Originalrahmen-Breite = Wortlänge
-  const frameW = wordLength; 
-
-  // Originalrahmen-Höhe = Wortlänge oder feste Höhe je nach Bedarf
-  // Du kannst z.B. frameH = Math.min(wordLength, 10) setzen, wenn max 10
-  const frameHNew = Math.min(wordLength, 10);
-
-  // X zufällig aber innerhalb Arena
-  frameX = Math.floor(Math.random() * (arena[0].length - frameW + 1));
-
-  // Y zufällig innerhalb Arena
-  const minY = 5;
-  const maxY = arena.length - frameHNew;
-  frameY = Math.floor(Math.random() * (maxY - minY)) + minY;
-
-  // Fake Frames anpassen
-  fakeFrames.forEach(f=>{
-    f.width = frameW;
-    f.x = Math.floor(Math.random() * (arena[0].length - frameW + 1));
-    const minFY = 5;
-    const maxFY = arena.length - frameHNew;
-    f.y = Math.floor(Math.random() * (maxFY - minFY)) + minFY;
-  });
-
-  return frameHNew; // optional, wenn du frameH global updaten willst
-}
-
 function newTargetWord() {
   if (wordQueue.length === 0 || wordIndex >= wordQueue.length) shuffleWords();
+
   targetWord = wordQueue[wordIndex++];
 
-  // ✅ Original Frame anpassen
-  adjustOriginalFrame();
-
-  // ✅ Fake Frames erzeugen
-  generateFakeFrames();
-
-  // ✅ Hinweis setzen
   if(!hintRevealed){
     document.getElementById('wordHint').textContent =
       getMaskedWord(targetWord, round);
@@ -335,15 +292,18 @@ function newTargetWord() {
 
   randomizeFrame();
 
-  // Alten Timer stoppen
-  if(colorShiftTimeout){
-    clearTimeout(colorShiftTimeout);
-  }
-  colorShiftIllusionTriggered = false;
+// Alten Timer stoppen
+if(colorShiftTimeout){
+  clearTimeout(colorShiftTimeout);
+}
 
-  colorShiftTimeout = setTimeout(() => {
-    triggerColorShiftIllusion();
-  }, 5000);
+// Flag zurücksetzen
+colorShiftIllusionTriggered = false;
+
+// Neuen Timer speichern
+colorShiftTimeout = setTimeout(() => {
+  triggerColorShiftIllusion();
+ }, 5000);
 }
 
 function getMaskedWord(word, round){
