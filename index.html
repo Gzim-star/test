@@ -199,7 +199,7 @@ let revealTimeout = null;
 // 🔲 FRAME POSITION (GLOBAL)
 let frameX = 0;
 let frameY = 0;
-const frameH = 10; // Höhe fix
+const frameH = adjustOriginalFrame(); // Höhe fix
 // 🟫 FAKE FRAMES SYSTEM
 let round = 1;
 const maxRounds = 9;
@@ -287,19 +287,34 @@ function shuffleFrameColors() {
   colorIndex = 0;
 }
   
-function adjustOriginalFrame(){
-  const frameW = targetWord.length;
+function adjustOriginalFrame() {
+  const wordLength = targetWord.length;
 
-  // X zufällig innerhalb Arena
-  frameX = Math.floor(Math.random() * Math.max(1, arena[0].length - frameW + 1));
+  // Originalrahmen-Breite = Wortlänge
+  const frameW = wordLength; 
+
+  // Originalrahmen-Höhe = Wortlänge oder feste Höhe je nach Bedarf
+  // Du kannst z.B. frameH = Math.min(wordLength, 10) setzen, wenn max 10
+  const frameHNew = Math.min(wordLength, 10);
+
+  // X zufällig aber innerhalb Arena
+  frameX = Math.floor(Math.random() * (arena[0].length - frameW + 1));
 
   // Y zufällig innerhalb Arena
   const minY = 5;
-  const maxY = arena.length - frameH;
-  frameY = Math.floor(Math.random() * (maxY - minY + 1)) + minY;
+  const maxY = arena.length - frameHNew;
+  frameY = Math.floor(Math.random() * (maxY - minY)) + minY;
 
-  // Originalrahmen-Farbe aktualisieren
-  frameColor = originalFrameColors[round - 1] || '#00ff00';
+  // Fake Frames anpassen
+  fakeFrames.forEach(f=>{
+    f.width = frameW;
+    f.x = Math.floor(Math.random() * (arena[0].length - frameW + 1));
+    const minFY = 5;
+    const maxFY = arena.length - frameHNew;
+    f.y = Math.floor(Math.random() * (maxFY - minFY)) + minFY;
+  });
+
+  return frameHNew; // optional, wenn du frameH global updaten willst
 }
 
 function newTargetWord() {
