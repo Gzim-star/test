@@ -162,13 +162,14 @@ ctx.scale(30, 30);
 
 /* ===== DICTIONARY ===== */
 const WORDS = [
+  // Alte 10+ Buchstaben-Wörter
   'ABOMINABLE', 'REPOSITORY', 'CROSSBREED', 'DISASTROUS',
   'EVERYTHING', 'FASCINATOR', 'REFRESHING', 'HEARTBEATS',
   'IMMEDIATES', 'JOURNALISM', 'KNIGHTHOOD', 'LANDSCAPER',
-  'MASTERMIND', 'NIGHTSTAND', 'OPERATIONS', 'POPULATION',
-  'RENDEZVOUS', 'SCRATCHING', 'LEGENDARYS',
-  'UNDERTAKER', 'VOLUNTEERS', 'WATERMELON', 'XENOPHOBIC',
-  'YELLOWHAZE', 'ZOOLOGISTS'
+  // Neue kurze/mittellange Wörter
+  'WORD', 'GAME', 'PLAY', 'TEST', 'CODE', 'DATA', 'FLOW', 'TASK', 'NODE', 'LINK',
+  'PUZZLE', 'RANDOM', 'PLAYER', 'LETTER', 'MATRIX', 'SYSTEM', 'UPDATE', 'BINARY', 'ORACLE', 'TARGET',
+  'FALLING', 'CASCADES', 'STRIKING', 'DYNAMIC', 'CROSSING', 'GENERATE', 'CHECKING', 'POSITION', 'COMPLETE', 'COLLISION'
 ];
 const MIN_LEN = 10;
 const COLORS = ['#00ffcc', '#ffcc00', '#ff6699', '#66ff66', '#66ccff'];
@@ -192,7 +193,7 @@ let revealTimeout = null;
 // 🔲 FRAME POSITION (GLOBAL)
 let frameX = 0;
 let frameY = 0;
-const frameH = 10; // Höhe fix
+let frameH = 10; // Höhe fix
 // 🟫 FAKE FRAMES SYSTEM
 let round = 1;
 const maxRounds = 9;
@@ -285,6 +286,9 @@ function newTargetWord() {
 
   targetWord = wordQueue[wordIndex++];
 
+  // 🔹 Rahmenhöhe automatisch an Wortlänge anpassen
+  frameH = targetWord.length < 10 ? targetWord.length : 10;
+
   if(!hintRevealed){
     document.getElementById('wordHint').textContent =
       getMaskedWord(targetWord, round);
@@ -292,18 +296,18 @@ function newTargetWord() {
 
   randomizeFrame();
 
-// Alten Timer stoppen
-if(colorShiftTimeout){
-  clearTimeout(colorShiftTimeout);
-}
+  // Alten Timer stoppen
+  if(colorShiftTimeout){
+    clearTimeout(colorShiftTimeout);
+  }
 
-// Flag zurücksetzen
-colorShiftIllusionTriggered = false;
+  // Flag zurücksetzen
+  colorShiftIllusionTriggered = false;
 
-// Neuen Timer speichern
-colorShiftTimeout = setTimeout(() => {
-  triggerColorShiftIllusion();
- }, 5000);
+  // Neuen Timer speichern
+  colorShiftTimeout = setTimeout(() => {
+    triggerColorShiftIllusion();
+  }, 5000);
 }
 
 function getMaskedWord(word, round){
