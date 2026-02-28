@@ -420,41 +420,31 @@ function triggerColorShiftIllusion(){
 
   if(round <= 1) return;
   if(colorShiftIllusionTriggered) return;
+
   colorShiftIllusionTriggered = true;
 
-  // Alle Frames sammeln
-  const allFrames = [
-    ...fakeFrames,
-    {x: frameX, y: frameY, isOriginal:true, color: frameColor}
-  ];
+  // Alle Frames (Fake + Original)
+  const totalFrames = fakeFrames.length + 1;
 
-  // Farben extrahieren
-  let colors = allFrames.map(f => f.color);
+  for(let i = 0; i < totalFrames; i++){
 
-// Alle Frames neu färben (Fake + Original)
-const allFrames = [
-  ...fakeFrames,
-  { isOriginal: true }
-];
+    let isOriginal = (i === fakeFrames.length);
+    let oldColor = isOriginal ? frameColor : fakeFrames[i].color;
+    let newColor;
 
-allFrames.forEach((f, index) => {
+    do {
+      newColor = fakeFrameColors[
+        Math.floor(Math.random() * fakeFrameColors.length)
+      ];
+    } while(newColor === oldColor);
 
-  let oldColor = f.isOriginal ? frameColor : fakeFrames[index]?.color;
-  let newColor;
-
-  do {
-    newColor = fakeFrameColors[
-      Math.floor(Math.random() * fakeFrameColors.length)
-    ];
-  } while(newColor === oldColor);
-
-  if(f.isOriginal){
-    frameColor = newColor;
-  } else {
-    fakeFrames[index].color = newColor;
+    if(isOriginal){
+      frameColor = newColor;
+    } else {
+      fakeFrames[i].color = newColor;
+    }
   }
-
- });
+}
 
 /* ===== GAME LOGIC ===== */
 function collide(arena, player) {
