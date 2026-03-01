@@ -162,15 +162,28 @@ ctx.scale(30, 30);
 
 /* ===== DICTIONARY ===== */
 const WORDS = [
+  // Deine alten 10-Buchstaben-Wörter
   'ABOMINABLE', 'REPOSITORY', 'CROSSBREED', 'DISASTROUS',
   'EVERYTHING', 'FASCINATOR', 'REFRESHING', 'HEARTBEATS',
   'IMMEDIATES', 'JOURNALISM', 'KNIGHTHOOD', 'LANDSCAPER',
   'MASTERMIND', 'NIGHTSTAND', 'OPERATIONS', 'POPULATION',
   'RENDEZVOUS', 'SCRATCHING', 'LEGENDARYS',
   'UNDERTAKER', 'VOLUNTEERS', 'WATERMELON', 'XENOPHOBIC',
-  'YELLOWHAZE', 'ZOOLOGISTS'
+  'YELLOWHAZE', 'ZOOLOGISTS',
+
+  // Neue 8-Buchstaben-Wörter
+  'DYNAMICS', 'ECLIPSES', 'FIREWALL', 'HORIZONS', 'JOURNEYS',
+  'KEYSTONE', 'LANDMARK', 'MOUNTAIN', 'NOTEBOOK', 'OBELISKS',
+
+  // Neue 6-Buchstaben-Wörter
+  'PUZZLE', 'ORACLE', 'SYSTEM', 'PLAYER', 'TARGET', 'BINARY',
+  'MODULE', 'VECTOR', 'RANDOM', 'CODING',
+
+  // Neue 4-Buchstaben-Wörter
+  'WORD', 'GAME', 'PLAY', 'TEST', 'DATA', 'NODE', 'LINK',
+  'TASK', 'FLOW', 'CODE'
 ];
-const MIN_LEN = 10;
+const MIN_LEN = 4;
 const COLORS = ['#00ffcc', '#ffcc00', '#ff6699', '#66ff66', '#66ccff'];
 let wordQueue = [];
 let wordIndex = 0;
@@ -192,7 +205,7 @@ let revealTimeout = null;
 // 🔲 FRAME POSITION (GLOBAL)
 let frameX = 0;
 let frameY = 0;
-const frameH = 10; // Höhe fix
+let frameH = 10; // Höhe fix
 // 🟫 FAKE FRAMES SYSTEM
 let round = 1;
 const maxRounds = 9;
@@ -285,6 +298,9 @@ function newTargetWord() {
 
   targetWord = wordQueue[wordIndex++];
 
+  // 🔹 Rahmenhöhe automatisch an Wortlänge anpassen
+  frameH = targetWord.length < 10 ? targetWord.length : 10;
+
   if(!hintRevealed){
     document.getElementById('wordHint').textContent =
       getMaskedWord(targetWord, round);
@@ -292,18 +308,18 @@ function newTargetWord() {
 
   randomizeFrame();
 
-// Alten Timer stoppen
-if(colorShiftTimeout){
-  clearTimeout(colorShiftTimeout);
-}
+  // Alten Timer stoppen
+  if(colorShiftTimeout){
+    clearTimeout(colorShiftTimeout);
+  }
 
-// Flag zurücksetzen
-colorShiftIllusionTriggered = false;
+  // Flag zurücksetzen
+  colorShiftIllusionTriggered = false;
 
-// Neuen Timer speichern
-colorShiftTimeout = setTimeout(() => {
-  triggerColorShiftIllusion();
- }, 5000);
+  // Neuen Timer speichern
+  colorShiftTimeout = setTimeout(() => {
+    triggerColorShiftIllusion();
+  }, 5000);
 }
 
 function getMaskedWord(word, round){
@@ -361,7 +377,12 @@ function generateFakeFrames() {
     let fx, fy;
     let valid = false;
 
-    while(!valid){
+    let attempts = 0;
+    let maxAttempts = 200;
+    
+    while(!valid && attempts < maxAttempts){
+    attempts++;
+      
       fx = Math.floor(Math.random() * arena[0].length);
       const minY = 5;
       const maxY = arena.length - frameH;
@@ -539,7 +560,12 @@ for(let i=0;i<fakeCount;i++){
   let fx, fy;
   let valid = false;
 
-  while(!valid){
+  let attempts = 0;
+  let maxAttempts = 200;
+  
+  while(!valid && attempts < maxAttempts){
+  attempts++;
+    
     fx = Math.floor(Math.random() * arena[0].length);
     const minY = 5;
     const maxY = arena.length - frameH;
