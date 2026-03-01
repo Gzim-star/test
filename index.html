@@ -526,89 +526,85 @@ function checkAndClearWords() {
   let targetFound = false;
 
   found.forEach(group=>{
-    const letters = group.map(([y,x])=>arena[y][x]).join('');
+    const letters = group.map(([y,x]) => arena[y][x]).join('');
     if(letters.toUpperCase() === targetWord){
-      const inFrame = group.every(([y,x])=> x===frameX && y>=frameY && y<frameY+frameH );
-      if(inFrame) targetFound=true;
+      const inFrame = group.every(([y,x]) => x===frameX && y>=frameY && y<frameY+frameH);
+      if(inFrame) targetFound = true;
     }
     const color = COLORS[Math.floor(Math.random()*COLORS.length)];
-    group.forEach(([y,x])=>highlights[y][x]=color);
+    group.forEach(([y,x]) => highlights[y][x] = color);
   });
 
-  setTimeout(()=>{
+  setTimeout(() => {
     if(targetFound){
+      // Spielfeld leeren
+      arena.forEach(r => r.fill(null));
+      clearHighlights();
+      resetPlayer();
 
-  // Spielfeld leeren
-  arena.forEach(r=>r.fill(null));
-  clearHighlights();
-  resetPlayer();
+      // Runde erhöhen
+      round++;
+      if(round > maxRounds) round = maxRounds;
+      colorShiftFakeTriggered = false;
+      colorShiftIllusionTriggered = false;
 
-  // Runde erhöhen (max 9)
-  round++;
-  if(round > maxRounds) round = maxRounds;
-    colorShiftFakeTriggered = false;
-    colorShiftIllusionTriggered = false;
-  // Original-Farbe für den aktuellen Frame aktualisieren
-    frameColor = originalFrameColors[round - 1] || '#00ff00';
-  // 🧠 Geschwindigkeit pro Runde erhöhen
-    dropInterval = Math.max(200, 700 - (round * 60));
-  // Pulse nur ab Runde 2
-if(round > 1){
-  pulseActive = true;
-  pulseTime = 0;
-}
-  // Neues Wort erzeugt auch neuen Original Frame
-  newTargetWord();
+      frameColor = originalFrameColors[round - 1] || '#00ff00';
+      dropInterval = Math.max(200, 700 - (round * 60));
 
-// Fake Frames neu erzeugen
-fakeFrames = [];
-let fakeCount = round - 1;
+      if(round > 1){
+        pulseActive = true;
+        pulseTime = 0;
+      }
 
-// Array mit verfügbaren Farben kopieren
-let availableColors = [...COLORS];
+      // Neues Wort & Original Frame
+      newTargetWord();
 
-for(let i=0;i<fakeCount;i++){
-  let fx, fy;
-  let valid = false;
+      // 🔹 Fake Frames sicher generieren
+      fakeFrames = [];
+      let fakeCount = round - 1;
 
-  while(!valid){
-    fx = Math.floor(Math.random() * arena[0].length);
-    const minY = 5;
-    const maxY = arena.length - frameH;
-    fy = Math.floor(Math.random() * (maxY - minY)) + minY;
+      for(let i=0; i<fakeCount; i++){
+        let fx, fy;
+        let valid = false;
+        let attempts = 0;
+        const maxAttempts = 50;
 
-    const overlapsOriginal =
-  fx === frameX &&
-  fy < frameY + frameH &&
-  fy + frameH > frameY;
+        while(!valid && attempts < maxAttempts){
+          attempts++;
+          fx = Math.floor(Math.random() * arena[0].length);
 
-const overlapsFake = fakeFrames.some(f =>
-  f.x === fx &&
-  fy < f.y + frameH &&
-  fy + frameH > f.y
-);
+          const minY = 5;
+          const maxY = arena.length - frameH;
 
-    if(!overlapsOriginal && !overlapsFake){
-      valid = true;
+          // 🔹 SAFE CHECK: Platzproblem vermeiden
+          if(maxY <= minY){
+            fy = minY;
+            valid = true;
+          } else {
+            fy = Math.floor(Math.random() * (maxY - minY)) + minY;
+          }
+
+          const overlapsOriginal = fx === frameX && fy < frameY + frameH && fy + frameH > frameY;
+          const overlapsFake = fakeFrames.some(f => fx === f.x && fy < f.y + frameH && fy + frameH > f.y);
+
+          if(!overlapsOriginal && !overlapsFake) valid = true;
+        }
+
+        if(!valid) continue;
+
+        let color = shuffledFrameColors[colorIndex++];
+        if(colorIndex >= shuffledFrameColors.length) shuffleFrameColors();
+
+        fakeFrames.push({x: fx, y: fy, color: color, h: frameH});
+      }
+
+      return;
     }
-  }
 
-  // Zufällige Farbe auswählen und aus availableColors entfernen
-  let color = shuffledFrameColors[colorIndex];
-  colorIndex++;
-
-  if(colorIndex >= shuffledFrameColors.length){
-  shuffleFrameColors();
-}
-  fakeFrames.push({x: fx, y: fy, color: color});
-}
-
-  return;
-}
-    found.flat().forEach(([y,x])=>arena[y][x]=null);
+    found.flat().forEach(([y,x]) => arena[y][x] = null);
     applyGravity();
     clearHighlights();
-  },300);
+  }, 300);
 }
 
 function findWords(){
