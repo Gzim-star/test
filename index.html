@@ -368,7 +368,7 @@ function randomizeFrame() {
   frameY = Math.floor(Math.random() * (maxY - minY)) + minY;
 }
 
-  function generateFakeFrames() {
+function generateFakeFrames() {
   fakeFrames = [];
   let fakeCount = round - 1;
 
@@ -387,8 +387,12 @@ function randomizeFrame() {
       const minY = 5;
       const maxY = arena.length - frameH;
 
-      // Falls kein Platz möglich ist → abbrechen
-      if(maxY <= minY) break;
+      // 🔹 NEUE SICHERHEITSABFRAGE HIER
+      if(maxY <= minY){
+        fy = minY;    // Fake Frame oben platzieren
+        valid = true; // Schleife direkt als erfolgreich markieren
+        continue;     // nächste Fake Frame prüfen
+      }
 
       fy = Math.floor(Math.random() * (maxY - minY)) + minY;
 
@@ -408,7 +412,7 @@ function randomizeFrame() {
       }
     }
 
-    // Wenn nach 50 Versuchen kein Platz gefunden → überspringen
+    // Wenn nach maxAttempts kein Platz gefunden → überspringen
     if(!valid) continue;
 
     // Farbe holen
