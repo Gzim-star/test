@@ -444,50 +444,21 @@ function triggerColorShiftIllusion(){
   if(colorShiftIllusionTriggered) return;
   colorShiftIllusionTriggered = true;
 
-  // Alle Frames sammeln
   const allFrames = [
     ...fakeFrames,
     {x: frameX, y: frameY, isOriginal:true, color: frameColor}
   ];
 
-  // Farben extrahieren
   let colors = allFrames.map(f => f.color);
 
-  // Shuffle (Fisher-Yates)
-// Shuffle bis niemand seine alte Farbe behält
-let valid = false;
-let attempts = 0;
-let maxAttempts = 100;
+  if(colors.length <= 1) return;
 
-while(!valid && attempts < maxAttempts){
-  attempts++;
-if(!valid){
-  return; // bricht Illusion ab statt Freeze
-}
-  // normal mischen
-  for(let i = colors.length - 1; i > 0; i--){
-    const j = Math.floor(Math.random() * (i + 1));
-    [colors[i], colors[j]] = [colors[j], colors[i]];
-  }
+  // 🔥 Rotation statt Endlos-Shuffle
+  let shift = Math.floor(Math.random() * (colors.length - 1)) + 1;
 
-  // prüfen ob jemand gleiche Farbe hat
-  valid = true;
-  for(let i = 0; i < colors.length; i++){
-    if(colors[i] === allFrames[i].color){
-      valid = false;
-      break;
-    }
-  }
-
-}
-
-  // Falls Original gleiche Farbe behalten würde → einmal tauschen
-  const originalIndex = allFrames.findIndex(f => f.isOriginal);
-  if(colors[originalIndex] === frameColor && colors.length > 1){
-    const swapIndex = (originalIndex + 1) % colors.length;
-    [colors[originalIndex], colors[swapIndex]] =
-    [colors[swapIndex], colors[originalIndex]];
-  }
+  colors = colors
+    .slice(shift)
+    .concat(colors.slice(0, shift));
 
   // Farben anwenden
   allFrames.forEach((f,i)=>{
@@ -498,7 +469,6 @@ if(!valid){
     }
   });
 }
-
 /* ===== GAME LOGIC ===== */
 function collide(arena, player) {
   const { x, y } = player.pos;
