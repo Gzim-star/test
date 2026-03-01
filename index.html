@@ -404,6 +404,7 @@ function generateFakeFrames() {
       }
     }
 
+    if(!valid) continue;   // 🔥 DAS FEHLT BEI DIR
     // Zufällige Farbe auswählen
     let color = shuffledFrameColors[colorIndex];
     colorIndex++;
@@ -587,6 +588,7 @@ const overlapsFake = fakeFrames.some(f =>
     }
   }
 
+  if(!valid) continue;   // 🔥 DAS FEHLT BEI DIR
   // Zufällige Farbe auswählen und aus availableColors entfernen
   let color = shuffledFrameColors[colorIndex];
   colorIndex++;
