@@ -177,24 +177,35 @@ const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 function playClearDiagonalSoundLow() {
 const now = audioCtx.currentTime;
 
-  const osc = audioCtx.createOscillator();
+  const osc1 = audioCtx.createOscillator();
+  const osc2 = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
 
-  osc.type = "sine"; // cleaner als triangle
+  osc1.type = "sine";
+  osc2.type = "triangle";
 
-  // Nur ein leichter, ruhiger Push nach oben
-  osc.frequency.setValueAtTime(380, now);
-  osc.frequency.linearRampToValueAtTime(430, now + 0.12);
+  // Grundton
+  osc1.frequency.setValueAtTime(360, now);
+  osc1.frequency.linearRampToValueAtTime(420, now + 0.15);
 
+  // ganz leichte Verstimmung für Charakter
+  osc2.frequency.setValueAtTime(362, now);
+  osc2.frequency.linearRampToValueAtTime(422, now + 0.15);
+
+  // weicherer Attack (wichtig!)
   gain.gain.setValueAtTime(0.0001, now);
-  gain.gain.exponentialRampToValueAtTime(0.05, now + 0.02);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
+  gain.gain.exponentialRampToValueAtTime(0.04, now + 0.05);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
 
-  osc.connect(gain);
+  osc1.connect(gain);
+  osc2.connect(gain);
   gain.connect(audioCtx.destination);
 
-  osc.start();
-  osc.stop(now + 0.16);
+  osc1.start();
+  osc2.start();
+
+  osc1.stop(now + 0.2);
+  osc2.stop(now + 0.2);
 }
 /* ===== DICTIONARY ===== */
 const WORDS = [
