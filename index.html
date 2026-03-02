@@ -171,37 +171,6 @@ const canvas = document.getElementById('wordFallCanvas');
 const ctx = canvas.getContext('2d');
 ctx.scale(30, 30);
 
-// ===== CLEARDIAGONALSIX SOUND =====
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-function playClearDiagonalSoundMysteryDigitalTone() {
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  const filter = audioCtx.createBiquadFilter();
-
-  // Filter für subtilen digitalen Klang
-  filter.type = "sine";
-  filter.frequency.setValueAtTime(800, audioCtx.currentTime);
-  filter.Q.setValueAtTime(1, audioCtx.currentTime);
-
-  // Oszillator
-  osc.type = "triangle"; // eher weich und minimalistisch
-  osc.frequency.setValueAtTime(400, audioCtx.currentTime);
-  osc.frequency.linearRampToValueAtTime(500, audioCtx.currentTime + 0.2);
-  osc.frequency.linearRampToValueAtTime(420, audioCtx.currentTime + 0.4);
-
-  // Gain-Hüllkurve für sehr leise, subtile Wirkung
-  gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.03, audioCtx.currentTime + 0.15);
-  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
-
-  osc.connect(filter);
-  filter.connect(gain);
-  gain.connect(audioCtx.destination);
-
-  osc.start();
-  osc.stop(audioCtx.currentTime + 0.4);
-}
 /* ===== DICTIONARY ===== */
 const WORDS = [
   // Deine alten 10-Buchstaben-Wörter
@@ -672,7 +641,7 @@ function clearDiagonalSixByColor(){
     }
   }
   if(!toClear.length) return;
-  toClear.forEach(([y,x])=>highlights[y][x]='#ff3333'); MysteryDigitalTone();
+  toClear.forEach(([y,x])=>highlights[y][x]='#ff3333');
   setTimeout(()=>{ toClear.forEach(([y,x])=>arena[y][x]=null); applyGravity(); clearHighlights(); },250);
 }
 
