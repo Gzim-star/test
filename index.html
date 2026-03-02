@@ -179,18 +179,18 @@ function playClearDiagonalSoundLow() {
   const gain = audioCtx.createGain();
 
   osc.type = "sine";
-  osc.frequency.setValueAtTime(400, audioCtx.currentTime);   // etwas höher
-  osc.frequency.exponentialRampToValueAtTime(250, audioCtx.currentTime + 0.3); // schneller abfallend
+  osc.frequency.setValueAtTime(320, audioCtx.currentTime);   // noch tiefer
+  osc.frequency.exponentialRampToValueAtTime(180, audioCtx.currentTime + 0.5); // langsamer abfallend
 
   gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.22, audioCtx.currentTime + 0.06);
-  gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.3);
+  gain.gain.exponentialRampToValueAtTime(0.18, audioCtx.currentTime + 0.1);
+  gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.5);
 
   osc.connect(gain);
   gain.connect(audioCtx.destination);
 
   osc.start();
-  osc.stop(audioCtx.currentTime + 0.3);
+  osc.stop(audioCtx.currentTime + 0.5);
 }
 /* ===== DICTIONARY ===== */
 const WORDS = [
