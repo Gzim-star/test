@@ -175,22 +175,38 @@ ctx.scale(30, 30);
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 function playClearDiagonalSoundLow() {
-const osc = audioCtx.createOscillator();
+const now = audioCtx.currentTime;
+
+  const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
+  const delay = audioCtx.createDelay();
+  const feedback = audioCtx.createGain();
 
-  osc.type = "sine";
-  osc.frequency.setValueAtTime(480, audioCtx.currentTime);
-  osc.frequency.exponentialRampToValueAtTime(580, audioCtx.currentTime + 0.08);
-  osc.frequency.exponentialRampToValueAtTime(560, audioCtx.currentTime + 0.18);
+  // 🌫 Weicher Grundklang
+  osc.type = "triangle";
+  osc.frequency.setValueAtTime(240, now);
+  osc.frequency.exponentialRampToValueAtTime(380, now + 0.4);
 
-  gain.gain.setValueAtTime(0.018, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.2);
+  // 🔊 Sanfte Lautstärke
+  gain.gain.setValueAtTime(0.001, now);
+  gain.gain.exponentialRampToValueAtTime(0.12, now + 0.1);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
+
+  // 🔁 Echo / Illusion
+  delay.delayTime.value = 0.18;
+  feedback.gain.value = 0.25;
 
   osc.connect(gain);
   gain.connect(audioCtx.destination);
 
+  // Delay Loop
+  gain.connect(delay);
+  delay.connect(feedback);
+  feedback.connect(delay);
+  delay.connect(audioCtx.destination);
+
   osc.start();
-  osc.stop(audioCtx.currentTime + 0.2);
+  osc.stop(now + 0.6);
 }
 /* ===== DICTIONARY ===== */
 const WORDS = [
