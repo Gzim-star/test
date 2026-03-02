@@ -175,29 +175,32 @@ ctx.scale(30, 30);
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 function playClearDiagonalSoundLow() {
-  const osc = audioCtx.createOscillator();
+const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
-  const now = audioCtx.currentTime;
+  const filter = audioCtx.createBiquadFilter();
 
-  // Oszillator-Typ
-  osc.type = "custom";
+  // Filter für subtilen digitalen Klang
+  filter.type = "highpass";
+  filter.frequency.setValueAtTime(800, audioCtx.currentTime);
+  filter.Q.setValueAtTime(1, audioCtx.currentTime);
 
-  // Frequenz leicht ansteigend → futuristisch
-  osc.frequency.setValueAtTime(450, now);       // Startton
-  osc.frequency.linearRampToValueAtTime(520, now + 0.15); // sanfter Aufstieg
+  // Oszillator
+  osc.type = "triangle"; // eher weich und minimalistisch
+  osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+  osc.frequency.linearRampToValueAtTime(500, audioCtx.currentTime + 0.2);
+  osc.frequency.linearRampToValueAtTime(420, audioCtx.currentTime + 0.4);
 
-  // Gain sehr leise und linear → keine Peaks
-  gain.gain.setValueAtTime(0.01, now);          // Startleise
-  gain.gain.linearRampToValueAtTime(0.015, now + 0.1); // leicht hörbar
-  gain.gain.linearRampToValueAtTime(0.0001, now + 0.2); // langsam ausblenden
+  // Gain-Hüllkurve für sehr leise, subtile Wirkung
+  gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.03, audioCtx.currentTime + 0.15);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
 
-  // Verbindung
-  osc.connect(gain);
+  osc.connect(filter);
+  filter.connect(gain);
   gain.connect(audioCtx.destination);
 
-  // Start / Stop
-  osc.start(now);
-  osc.stop(now + 0.2);
+  osc.start();
+  osc.stop(audioCtx.currentTime + 0.4);
 }
 /* ===== DICTIONARY ===== */
 const WORDS = [
