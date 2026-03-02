@@ -180,7 +180,7 @@ function playClearDiagonalSoundMysteryDigitalTone() {
   const filter = audioCtx.createBiquadFilter();
 
   // Filter für subtilen digitalen Klang
-  filter.type = "highpass";
+  filter.type = "sine";
   filter.frequency.setValueAtTime(800, audioCtx.currentTime);
   filter.Q.setValueAtTime(1, audioCtx.currentTime);
 
