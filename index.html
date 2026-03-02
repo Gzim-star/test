@@ -175,22 +175,22 @@ ctx.scale(30, 30);
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 function playClearDiagonalSoundLow() {
-  const osc = audioCtx.createOscillator();
+ const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
 
   osc.type = "sine";
-  osc.frequency.setValueAtTime(180, audioCtx.currentTime);   // tiefer Startton
-  osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + 0.2); // langsamer abfallend
+  osc.frequency.setValueAtTime(400, audioCtx.currentTime);   // etwas höher
+  osc.frequency.exponentialRampToValueAtTime(250, audioCtx.currentTime + 0.3); // schneller abfallend
 
   gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.1, audioCtx.currentTime + 0.04);
-  gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.2);
+  gain.gain.exponentialRampToValueAtTime(0.22, audioCtx.currentTime + 0.06);
+  gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.3);
 
   osc.connect(gain);
   gain.connect(audioCtx.destination);
 
   osc.start();
-  osc.stop(audioCtx.currentTime + 0.2);
+  osc.stop(audioCtx.currentTime + 0.3);
 }
 /* ===== DICTIONARY ===== */
 const WORDS = [
