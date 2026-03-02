@@ -175,24 +175,23 @@ ctx.scale(30, 30);
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 function playClearDiagonalSound() {
-  const osc = audioCtx.createOscillator();
+    const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
 
-  osc.type = "sine";                       // weich, rund
-  osc.frequency.setValueAtTime(440, audioCtx.currentTime); // Startton
-  osc.frequency.exponentialRampToValueAtTime(330, audioCtx.currentTime + 0.3); // fällt ab
+  osc.type = "square";                     // eckig, etwas Retro
+  osc.frequency.setValueAtTime(660, audioCtx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.25);
 
   gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.2, audioCtx.currentTime + 0.05);
-  gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.35);
+  gain.gain.exponentialRampToValueAtTime(0.25, audioCtx.currentTime + 0.03);
+  gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.25);
 
   osc.connect(gain);
   gain.connect(audioCtx.destination);
 
   osc.start();
-  osc.stop(audioCtx.currentTime + 0.35);
+  osc.stop(audioCtx.currentTime + 0.25);
 }
-  
 /* ===== DICTIONARY ===== */
 const WORDS = [
   // Deine alten 10-Buchstaben-Wörter
