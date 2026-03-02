@@ -174,21 +174,23 @@ ctx.scale(30, 30);
 // ===== CLEARDIAGONALSIX SOUND =====
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-function playClearDiagonalSound() {
- const osc = audioCtx.createOscillator();
+function playClearDiagonalSoundLow() {
+  const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
 
-  osc.type = "triangle";
-  osc.frequency.value = freq;
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(360, audioCtx.currentTime);   // tiefer Startton
+  osc.frequency.exponentialRampToValueAtTime(240, audioCtx.currentTime + 0.4); // langsamer abfallend
 
-  gain.gain.setValueAtTime(0.04, now);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.15);
+  gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.2, audioCtx.currentTime + 0.08);
+  gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.4);
 
   osc.connect(gain);
   gain.connect(audioCtx.destination);
 
-  osc.start(now);
-  osc.stop(now + 0.15);
+  osc.start();
+  osc.stop(audioCtx.currentTime + 0.4);
 }
 /* ===== DICTIONARY ===== */
 const WORDS = [
@@ -660,7 +662,7 @@ function clearDiagonalSixByColor(){
     }
   }
   if(!toClear.length) return;
-  toClear.forEach(([y,x])=>highlights[y][x]='#ff3333'); playClearDiagonalSound();
+  toClear.forEach(([y,x])=>highlights[y][x]='#ff3333'); playClearDiagonalSoundLow();
   setTimeout(()=>{ toClear.forEach(([y,x])=>arena[y][x]=null); applyGravity(); clearHighlights(); },250);
 }
 
