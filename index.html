@@ -175,39 +175,29 @@ ctx.scale(30, 30);
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 function playClearDiagonalSoundLow() {
-const now = audioCtx.currentTime;
-
-  const osc1 = audioCtx.createOscillator();
-  const osc2 = audioCtx.createOscillator();
+  const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
+  const now = audioCtx.currentTime;
 
-  // 🟢 Oszillatoren: digital clean
-  osc1.type = "square";   // futuristisch, kantig
-  osc2.type = "sine";     // weicher Hintergrund
+  // Oszillator-Typ
+  osc.type = "sine";
 
-  // Frequenzen
-  osc1.frequency.setValueAtTime(420, now);
-  osc1.frequency.linearRampToValueAtTime(480, now + 0.12);
+  // Frequenz leicht ansteigend → futuristisch
+  osc.frequency.setValueAtTime(450, now);       // Startton
+  osc.frequency.linearRampToValueAtTime(520, now + 0.15); // sanfter Aufstieg
 
-  osc2.frequency.setValueAtTime(360, now);
-  osc2.frequency.linearRampToValueAtTime(380, now + 0.12);
+  // Gain sehr leise und linear → keine Peaks
+  gain.gain.setValueAtTime(0.01, now);          // Startleise
+  gain.gain.linearRampToValueAtTime(0.015, now + 0.1); // leicht hörbar
+  gain.gain.linearRampToValueAtTime(0.0001, now + 0.2); // langsam ausblenden
 
-  // Gain: sehr leise & subtil
-  gain.gain.setValueAtTime(0.001, now);
-  gain.gain.exponentialRampToValueAtTime(0.03, now + 0.04);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
-
-  // Verbindungen
-  osc1.connect(gain);
-  osc2.connect(gain);
+  // Verbindung
+  osc.connect(gain);
   gain.connect(audioCtx.destination);
 
-  // Start/Stop
-  osc1.start(now);
-  osc2.start(now);
-
-  osc1.stop(now + 0.18);
-  osc2.stop(now + 0.18);
+  // Start / Stop
+  osc.start(now);
+  osc.stop(now + 0.2);
 }
 /* ===== DICTIONARY ===== */
 const WORDS = [
