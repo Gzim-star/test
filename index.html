@@ -177,35 +177,25 @@ const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 function playClearDiagonalSoundLow() {
 const now = audioCtx.currentTime;
 
-  const osc1 = audioCtx.createOscillator();
-  const osc2 = audioCtx.createOscillator();
+  const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
 
-  osc1.type = "sine";
-  osc2.type = "triangle";
+  osc.type = "triangle"; // weicher als square, moderner als sine
 
-  // Tiefer, dunkler Grundton
-  osc1.frequency.setValueAtTime(160, now);
-  osc1.frequency.linearRampToValueAtTime(170, now + 0.3);
+  // cooler kurzer Drop + kleiner Push
+  osc.frequency.setValueAtTime(420, now);
+  osc.frequency.linearRampToValueAtTime(380, now + 0.07);
+  osc.frequency.linearRampToValueAtTime(460, now + 0.14);
 
-  // Ganz leichte Schwebung für Gänsehaut
-  osc2.frequency.setValueAtTime(162, now);
-  osc2.frequency.linearRampToValueAtTime(172, now + 0.3);
-
-  // EXTREM leise
   gain.gain.setValueAtTime(0.0001, now);
-  gain.gain.exponentialRampToValueAtTime(0.025, now + 0.15);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
+  gain.gain.exponentialRampToValueAtTime(0.06, now + 0.03);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
 
-  osc1.connect(gain);
-  osc2.connect(gain);
+  osc.connect(gain);
   gain.connect(audioCtx.destination);
 
-  osc1.start();
-  osc2.start();
-
-  osc1.stop(now + 0.5);
-  osc2.stop(now + 0.5);
+  osc.start();
+  osc.stop(now + 0.18);
 }
 /* ===== DICTIONARY ===== */
 const WORDS = [
