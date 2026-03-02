@@ -174,7 +174,7 @@ ctx.scale(30, 30);
 // ===== CLEARDIAGONALSIX SOUND =====
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-function playMysteryDigitalTone() {
+function playClearDiagonalSoundMysteryDigitalTone() {
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
   const filter = audioCtx.createBiquadFilter();
@@ -672,7 +672,7 @@ function clearDiagonalSixByColor(){
     }
   }
   if(!toClear.length) return;
-  toClear.forEach(([y,x])=>highlights[y][x]='#ff3333'); playMysteryDigitalTone();
+  toClear.forEach(([y,x])=>highlights[y][x]='#ff3333'); MysteryDigitalTone();
   setTimeout(()=>{ toClear.forEach(([y,x])=>arena[y][x]=null); applyGravity(); clearHighlights(); },250);
 }
 
