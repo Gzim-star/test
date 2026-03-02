@@ -525,7 +525,10 @@ function checkAndClearWords() {
 
   // Runde erhöhen (max 9)
   round++;
-  if(round > maxRounds) round = maxRounds; updateRoundDisplay();
+   if(round > maxRounds){
+  round = 1;
+}
+ updateRoundDisplay();
     colorShiftFakeTriggered = false;
     colorShiftIllusionTriggered = false;
   // Original-Farbe für den aktuellen Frame aktualisieren
