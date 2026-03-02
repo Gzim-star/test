@@ -174,23 +174,23 @@ ctx.scale(30, 30);
 // ===== CLEARDIAGONALSIX SOUND =====
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-function playClearDiagonalSound() {
+function playClearDiagonalSound1() {
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
 
-  osc.type = "sine";           
-  osc.frequency.setValueAtTime(440, audioCtx.currentTime);
-  osc.frequency.exponentialRampToValueAtTime(220, audioCtx.currentTime + 0.25);
+  osc.type = "sine";                       // weich, rund
+  osc.frequency.setValueAtTime(440, audioCtx.currentTime); // Startton
+  osc.frequency.exponentialRampToValueAtTime(330, audioCtx.currentTime + 0.3); // fällt ab
 
-  gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+  gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
   gain.gain.exponentialRampToValueAtTime(0.2, audioCtx.currentTime + 0.05);
-  gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.3);
+  gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.35);
 
   osc.connect(gain);
   gain.connect(audioCtx.destination);
 
   osc.start();
-  osc.stop(audioCtx.currentTime + 0.3);
+  osc.stop(audioCtx.currentTime + 0.35);
 }
   
 /* ===== DICTIONARY ===== */
