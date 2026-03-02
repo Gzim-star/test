@@ -175,22 +175,20 @@ ctx.scale(30, 30);
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 function playClearDiagonalSound() {
-    const osc = audioCtx.createOscillator();
+ const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
 
-  osc.type = "square";                     // eckig, etwas Retro
-  osc.frequency.setValueAtTime(660, audioCtx.currentTime);
-  osc.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.25);
+  osc.type = "triangle";
+  osc.frequency.value = freq;
 
-  gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.25, audioCtx.currentTime + 0.03);
-  gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.25);
+  gain.gain.setValueAtTime(0.04, now);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.15);
 
   osc.connect(gain);
   gain.connect(audioCtx.destination);
 
-  osc.start();
-  osc.stop(audioCtx.currentTime + 0.25);
+  osc.start(now);
+  osc.stop(now + 0.15);
 }
 /* ===== DICTIONARY ===== */
 const WORDS = [
