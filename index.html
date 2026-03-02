@@ -171,6 +171,28 @@ const canvas = document.getElementById('wordFallCanvas');
 const ctx = canvas.getContext('2d');
 ctx.scale(30, 30);
 
+// ===== CLEARDIAGONALSIX SOUND =====
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function playClearDiagonalSound() {
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+
+  osc.type = "sine";           
+  osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(220, audioCtx.currentTime + 0.25);
+
+  gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.2, audioCtx.currentTime + 0.05);
+  gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.3);
+
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  osc.start();
+  osc.stop(audioCtx.currentTime + 0.3);
+}
+  
 /* ===== DICTIONARY ===== */
 const WORDS = [
   // Deine alten 10-Buchstaben-Wörter
@@ -641,7 +663,7 @@ function clearDiagonalSixByColor(){
     }
   }
   if(!toClear.length) return;
-  toClear.forEach(([y,x])=>highlights[y][x]='#ff3333');
+  toClear.forEach(([y,x])=>highlights[y][x]='#ff3333'); playClearDiagonalSound();
   setTimeout(()=>{ toClear.forEach(([y,x])=>arena[y][x]=null); applyGravity(); clearHighlights(); },250);
 }
 
