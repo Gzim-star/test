@@ -180,10 +180,10 @@ const osc = audioCtx.createOscillator();
 
   osc.type = "sine";
   osc.frequency.setValueAtTime(500, audioCtx.currentTime);
-  osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.1);
-  osc.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime + 0.2);
+  osc.frequency.exponentialRampToValueAtTime(650, audioCtx.currentTime + 0.1);
+  osc.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime + 0.25);
 
-  gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+  gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
   gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.25);
 
   osc.connect(gain);
