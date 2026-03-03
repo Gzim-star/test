@@ -171,6 +171,48 @@ const canvas = document.getElementById('wordFallCanvas');
 const ctx = canvas.getContext('2d');
 ctx.scale(30, 30);
 
+// ===== NEXT ROUND FUTURISTIC TONE =====
+let audioCtx = null;
+
+function initAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+}
+
+function playNextRoundTone() {
+  if (!audioCtx) return;
+
+  const now = audioCtx.currentTime;
+
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  const filter = audioCtx.createBiquadFilter();
+
+  // Clean digital sound
+  osc.type = "triangle";
+
+  // Leichter futuristischer Aufstieg
+  osc.frequency.setValueAtTime(420, now);
+  osc.frequency.linearRampToValueAtTime(620, now + 0.18);
+
+  // Subtiler Highpass für digitalen Charakter
+  filter.type = "highpass";
+  filter.frequency.setValueAtTime(900, now);
+
+  // Sehr leise und kurz
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.exponentialRampToValueAtTime(0.04, now + 0.05);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
+
+  osc.connect(filter);
+  filter.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  osc.start(now);
+  osc.stop(now + 0.22);
+}
+  
 /* ===== DICTIONARY ===== */
 const WORDS = [
   // Deine alten 10-Buchstaben-Wörter
@@ -518,6 +560,7 @@ function checkAndClearWords() {
   setTimeout(()=>{
     if(targetFound){
 
+  playNextRoundTone(); // 👈 HIER
   // Spielfeld leeren
   arena.forEach(r=>r.fill(null));
   clearHighlights();
@@ -809,6 +852,8 @@ document.addEventListener('keydown',e=>{
 /* ===== BUTTONS ===== */
 function startGame() {
   // Stoppt die Falling Letters Preview, falls noch aktiv
+  initAudio(); // 👈 HIER
+  
   if(window.previewAnim){
     cancelAnimationFrame(window.previewAnim);
     window.previewAnim = null;
