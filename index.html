@@ -547,15 +547,21 @@ function triggerColorShiftIllusion(){
   }, 6000);
 }
   
-function triggerOriginalFramePulseRound() {
-  if(round !== 3) return;   // Nur Runde 3
-  if(pulseActive) return;   // Falls schon aktiv, nicht nochmal starten
+function triggerOriginalFramePulse() {
 
-  setTimeout(() => {
-    pulseActive = true;  // Pulse für Original-Rahmen aktivieren
-    pulseTime = 0;       // Timer zurücksetzen
+  if(round !== 3) return;
+  if(originalPulseTriggered) return;
+  if(orginalFrames.length === 0) return;
+
+  orginalPulseTriggered = true;
+
+  orginalPulseTimeout = setTimeout(() => {
+
+    orginalPulseActive = true;
+    orginalPulseTime = 0;
+
   }, 6000);
-}
+}  
   /* ===== GAME LOGIC ===== */
 function collide(arena, player) {
   const { x, y } = player.pos;
@@ -665,7 +671,7 @@ const overlapsFake = fakeFrames.some(f =>
 }
 fakePulseTriggered = false;
  triggerFakeFramePulse();
-  triggerOriginalFramePulseRound();
+  triggerOriginalFramePulse();
   return;
 }
     found.flat().forEach(([y,x])=>arena[y][x]=null);
