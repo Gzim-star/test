@@ -832,7 +832,6 @@ fakeFrames.forEach(f=>{
   let alpha = 1;
 
   if(fakePulseActive){
-
     fakePulseTime += 16;
     let progress = fakePulseTime / pulseDuration;
 
@@ -845,10 +844,12 @@ fakeFrames.forEach(f=>{
   }
 
   ctx.fillStyle='#000000';
+  ctx.globalAlpha = alpha;
   ctx.strokeStyle = f.color || '#00ff00'; // benutze die individuelle Farbe
   ctx.lineWidth = 0.05;
   ctx.fillRect(f.x+0.05, f.y-0.27, 0.9, frameH-0.2);
   ctx.strokeRect(f.x+0.05, f.y-0.27, 0.9, frameH-0.2);
+  ctx.globalAlpha = 1;
  });
 }
 
