@@ -546,6 +546,16 @@ function triggerColorShiftIllusion(){
 
   }, 6000);
 }
+  
+function triggerOriginalFramePulseRound() {
+  if(round !== 3) return;   // Nur Runde 3
+  if(pulseActive) return;   // Falls schon aktiv, nicht nochmal starten
+
+  setTimeout(() => {
+    pulseActive = true;  // Pulse für Original-Rahmen aktivieren
+    pulseTime = 0;       // Timer zurücksetzen
+  }, 6000);
+}
   /* ===== GAME LOGIC ===== */
 function collide(arena, player) {
   const { x, y } = player.pos;
@@ -655,6 +665,7 @@ const overlapsFake = fakeFrames.some(f =>
 }
 fakePulseTriggered = false;
  triggerFakeFramePulse();
+  triggerOriginalFramePulseRound();
   return;
 }
     found.flat().forEach(([y,x])=>arena[y][x]=null);
@@ -903,7 +914,7 @@ function startGame() {
     
     gameRunning = true;
     resetPlayer();
-    //round = 10; fur testen ( das game )
+    round = 2;
     newTargetWord();
     updateRoundDisplay(); // ← Anzeige direkt updaten
   }
