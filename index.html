@@ -270,6 +270,8 @@ let fakeFrames = [];
 let pulseActive = false;
 let fakePulseTriggered = false;
 let fakePulseTimeout = null;
+let fakePulseActive = false;
+let fakePulseTime = 0;
 let colorShiftTimeout = null;
 let colorShiftFakeTriggered = false;
 let colorShiftIllusionTriggered = false;
@@ -529,7 +531,7 @@ function triggerColorShiftIllusion(){
   });
 }
 
-function triggerFakeFramePulse() {
+ function triggerFakeFramePulse() {
 
   if(round !== 2) return;
   if(fakePulseTriggered) return;
@@ -539,12 +541,11 @@ function triggerFakeFramePulse() {
 
   fakePulseTimeout = setTimeout(() => {
 
-    // Wir benutzen dein bestehendes Pulse-System
-    pulseActive = true;
-    pulseTime = 0;
+    fakePulseActive = true;
+    fakePulseTime = 0;
 
-  }, 6000); // 6 Sekunden
-}  
+  }, 6000);
+}
   /* ===== GAME LOGIC ===== */
 function collide(arena, player) {
   const { x, y } = player.pos;
@@ -604,9 +605,6 @@ if(round > 1){
 }
   // Neues Wort erzeugt auch neuen Original Frame
   newTargetWord();
-
-fakePulseTriggered = false;
-triggerFakeFramePulse();
 // Fake Frames neu erzeugen
 fakeFrames = [];
 let fakeCount = round - 1;
@@ -655,7 +653,8 @@ const overlapsFake = fakeFrames.some(f =>
 }
   fakeFrames.push({x: fx, y: fy, color: color});
 }
-
+fakePulseTriggered = false;
+ triggerFakeFramePulse();
   return;
 }
     found.flat().forEach(([y,x])=>arena[y][x]=null);
@@ -829,6 +828,22 @@ ctx.globalAlpha = 1;
 
 // 🟫 FAKE FRAMES
 fakeFrames.forEach(f=>{
+  let borderWidth = 0.05;
+  let alpha = 1;
+
+  if(fakePulseActive){
+
+    fakePulseTime += 16;
+    let progress = fakePulseTime / pulseDuration;
+
+    if(progress >= 1){
+      fakePulseActive = false;
+    } else {
+      borderWidth = 0.05 + Math.sin(progress * Math.PI) * 0.08;
+      alpha = 1 + Math.sin(progress * Math.PI) * 0.5;
+    }
+  }
+
   ctx.fillStyle='#000000';
   ctx.strokeStyle = f.color || '#00ff00'; // benutze die individuelle Farbe
   ctx.lineWidth = 0.05;
