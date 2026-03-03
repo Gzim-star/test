@@ -550,16 +550,12 @@ function triggerColorShiftIllusion(){
 function triggerOriginalFramePulse() {
 
   if(round !== 3) return;
-  if(originalPulseTriggered) return;
-  if(orginalFrames.length === 0) return;
 
-  orginalPulseTriggered = true;
+  setTimeout(() => {
+    pulseActive = true;
+    pulseTime = 0;
+  }, 6000);
 
-  orginalPulseTimeout = setTimeout(() => {
-
-    orginalPulseActive = true;
-  
-   }, 6000);
 }  
   /* ===== GAME LOGIC ===== */
 function collide(arena, player) {
