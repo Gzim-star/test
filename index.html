@@ -761,7 +761,7 @@ function randomLetter(){ return String.fromCharCode(65+Math.floor(Math.random()*
 
 function resetPlayer(){
   if(round === 5 && vipLetter){
-    player.letter = vipLetter;   // VIP-Buchstabe als Spieler setzen
+   player.letter = randomLetter();    // VIP-Buchstabe als Spieler setzen
   } else {
     player.letter = randomLetter();
   }
