@@ -870,14 +870,28 @@ fakeFrames.forEach(f=>{
  });
 }
 
-  arena.forEach((row,y)=>{
-    row.forEach((v,x)=>{
-      if(v){ 
-        ctx.fillStyle = highlights[y][x]||COLORS[(x+y)%COLORS.length]; 
-        ctx.fillText(v,x+0.5,y+0.5); 
+// ⚡ In draw() beim Zeichnen der Arena:
+arena.forEach((row,y)=>{
+  row.forEach((v,x)=>{
+    if(v){
+      // Standardfarbe
+      let color = highlights[y][x] || COLORS[(x+y)%COLORS.length];
+
+      // Spezieller weißer Buchstabe für Runde 5
+      if(round === 5){
+        // Prüfen, ob dies der erste Buchstabe vom Target-Word ist
+        // UND im Original-Frame liegt
+        if(v.toUpperCase() === targetWord[0].toUpperCase() &&
+           x === frameX && y >= frameY && y < frameY + frameH){
+          color = '#ffffff'; // Immer weiß
+        }
       }
-    });
+
+      ctx.fillStyle = color;
+      ctx.fillText(v,x+0.5,y+0.5); 
+    }
   });
+});
 
   ctx.fillStyle=COLORS[(player.pos.x+player.pos.y)%COLORS.length];
   ctx.fillText(player.letter,player.pos.x+0.5,player.pos.y+0.5);
@@ -920,7 +934,7 @@ function startGame() {
     
     gameRunning = true;
     resetPlayer();
-    //round = 10; fur test (game)
+    round = 5; 
     newTargetWord();
     updateRoundDisplay(); // ← Anzeige direkt updaten
   }
