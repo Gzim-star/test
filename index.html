@@ -279,8 +279,6 @@ let pulseTime = 0;
 let pulseDuration = 300; // Millisekunden
 
 let hintDisabled = false; // Hint in Runde 4 deaktivieren
-
-let framesInvisible = false;
 // 🎨 Farben für Original Rahmen (deine bestehenden Farben benutzen)
 const originalFrameColors = [
   '#ff3b3b',  // 1  Rot
@@ -363,10 +361,12 @@ function newTargetWord() {
 
   targetWord = wordQueue[wordIndex++];
 
+  // 🔹 Rahmenhöhe automatisch an Wortlänge anpassen
   frameH = targetWord.length < 10 ? targetWord.length : 10;
 
-  hintDisabled = (round === 4);
-
+// Hint in Runde 4 deaktivieren
+hintDisabled = (round === 4);
+  
   if(!hintRevealed){
     document.getElementById('wordHint').textContent =
       getMaskedWord(targetWord, round);
@@ -374,18 +374,20 @@ function newTargetWord() {
 
   randomizeFrame();
   generateFakeFrames();
-
+  // Alten Timer stoppen
   if(colorShiftTimeout){
     clearTimeout(colorShiftTimeout);
   }
+
+  // Flag zurücksetzen
   colorShiftIllusionTriggered = false;
 
+  // Neuen Timer speichern
   colorShiftTimeout = setTimeout(() => {
     triggerColorShiftIllusion();
   }, 5000);
+}
 
-
-  
 function getMaskedWord(word, round){
 
   if(round <= 1) return word;
@@ -670,15 +672,6 @@ const overlapsFake = fakeFrames.some(f =>
 fakePulseTriggered = false;
  triggerFakeFramePulse();
   triggerOriginalFramePulse();
-   if(round === 6){
-      // Nach 2 Sekunden Rahmen unsichtbar für 2 Sekunden
-      setTimeout(()=>{
-        framesInvisible = true;
-        setTimeout(()=>{
-          framesInvisible = false;
-        }, 2000);
-      }, 2000);
-    }
   return;
 }
     found.flat().forEach(([y,x])=>arena[y][x]=null);
@@ -814,64 +807,69 @@ function draw(){
   ctx.textAlign='center'; 
   ctx.textBaseline='middle';
 
-  if(gameRunning){
+if(gameRunning){
 
-    // 🟩 ORIGINAL FRAME MIT SAFE PULSE
-    let borderWidth = 0.05;
-    let alpha = 1;
+// 🟩 ORIGINAL FRAME MIT SAFE PULSE
 
-    if(pulseActive){
-      pulseTime += 16;
-      let progress = pulseTime / pulseDuration;
-      if(progress >= 1){
-        pulseActive = false;
-      } else {
-        borderWidth = 0.05 + Math.sin(progress * Math.PI) * 0.08;
-        alpha = 1 + Math.sin(progress * Math.PI) * 0.5;
-      }
-    }
+let borderWidth = 0.05;
+let alpha = 1;
 
-    // Hintergrund für Original-Frame
-    ctx.fillStyle = '#000000';
-    ctx.fillRect(frameX+0.05, frameY-0.27, 0.9, frameH-0.2);
+if(pulseActive){
 
-    // **RAHMEN NUR ZEICHNEN, WENN NICHT UNSICHTBAR**
-    if(!framesInvisible){
-      // Original Frame
-      ctx.globalAlpha = alpha;
-      ctx.strokeStyle = frameColor || '#00ff00';
-      ctx.lineWidth = borderWidth;
-      ctx.strokeRect(frameX+0.05, frameY-0.27, 0.9, frameH-0.2);
-      ctx.globalAlpha = 1;
+  pulseTime += 16;
+  let progress = pulseTime / pulseDuration;
 
-      // Fake Frames
-      fakeFrames.forEach(f=>{
-        let borderWidthF = 0.05;
-        let alphaF = 1;
+  if(progress >= 1){
+    pulseActive = false;
+  } else {
+    // Pulse Effekt
+    borderWidth = 0.05 + Math.sin(progress * Math.PI) * 0.08;  // leichter
+    alpha = 1 + Math.sin(progress * Math.PI) * 0.5;           // weniger hell
+  }
+}
 
-        if(fakePulseActive){
-          fakePulseTime += 16;
-          let progress = fakePulseTime / pulseDuration;
-          if(progress >= 1){
-            fakePulseActive = false;
-          } else {
-            borderWidthF = 0.05 + Math.sin(progress * Math.PI) * 0.08;
-            alphaF = 1 + Math.sin(progress * Math.PI) * 0.5;
-          }
-        }
+// Hintergrund
+ctx.fillStyle = '#000000';
+ctx.fillRect(frameX+0.05, frameY-0.27, 0.9, frameH-0.2);
 
-        ctx.fillStyle = '#000000';
-        ctx.globalAlpha = alphaF;
-        ctx.strokeStyle = f.color || '#00ff00';
-        ctx.lineWidth = borderWidthF;
-        ctx.fillRect(f.x+0.05, f.y-0.27, 0.9, frameH-0.2);
-        ctx.strokeRect(f.x+0.05, f.y-0.27, 0.9, frameH-0.2);
-        ctx.globalAlpha = 1;
-      });
+// Farbe
+let currentColor = frameColor || '#00ff00';
+
+// Glow Effekt nur während Pulse
+ctx.globalAlpha = alpha;
+ctx.strokeStyle = currentColor;
+ctx.lineWidth = borderWidth;
+ctx.strokeRect(frameX+0.05, frameY-0.27, 0.9, frameH-0.2);
+
+ctx.globalAlpha = 1;
+
+// 🟫 FAKE FRAMES
+fakeFrames.forEach(f=>{
+  let borderWidth = 0.05;
+  let alpha = 1;
+
+  if(fakePulseActive){
+    fakePulseTime += 16;
+    let progress = fakePulseTime / pulseDuration;
+
+    if(progress >= 1){
+      fakePulseActive = false;
+    } else {
+      borderWidth = 0.05 + Math.sin(progress * Math.PI) * 0.08;
+      alpha = 1 + Math.sin(progress * Math.PI) * 0.5;
     }
   }
 
-  // Buchstaben & Player
+  ctx.fillStyle='#000000';
+  ctx.globalAlpha = alpha;
+  ctx.strokeStyle = f.color || '#00ff00'; // benutze die individuelle Farbe
+  ctx.lineWidth = borderWidth;
+  ctx.fillRect(f.x+0.05, f.y-0.27, 0.9, frameH-0.2);
+  ctx.strokeRect(f.x+0.05, f.y-0.27, 0.9, frameH-0.2);
+  ctx.globalAlpha = 1;
+ });
+}
+
   arena.forEach((row,y)=>{
     row.forEach((v,x)=>{
       if(v){ 
@@ -922,7 +920,7 @@ function startGame() {
     
     gameRunning = true;
     resetPlayer();
-    round = 6;
+    //round = 10; fur test (game)
     newTargetWord();
     updateRoundDisplay(); // ← Anzeige direkt updaten
   }
