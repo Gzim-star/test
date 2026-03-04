@@ -384,17 +384,7 @@ function newTargetWord() {
     triggerColorShiftIllusion();
   }, 5000);
 
-  // 🔹 RAHMEN FÜR RONDE 6 KURZ UNSICHTBAR
-// Runde 6: Rahmen kurz unsichtbar
-if(round === 6){
-    // Erst 2s normal sichtbar lassen
-    setTimeout(()=>{
-        framesInvisible = true; // für 2s unsichtbar
-        setTimeout(()=>{
-            framesInvisible = false; // wieder sichtbar
-        }, 2000);
-    }, 2000);
-}
+
   
 function getMaskedWord(word, round){
 
@@ -680,6 +670,15 @@ const overlapsFake = fakeFrames.some(f =>
 fakePulseTriggered = false;
  triggerFakeFramePulse();
   triggerOriginalFramePulse();
+   if(round === 6){
+      // Nach 2 Sekunden Rahmen unsichtbar für 2 Sekunden
+      setTimeout(()=>{
+        framesInvisible = true;
+        setTimeout(()=>{
+          framesInvisible = false;
+        }, 2000);
+      }, 2000);
+    }
   return;
 }
     found.flat().forEach(([y,x])=>arena[y][x]=null);
