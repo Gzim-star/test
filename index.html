@@ -279,6 +279,8 @@ let pulseTime = 0;
 let pulseDuration = 300; // Millisekunden
 
 let hintDisabled = false; // Hint in Runde 4 deaktivieren
+
+let framesInvisible = false;
 // 🎨 Farben für Original Rahmen (deine bestehenden Farben benutzen)
 const originalFrameColors = [
   '#ff3b3b',  // 1  Rot
@@ -388,6 +390,15 @@ hintDisabled = (round === 4);
   }, 5000);
 }
 
+machen
+  if(round === 6){
+    framesInvisible = true;         // Rahmen sofort unsichtbar
+    setTimeout(()=>{
+        framesInvisible = false;    // nach 2 Sekunden wieder sichtbar
+    }, 2000);
+  }
+}
+  
 function getMaskedWord(word, round){
 
   if(round <= 1) return word;
@@ -807,69 +818,64 @@ function draw(){
   ctx.textAlign='center'; 
   ctx.textBaseline='middle';
 
-if(gameRunning){
+  if(gameRunning){
 
-// 🟩 ORIGINAL FRAME MIT SAFE PULSE
+    // 🟩 ORIGINAL FRAME MIT SAFE PULSE
+    let borderWidth = 0.05;
+    let alpha = 1;
 
-let borderWidth = 0.05;
-let alpha = 1;
+    if(pulseActive){
+      pulseTime += 16;
+      let progress = pulseTime / pulseDuration;
+      if(progress >= 1){
+        pulseActive = false;
+      } else {
+        borderWidth = 0.05 + Math.sin(progress * Math.PI) * 0.08;
+        alpha = 1 + Math.sin(progress * Math.PI) * 0.5;
+      }
+    }
 
-if(pulseActive){
+    // Hintergrund für Original-Frame
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(frameX+0.05, frameY-0.27, 0.9, frameH-0.2);
 
-  pulseTime += 16;
-  let progress = pulseTime / pulseDuration;
+    // **RAHMEN NUR ZEICHNEN, WENN NICHT UNSICHTBAR**
+    if(!framesInvisible){
+      // Original Frame
+      ctx.globalAlpha = alpha;
+      ctx.strokeStyle = frameColor || '#00ff00';
+      ctx.lineWidth = borderWidth;
+      ctx.strokeRect(frameX+0.05, frameY-0.27, 0.9, frameH-0.2);
+      ctx.globalAlpha = 1;
 
-  if(progress >= 1){
-    pulseActive = false;
-  } else {
-    // Pulse Effekt
-    borderWidth = 0.05 + Math.sin(progress * Math.PI) * 0.08;  // leichter
-    alpha = 1 + Math.sin(progress * Math.PI) * 0.5;           // weniger hell
-  }
-}
+      // Fake Frames
+      fakeFrames.forEach(f=>{
+        let borderWidthF = 0.05;
+        let alphaF = 1;
 
-// Hintergrund
-ctx.fillStyle = '#000000';
-ctx.fillRect(frameX+0.05, frameY-0.27, 0.9, frameH-0.2);
+        if(fakePulseActive){
+          fakePulseTime += 16;
+          let progress = fakePulseTime / pulseDuration;
+          if(progress >= 1){
+            fakePulseActive = false;
+          } else {
+            borderWidthF = 0.05 + Math.sin(progress * Math.PI) * 0.08;
+            alphaF = 1 + Math.sin(progress * Math.PI) * 0.5;
+          }
+        }
 
-// Farbe
-let currentColor = frameColor || '#00ff00';
-
-// Glow Effekt nur während Pulse
-ctx.globalAlpha = alpha;
-ctx.strokeStyle = currentColor;
-ctx.lineWidth = borderWidth;
-ctx.strokeRect(frameX+0.05, frameY-0.27, 0.9, frameH-0.2);
-
-ctx.globalAlpha = 1;
-
-// 🟫 FAKE FRAMES
-fakeFrames.forEach(f=>{
-  let borderWidth = 0.05;
-  let alpha = 1;
-
-  if(fakePulseActive){
-    fakePulseTime += 16;
-    let progress = fakePulseTime / pulseDuration;
-
-    if(progress >= 1){
-      fakePulseActive = false;
-    } else {
-      borderWidth = 0.05 + Math.sin(progress * Math.PI) * 0.08;
-      alpha = 1 + Math.sin(progress * Math.PI) * 0.5;
+        ctx.fillStyle = '#000000';
+        ctx.globalAlpha = alphaF;
+        ctx.strokeStyle = f.color || '#00ff00';
+        ctx.lineWidth = borderWidthF;
+        ctx.fillRect(f.x+0.05, f.y-0.27, 0.9, frameH-0.2);
+        ctx.strokeRect(f.x+0.05, f.y-0.27, 0.9, frameH-0.2);
+        ctx.globalAlpha = 1;
+      });
     }
   }
 
-  ctx.fillStyle='#000000';
-  ctx.globalAlpha = alpha;
-  ctx.strokeStyle = f.color || '#00ff00'; // benutze die individuelle Farbe
-  ctx.lineWidth = borderWidth;
-  ctx.fillRect(f.x+0.05, f.y-0.27, 0.9, frameH-0.2);
-  ctx.strokeRect(f.x+0.05, f.y-0.27, 0.9, frameH-0.2);
-  ctx.globalAlpha = 1;
- });
-}
-
+  // Buchstaben & Player
   arena.forEach((row,y)=>{
     row.forEach((v,x)=>{
       if(v){ 
@@ -920,7 +926,7 @@ function startGame() {
     
     gameRunning = true;
     resetPlayer();
-    //round = 10; fur test (game)
+    round = 6;
     newTargetWord();
     updateRoundDisplay(); // ← Anzeige direkt updaten
   }
