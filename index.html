@@ -189,10 +189,10 @@ function playNextRoundTone() {
   const gain = audioCtx.createGain();
   const filter = audioCtx.createBiquadFilter();
 
-  // Clean digital sound
+  // Digitaler, futuristischer Sound
   osc.type = "triangle";
 
-  // Leichter futuristischer Aufstieg
+  // Leichter Aufstieg
   osc.frequency.setValueAtTime(420, now);
   osc.frequency.linearRampToValueAtTime(620, now + 0.18);
 
@@ -200,10 +200,10 @@ function playNextRoundTone() {
   filter.type = "highpass";
   filter.frequency.setValueAtTime(900, now);
 
-  // Sehr leise und kurz
-  gain.gain.setValueAtTime(0.01, now);
-  gain.gain.exponentialRampToValueAtTime(0.3, now + 0.05);
-  gain.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
+  // 🔹 LEISER
+  gain.gain.setValueAtTime(0.01, now);           // Start
+  gain.gain.exponentialRampToValueAtTime(0.12, now + 0.05); // Peak
+  gain.gain.exponentialRampToValueAtTime(0.01, now + 0.22); // Ende
 
   osc.connect(filter);
   filter.connect(gain);
