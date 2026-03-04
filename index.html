@@ -385,13 +385,17 @@ function newTargetWord() {
   }, 5000);
 
   // 🔹 RAHMEN FÜR RONDE 6 KURZ UNSICHTBAR
-  if(round === 6){
-    framesInvisible = true;         
-    setTimeout(()=>{
-        framesInvisible = false;    
-    }, 2000);
-  }
-} // ← Ende Funktion
+// Wenn wir in Runde 6 sind
+if(round === 6){
+    // Nach 2 Sekunden -> Rahmen unsichtbar
+    setTimeout(() => {
+        framesInvisible = true;   // Rahmen verschwinden für 2 Sekunden
+        // Nach weiteren 2 Sekunden -> wieder sichtbar
+        setTimeout(() => {
+            framesInvisible = false;
+        }, 2000);
+    }, 2000); // Erst 2 Sekunden warten bevor Unsichtbar
+}
   
 function getMaskedWord(word, round){
 
