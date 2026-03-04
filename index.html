@@ -266,6 +266,7 @@ function updateRoundDisplay() {
   const display = document.getElementById('roundDisplay');
   if(display) display.textContent = round + '/' + maxRounds;
 }
+let round6Invisible = false; // 🔹 für kurze Unsichtbarkeit in Runde 6
 let fakeFrames = [];
 let pulseActive = false;
 let fakePulseTriggered = false;
@@ -621,7 +622,14 @@ if(round > 1){
 }
   // Neues Wort erzeugt auch neuen Original Frame
   newTargetWord();
-// Fake Frames neu erzeugen
+
+// 🔹 NEU: Runde 6 Unsichtbar Trigger
+if(round === 6){
+  setTimeout(() => { round6Invisible = true; }, 2000);       // nach 2s unsichtbar
+  setTimeout(() => { round6Invisible = false; }, 4000);      // nach weiteren 2s wieder sichtbar
+}
+
+  // Fake Frames neu erzeugen
 fakeFrames = [];
 let fakeCount = round - 1;
 
@@ -836,13 +844,14 @@ ctx.fillRect(frameX+0.05, frameY-0.27, 0.9, frameH-0.2);
 let currentColor = frameColor || '#00ff00';
 
 // Glow Effekt nur während Pulse
+if(!round6Invisible){
 ctx.globalAlpha = alpha;
 ctx.strokeStyle = currentColor;
 ctx.lineWidth = borderWidth;
 ctx.strokeRect(frameX+0.05, frameY-0.27, 0.9, frameH-0.2);
 
 ctx.globalAlpha = 1;
-
+}
 // 🟫 FAKE FRAMES
 fakeFrames.forEach(f=>{
   let borderWidth = 0.05;
@@ -859,7 +868,8 @@ fakeFrames.forEach(f=>{
       alpha = 1 + Math.sin(progress * Math.PI) * 0.5;
     }
   }
-
+  
+  if(!round6Invisible){
   ctx.fillStyle='#000000';
   ctx.globalAlpha = alpha;
   ctx.strokeStyle = f.color || '#00ff00'; // benutze die individuelle Farbe
@@ -920,7 +930,7 @@ function startGame() {
     
     gameRunning = true;
     resetPlayer();
-    //round = 10; fur test (game)
+    round = 6;
     newTargetWord();
     updateRoundDisplay(); // ← Anzeige direkt updaten
   }
