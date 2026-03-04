@@ -760,11 +760,7 @@ function applyGravity(){
 function randomLetter(){ return String.fromCharCode(65+Math.floor(Math.random()*26)); }
 
 function resetPlayer(){
-  if(round === 5 && vipLetter){
-   player.letter = randomLetter();    // VIP-Buchstabe als Spieler setzen
-  } else {
-    player.letter = randomLetter();
-  }
+  player.letter = randomLetter();
   player.pos.y = 0;
   player.pos.x = Math.floor(arena[0].length/2);
   if(collide(arena,player)) arena.forEach(r=>r.fill(null));
@@ -910,6 +906,16 @@ arena.forEach((row,y)=>{
   });
 });
 
+  // ⚡ Spieler zeichnen
+let playerColor = COLORS[(player.pos.x + player.pos.y) % COLORS.length];
+
+// VIP-Buchstabe immer weiß
+if(round === 5 && player.letter.toUpperCase() === vipLetter){
+  playerColor = '#ffffff';
+}
+
+ctx.fillStyle = playerColor;
+ctx.fillText(player.letter, player.pos.x + 0.5, player.pos.y + 0.5);
   ctx.fillStyle=COLORS[(player.pos.x+player.pos.y)%COLORS.length];
   ctx.fillText(player.letter,player.pos.x+0.5,player.pos.y+0.5);
 }
