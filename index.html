@@ -569,14 +569,14 @@ function collide(arena, player) {
   return y >= arena.length || x < 0 || x >= arena[0].length || arena[y][x] !== null;
 }
 
-function merge(arena, player) { 
+function merge(arena, player){
   arena[player.pos.y][player.pos.x] = player.letter;
 
-  // 🎯 Runde 5: weiß speichern
-  if(round === 5 && player.letter === targetWord[0]){
-    arenaColors[player.pos.y][player.pos.x] = "#ffffff";
+  // Runde 5: nur erster Buchstabe vom Target im Original-Frame weiß
+  if(round === 5 && player.letter === targetWord[0] && player.pos.x === frameX){
+    arenaColors[player.pos.y][player.pos.x] = "#ffffff"; // nur dieser wird weiß
   } else {
-    arenaColors[player.pos.y][player.pos.x] = null;
+    arenaColors[player.pos.y][player.pos.x] = null; // alle anderen normal
   }
 }
 function move(dir) { player.pos.x += dir; if(collide(arena, player)) player.pos.x -= dir; }
@@ -750,21 +750,18 @@ function applyGravity(){
 
 /* ===== PLAYER ===== */
 function randomLetter(){
-
-  // 🎯 Runde 5 Spezialregel
+  // Runde 5 Spezialregel
   if(round === 5 && targetWord){
-    
-    // 60% Wahrscheinlichkeit = erster Buchstabe
+    // 5% Chance: erster Buchstabe des Target
     if(Math.random() < 0.05){
-      return targetWord[0];
+      return targetWord[0]; // weißer Buchstabe im Original Frame
     }
-
-    // sonst normal zufällig
-    return String.fromCharCode(65+Math.floor(Math.random()*26));
+    // sonst normale Zufallsbuchstaben (inkl. gleiche Buchstaben wie Target)
+    return String.fromCharCode(65 + Math.floor(Math.random() * 26));
   }
 
-  // normale Runden
-  return String.fromCharCode(65+Math.floor(Math.random()*26));
+  // Normale Runden
+  return String.fromCharCode(65 + Math.floor(Math.random() * 26));
 }
 
 function resetPlayer(){
@@ -955,7 +952,7 @@ function startGame() {
     
     gameRunning = true;
     resetPlayer();
-    //round = 10; fur testen
+    round = 5;
     newTargetWord();
     updateRoundDisplay(); // ← Anzeige direkt updaten
   }
