@@ -572,12 +572,12 @@ function collide(arena, player) {
 function merge(arena, player){
   arena[player.pos.y][player.pos.x] = player.letter;
 
-  // Runde 5: nur erster Buchstabe vom Target im Original-Frame soll weiß sein
-if(round === 5 && player.letter === targetWord[0] && player.pos.x === frameX){
-    arenaColors[player.pos.y][player.pos.x] = "#ffffff"; // erster Buchstabe bleibt weiß
-} else if(round !== 5){
-    arenaColors[player.pos.y][player.pos.x] = null; // andere Runden: normale Farben
- }
+  // Runde 5: erster Buchstabe vom Target im Original-Frame bleibt weiß
+  if(round === 5 && player.letter === targetWord[0] && player.pos.x === frameX){
+      arenaColors[player.pos.y][player.pos.x] = "#ffffff"; // Fix
+  } else if(round !== 5){
+      arenaColors[player.pos.y][player.pos.x] = null; // normale Runden
+  }
 }
 function move(dir) { player.pos.x += dir; if(collide(arena, player)) player.pos.x -= dir; }
 function drop() { 
@@ -893,17 +893,15 @@ fakeFrames.forEach(f=>{
  });
 }
 
-  arena.forEach((row,y)=>{
+arena.forEach((row,y)=>{
     row.forEach((v,x)=>{
       if(v){ 
-         ctx.fillStyle =
-          highlights[y][x] ||
-           arenaColors[y][x] ||
-          COLORS[(x+y)%COLORS.length];
-        ctx.fillText(v,x+0.5,y+0.5); 
+        // Wichtig: zuerst arenaColors prüfen, dann Highlights, dann normale Farbe
+        ctx.fillStyle = arenaColors[y][x] || highlights[y][x] || COLORS[(x+y)%COLORS.length];
+        ctx.fillText(v, x+0.5, y+0.5); 
       }
     });
-  });
+});
 
 // 🎯 Runde 5: erster Buchstabe weiß
 // 🎯 Spielerbuchstabe zeichnen
