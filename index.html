@@ -893,18 +893,20 @@ fakeFrames.forEach(f=>{
  });
 }
 
-arena.forEach((row,y)=>{
-    row.forEach((v,x)=>{
-      if(v){ 
-        // Runde 5: erster Buchstabe im Original-Frame bleibt weiß
-        if(round === 5 && v === targetWord[0] && x === frameX && y >= frameY && y < frameY + frameH){
-            ctx.fillStyle = "#ffffff"; // Fix: weiß
-        } else {
-            ctx.fillStyle = arenaColors[y][x] || highlights[y][x] || COLORS[(x+y)%COLORS.length];
-        }
-        ctx.fillText(v, x+0.5, y+0.5); 
+arena.forEach((row, y) => {
+  row.forEach((v, x) => {
+    if(v){
+      // 🔹 Prüfen, ob Feld im Original-Frame ist
+      const inOriginalFrame = (x === frameX && y >= frameY && y < frameY + frameH);
+      // 🔹 Nur der erste Buchstabe im Original-Frame wird weiß
+      if(round === 5 && inOriginalFrame && y === frameY){
+        ctx.fillStyle = "#ffffff"; // erster Buchstabe immer weiß
+      } else {
+        ctx.fillStyle = arenaColors[y][x] || highlights[y][x] || COLORS[(x+y)%COLORS.length];
       }
-    });
+      ctx.fillText(v, x + 0.5, y + 0.5);
+    }
+  });
 });
 
 // 🎯 Runde 5: erster Buchstabe weiß
