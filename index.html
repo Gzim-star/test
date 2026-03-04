@@ -277,7 +277,7 @@ let colorShiftFakeTriggered = false;
 let colorShiftIllusionTriggered = false;
 let pulseTime = 0;
 let pulseDuration = 300; // Millisekunden
-
+let framesInvisible = false;
 let hintDisabled = false; // Hint in Runde 4 deaktivieren
 // 🎨 Farben für Original Rahmen (deine bestehenden Farben benutzen)
 const originalFrameColors = [
@@ -608,6 +608,17 @@ function checkAndClearWords() {
   round = 1;
 }
  updateRoundDisplay();
+    // Runde 6 Spezialeffekt
+if(round === 6){
+  setTimeout(()=>{
+    framesInvisible = true;
+
+    setTimeout(()=>{
+      framesInvisible = false;
+    },2000);
+
+  },2000);
+}
     colorShiftFakeTriggered = false;
     colorShiftIllusionTriggered = false;
   // Original-Farbe für den aktuellen Frame aktualisieren
@@ -828,13 +839,16 @@ if(pulseActive){
   }
 }
 
-// Hintergrund
-ctx.fillStyle = '#000000';
-ctx.fillRect(frameX+0.05, frameY-0.27, 0.9, frameH-0.2);
+// Hintergrund nur wenn sichtbar
+if(!framesInvisible){
+  ctx.fillStyle = '#000000';
+  ctx.fillRect(frameX+0.05, frameY-0.27, 0.9, frameH-0.2);
+}
 
 // Farbe
 let currentColor = frameColor || '#00ff00';
 
+if(framesInvisible) return;
 // Glow Effekt nur während Pulse
 ctx.globalAlpha = alpha;
 ctx.strokeStyle = currentColor;
@@ -920,7 +934,7 @@ function startGame() {
     
     gameRunning = true;
     resetPlayer();
-    //round = 10; fur test (game)
+    round = 6;
     newTargetWord();
     updateRoundDisplay(); // ← Anzeige direkt updaten
   }
