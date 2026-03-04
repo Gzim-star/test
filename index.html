@@ -577,8 +577,8 @@ if(round === 5 && player.letter === targetWord[0] && player.pos.x === frameX){
     arenaColors[player.pos.y][player.pos.x] = "#ffffff"; // erster Buchstabe bleibt weiß
 } else if(round !== 5){
     arenaColors[player.pos.y][player.pos.x] = null; // andere Runden: normale Farben
+ }
 }
-
 function move(dir) { player.pos.x += dir; if(collide(arena, player)) player.pos.x -= dir; }
 function drop() { 
   if(!gameRunning) return;
