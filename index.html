@@ -248,7 +248,6 @@ function shuffleWords() {
 
 /* ===== ARENA ===== */
 const arena = Array.from({ length: 20 }, () => Array(10).fill(null));
-const arenaColors = Array.from({ length: 20 }, () => Array(10).fill(null));
 const highlights = Array.from({ length: 20 }, () => Array(10).fill(null));
 
 const player = { pos: { x: 0, y: 0 }, letter: '' };
@@ -569,16 +568,7 @@ function collide(arena, player) {
   return y >= arena.length || x < 0 || x >= arena[0].length || arena[y][x] !== null;
 }
 
-function merge(arena, player){
-  arena[player.pos.y][player.pos.x] = player.letter;
-
-  // Runde 5: erster Buchstabe vom Target im Original-Frame bleibt weiß
-  if(round === 5 && player.letter === targetWord[0] && player.pos.x === frameX){
-      arenaColors[player.pos.y][player.pos.x] = "#ffffff"; // Fix
-  } else if(round !== 5){
-      arenaColors[player.pos.y][player.pos.x] = null; // normale Runden
-  }
-}
+function merge(arena, player) { arena[player.pos.y][player.pos.x] = player.letter; }
 function move(dir) { player.pos.x += dir; if(collide(arena, player)) player.pos.x -= dir; }
 function drop() { 
   if(!gameRunning) return;
@@ -749,20 +739,7 @@ function applyGravity(){
 }
 
 /* ===== PLAYER ===== */
-function randomLetter(){
-  // Runde 5 Spezialregel
-  if(round === 5 && targetWord){
-    // 5% Chance: erster Buchstabe des Target
-    if(Math.random() < 0.05){
-      return targetWord[0]; // weißer Buchstabe im Original Frame
-    }
-    // sonst normale Zufallsbuchstaben (inkl. gleiche Buchstaben wie Target)
-    return String.fromCharCode(65 + Math.floor(Math.random() * 26));
-  }
-
-  // Normale Runden
-  return String.fromCharCode(65 + Math.floor(Math.random() * 26));
-}
+function randomLetter(){ return String.fromCharCode(65+Math.floor(Math.random()*26)); }
 
 function resetPlayer(){
   player.letter = randomLetter();
@@ -893,39 +870,17 @@ fakeFrames.forEach(f=>{
  });
 }
 
-arena.forEach((row, y) => {
-  row.forEach((v, x) => {
-    if(v){
-      // 🔹 Prüfen, ob Feld im Original-Frame ist
-      const inOriginalFrame = (x === frameX && y >= frameY && y < frameY + frameH);
-      // 🔹 Nur der erste Buchstabe im Original-Frame wird weiß
-      if(round === 5 && inOriginalFrame && y === frameY){
-        ctx.fillStyle = "#ffffff"; // erster Buchstabe immer weiß
-      } else {
-        ctx.fillStyle = arenaColors[y][x] || highlights[y][x] || COLORS[(x+y)%COLORS.length];
+  arena.forEach((row,y)=>{
+    row.forEach((v,x)=>{
+      if(v){ 
+        ctx.fillStyle = highlights[y][x]||COLORS[(x+y)%COLORS.length]; 
+        ctx.fillText(v,x+0.5,y+0.5); 
       }
-      ctx.fillText(v, x + 0.5, y + 0.5);
-    }
+    });
   });
-});
 
-// 🎯 Runde 5: erster Buchstabe weiß
-// 🎯 Spielerbuchstabe zeichnen
-ctx.save();
-ctx.font = '1px monospace';
-ctx.textAlign = 'center';
-ctx.textBaseline = 'middle';
-
-// Runde 5: erster Buchstabe des Targets fällt weiß
-if(round === 5 && player.letter === targetWord[0]){
-    ctx.fillStyle = "#ffffff";
-} else {
-    ctx.fillStyle = COLORS[(player.pos.x + player.pos.y) % COLORS.length];
-}
-
-ctx.fillText(player.letter, player.pos.x + 0.5, player.pos.y + 0.5);
-ctx.restore();
-
+  ctx.fillStyle=COLORS[(player.pos.x+player.pos.y)%COLORS.length];
+  ctx.fillText(player.letter,player.pos.x+0.5,player.pos.y+0.5);
 }
 
 /* ===== LOOP ===== */
@@ -965,7 +920,7 @@ function startGame() {
     
     gameRunning = true;
     resetPlayer();
-    round = 5;
+    //round = 10; fur test (game)
     newTargetWord();
     updateRoundDisplay(); // ← Anzeige direkt updaten
   }
