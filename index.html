@@ -201,9 +201,9 @@ function playNextRoundTone() {
   filter.frequency.setValueAtTime(900, now);
 
   // Sehr leise und kurz
-  gain.gain.setValueAtTime(0.0001, now);
-  gain.gain.exponentialRampToValueAtTime(0.15, now + 0.05);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
+  gain.gain.setValueAtTime(0.01, now);
+  gain.gain.exponentialRampToValueAtTime(0.3, now + 0.05);
+  gain.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
 
   osc.connect(filter);
   filter.connect(gain);
@@ -936,7 +936,7 @@ function startGame() {
     
     gameRunning = true;
     resetPlayer();
-    round = 5;
+    //round = 5; fur testen (game)
     newTargetWord();
     updateRoundDisplay(); // ← Anzeige direkt updaten
   }
