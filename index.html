@@ -277,6 +277,8 @@ let colorShiftFakeTriggered = false;
 let colorShiftIllusionTriggered = false;
 let pulseTime = 0;
 let pulseDuration = 300; // Millisekunden
+
+let hintDisabled = false; // Hint in Runde 4 deaktivieren
 // 🎨 Farben für Original Rahmen (deine bestehenden Farben benutzen)
 const originalFrameColors = [
   '#ff3b3b',  // 1  Rot
@@ -362,6 +364,9 @@ function newTargetWord() {
   // 🔹 Rahmenhöhe automatisch an Wortlänge anpassen
   frameH = targetWord.length < 10 ? targetWord.length : 10;
 
+// Hint in Runde 4 deaktivieren
+hintDisabled = (round === 4);
+  
   if(!hintRevealed){
     document.getElementById('wordHint').textContent =
       getMaskedWord(targetWord, round);
@@ -407,7 +412,7 @@ function getMaskedWord(word, round){
 }
 
 function revealHint(){
-
+ if(hintDisabled) return;
   if(hintRevealed) return;
 
   hintRevealed = true;
@@ -915,7 +920,7 @@ function startGame() {
     
     gameRunning = true;
     resetPlayer();
-    //round = 10; fur testen (game)
+    round = 4; 
     newTargetWord();
     updateRoundDisplay(); // ← Anzeige direkt updaten
   }
