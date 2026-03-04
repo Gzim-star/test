@@ -363,6 +363,14 @@ function newTargetWord() {
 
   targetWord = wordQueue[wordIndex++];
 
+  // VIP-Buchstabe nur in Runde 5
+if(round === 5){
+  vipLetter = targetWord[0].toUpperCase(); // z.B. erster Buchstabe
+  vipLetterPos = null;                     // wird gesetzt, wenn Spieler ihn platziert
+} else {
+  vipLetter = null;
+  vipLetterPos = null;
+}
   // 🔹 Rahmenhöhe automatisch an Wortlänge anpassen
   frameH = targetWord.length < 10 ? targetWord.length : 10;
 
@@ -390,14 +398,7 @@ hintDisabled = (round === 4);
   }, 5000);
 }
 
-// VIP-Buchstabe nur in Runde 5
-if(round === 5){
-  vipLetter = targetWord[0].toUpperCase(); // erstes Buchstabe
-  vipLetterPos = null;                     // wird beim Merge gesetzt
-} else {
-  vipLetter = null;
-  vipLetterPos = null;
-}
+
 function getMaskedWord(word, round){
 
   if(round <= 1) return word;
@@ -759,7 +760,11 @@ function applyGravity(){
 function randomLetter(){ return String.fromCharCode(65+Math.floor(Math.random()*26)); }
 
 function resetPlayer(){
-  player.letter = randomLetter();
+  if(round === 5 && vipLetter){
+    player.letter = vipLetter;   // VIP-Buchstabe als Spieler setzen
+  } else {
+    player.letter = randomLetter();
+  }
   player.pos.y = 0;
   player.pos.x = Math.floor(arena[0].length/2);
   if(collide(arena,player)) arena.forEach(r=>r.fill(null));
