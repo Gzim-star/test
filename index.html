@@ -279,8 +279,6 @@ let pulseTime = 0;
 let pulseDuration = 300; // Millisekunden
 
 let hintDisabled = false; // Hint in Runde 4 deaktivieren
-let vipLetter = null;      // Der VIP-Buchstabe (weiß bleiben)
-let vipLetterPos = null;   // Position in der Arena
 // 🎨 Farben für Original Rahmen (deine bestehenden Farben benutzen)
 const originalFrameColors = [
   '#ff3b3b',  // 1  Rot
@@ -363,14 +361,6 @@ function newTargetWord() {
 
   targetWord = wordQueue[wordIndex++];
 
-  // VIP-Buchstabe nur in Runde 5
-if(round === 5){
-  vipLetter = targetWord[0].toUpperCase(); // z.B. erster Buchstabe
-  vipLetterPos = null;                     // wird gesetzt, wenn Spieler ihn platziert
-} else {
-  vipLetter = null;
-  vipLetterPos = null;
-}
   // 🔹 Rahmenhöhe automatisch an Wortlänge anpassen
   frameH = targetWord.length < 10 ? targetWord.length : 10;
 
@@ -397,7 +387,6 @@ hintDisabled = (round === 4);
     triggerColorShiftIllusion();
   }, 5000);
 }
-
 
 function getMaskedWord(word, round){
 
@@ -579,14 +568,7 @@ function collide(arena, player) {
   return y >= arena.length || x < 0 || x >= arena[0].length || arena[y][x] !== null;
 }
 
-function merge(arena, player) { 
-  arena[player.pos.y][player.pos.x] = player.letter;
-
-  // VIP-Buchstabe speichern, wenn Runde 5
-  if(round === 5 && vipLetter && player.letter.toUpperCase() === vipLetter){
-    vipLetterPos = { x: player.pos.x, y: player.pos.y };
-  }
-}
+function merge(arena, player) { arena[player.pos.y][player.pos.x] = player.letter; }
 function move(dir) { player.pos.x += dir; if(collide(arena, player)) player.pos.x -= dir; }
 function drop() { 
   if(!gameRunning) return;
@@ -888,34 +870,15 @@ fakeFrames.forEach(f=>{
  });
 }
 
-// ⚡ In draw() beim Zeichnen der Arena:
-arena.forEach((row,y)=>{
-  row.forEach((v,x)=>{
-    if(v){
-      let color = highlights[y][x] || COLORS[(x+y)%COLORS.length];
-
-      // VIP-Buchstabe immer weiß anzeigen
-      if(round === 5 && vipLetter && vipLetterPos &&
-         x === vipLetterPos.x && y === vipLetterPos.y){
-        color = '#ffffff';
+  arena.forEach((row,y)=>{
+    row.forEach((v,x)=>{
+      if(v){ 
+        ctx.fillStyle = highlights[y][x]||COLORS[(x+y)%COLORS.length]; 
+        ctx.fillText(v,x+0.5,y+0.5); 
       }
-
-      ctx.fillStyle = color;
-      ctx.fillText(v,x+0.5,y+0.5);
-    }
+    });
   });
-});
 
-  // ⚡ Spieler zeichnen
-let playerColor = COLORS[(player.pos.x + player.pos.y) % COLORS.length];
-
-// VIP-Buchstabe immer weiß
-if(round === 5 && player.letter.toUpperCase() === vipLetter){
-  playerColor = '#ffffff';
-}
-
-ctx.fillStyle = playerColor;
-ctx.fillText(player.letter, player.pos.x + 0.5, player.pos.y + 0.5);
   ctx.fillStyle=COLORS[(player.pos.x+player.pos.y)%COLORS.length];
   ctx.fillText(player.letter,player.pos.x+0.5,player.pos.y+0.5);
 }
@@ -957,7 +920,7 @@ function startGame() {
     
     gameRunning = true;
     resetPlayer();
-    round = 5; 
+    //round = 10; fur test (game)
     newTargetWord();
     updateRoundDisplay(); // ← Anzeige direkt updaten
   }
