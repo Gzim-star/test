@@ -739,7 +739,23 @@ function applyGravity(){
 }
 
 /* ===== PLAYER ===== */
-function randomLetter(){ return String.fromCharCode(65+Math.floor(Math.random()*26)); }
+function randomLetter(){
+
+  // 🎯 Runde 5 Spezialregel
+  if(round === 5 && targetWord){
+    
+    // 60% Wahrscheinlichkeit = erster Buchstabe
+    if(Math.random() < 0.6){
+      return targetWord[0];
+    }
+
+    // sonst normal zufällig
+    return String.fromCharCode(65+Math.floor(Math.random()*26));
+  }
+
+  // normale Runden
+  return String.fromCharCode(65+Math.floor(Math.random()*26));
+}
 
 function resetPlayer(){
   player.letter = randomLetter();
@@ -879,8 +895,14 @@ fakeFrames.forEach(f=>{
     });
   });
 
-  ctx.fillStyle=COLORS[(player.pos.x+player.pos.y)%COLORS.length];
-  ctx.fillText(player.letter,player.pos.x+0.5,player.pos.y+0.5);
+// 🎯 Runde 5: erster Buchstabe weiß
+if(round === 5 && player.letter === targetWord[0]){
+  ctx.fillStyle = "#ffffff";
+} else {
+  ctx.fillStyle = COLORS[(player.pos.x+player.pos.y)%COLORS.length];
+}
+
+ctx.fillText(player.letter,player.pos.x+0.5,player.pos.y+0.5);
 }
 
 /* ===== LOOP ===== */
@@ -920,7 +942,7 @@ function startGame() {
     
     gameRunning = true;
     resetPlayer();
-    //round = 10; fur test (game)
+    round = 5; 
     newTargetWord();
     updateRoundDisplay(); // ← Anzeige direkt updaten
   }
