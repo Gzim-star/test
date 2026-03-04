@@ -248,6 +248,7 @@ function shuffleWords() {
 
 /* ===== ARENA ===== */
 const arena = Array.from({ length: 20 }, () => Array(10).fill(null));
+const arenaColors = Array.from({ length: 20 }, () => Array(10).fill(null));
 const highlights = Array.from({ length: 20 }, () => Array(10).fill(null));
 
 const player = { pos: { x: 0, y: 0 }, letter: '' };
@@ -568,7 +569,16 @@ function collide(arena, player) {
   return y >= arena.length || x < 0 || x >= arena[0].length || arena[y][x] !== null;
 }
 
-function merge(arena, player) { arena[player.pos.y][player.pos.x] = player.letter; }
+function merge(arena, player) { 
+  arena[player.pos.y][player.pos.x] = player.letter;
+
+  // 🎯 Runde 5: weiß speichern
+  if(round === 5 && player.letter === targetWord[0]){
+    arenaColors[player.pos.y][player.pos.x] = "#ffffff";
+  } else {
+    arenaColors[player.pos.y][player.pos.x] = null;
+  }
+}
 function move(dir) { player.pos.x += dir; if(collide(arena, player)) player.pos.x -= dir; }
 function drop() { 
   if(!gameRunning) return;
@@ -889,7 +899,10 @@ fakeFrames.forEach(f=>{
   arena.forEach((row,y)=>{
     row.forEach((v,x)=>{
       if(v){ 
-        ctx.fillStyle = highlights[y][x]||COLORS[(x+y)%COLORS.length]; 
+         ctx.fillStyle =
+          highlights[y][x] ||
+           arenaColors[y][x] ||
+          COLORS[(x+y)%COLORS.length];
         ctx.fillText(v,x+0.5,y+0.5); 
       }
     });
