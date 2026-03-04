@@ -279,6 +279,8 @@ let pulseTime = 0;
 let pulseDuration = 300; // Millisekunden
 
 let hintDisabled = false; // Hint in Runde 4 deaktivieren
+let vipLetter = null;      // Der VIP-Buchstabe (weiß bleiben)
+let vipLetterPos = null;   // Position in der Arena
 // 🎨 Farben für Original Rahmen (deine bestehenden Farben benutzen)
 const originalFrameColors = [
   '#ff3b3b',  // 1  Rot
@@ -388,6 +390,14 @@ hintDisabled = (round === 4);
   }, 5000);
 }
 
+// VIP-Buchstabe nur in Runde 5
+if(round === 5){
+  vipLetter = targetWord[0].toUpperCase(); // erstes Buchstabe
+  vipLetterPos = null;                     // wird beim Merge gesetzt
+} else {
+  vipLetter = null;
+  vipLetterPos = null;
+}
 function getMaskedWord(word, round){
 
   if(round <= 1) return word;
@@ -568,7 +578,14 @@ function collide(arena, player) {
   return y >= arena.length || x < 0 || x >= arena[0].length || arena[y][x] !== null;
 }
 
-function merge(arena, player) { arena[player.pos.y][player.pos.x] = player.letter; }
+function merge(arena, player) { 
+  arena[player.pos.y][player.pos.x] = player.letter;
+
+  // VIP-Buchstabe speichern, wenn Runde 5
+  if(round === 5 && vipLetter && player.letter.toUpperCase() === vipLetter){
+    vipLetterPos = { x: player.pos.x, y: player.pos.y };
+  }
+}
 function move(dir) { player.pos.x += dir; if(collide(arena, player)) player.pos.x -= dir; }
 function drop() { 
   if(!gameRunning) return;
@@ -874,21 +891,16 @@ fakeFrames.forEach(f=>{
 arena.forEach((row,y)=>{
   row.forEach((v,x)=>{
     if(v){
-      // Standardfarbe
       let color = highlights[y][x] || COLORS[(x+y)%COLORS.length];
 
-      // Spezieller weißer Buchstabe für Runde 5
-      if(round === 5){
-        // Prüfen, ob dies der erste Buchstabe vom Target-Word ist
-        // UND im Original-Frame liegt
-        if(v.toUpperCase() === targetWord[0].toUpperCase() &&
-           x === frameX && y >= frameY && y < frameY + frameH){
-          color = '#ffffff'; // Immer weiß
-        }
+      // VIP-Buchstabe immer weiß anzeigen
+      if(round === 5 && vipLetter && vipLetterPos &&
+         x === vipLetterPos.x && y === vipLetterPos.y){
+        color = '#ffffff';
       }
 
       ctx.fillStyle = color;
-      ctx.fillText(v,x+0.5,y+0.5); 
+      ctx.fillText(v,x+0.5,y+0.5);
     }
   });
 });
