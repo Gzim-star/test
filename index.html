@@ -363,12 +363,10 @@ function newTargetWord() {
 
   targetWord = wordQueue[wordIndex++];
 
-  // 🔹 Rahmenhöhe automatisch an Wortlänge anpassen
   frameH = targetWord.length < 10 ? targetWord.length : 10;
 
-// Hint in Runde 4 deaktivieren
-hintDisabled = (round === 4);
-  
+  hintDisabled = (round === 4);
+
   if(!hintRevealed){
     document.getElementById('wordHint').textContent =
       getMaskedWord(targetWord, round);
@@ -376,28 +374,24 @@ hintDisabled = (round === 4);
 
   randomizeFrame();
   generateFakeFrames();
-  // Alten Timer stoppen
+
   if(colorShiftTimeout){
     clearTimeout(colorShiftTimeout);
   }
-
-  // Flag zurücksetzen
   colorShiftIllusionTriggered = false;
 
-  // Neuen Timer speichern
   colorShiftTimeout = setTimeout(() => {
     triggerColorShiftIllusion();
   }, 5000);
-}
 
-machen
+  // 🔹 RAHMEN FÜR RONDE 6 KURZ UNSICHTBAR
   if(round === 6){
-    framesInvisible = true;         // Rahmen sofort unsichtbar
+    framesInvisible = true;         
     setTimeout(()=>{
-        framesInvisible = false;    // nach 2 Sekunden wieder sichtbar
+        framesInvisible = false;    
     }, 2000);
   }
-}
+} // ← Ende Funktion
   
 function getMaskedWord(word, round){
 
