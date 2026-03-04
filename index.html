@@ -202,7 +202,7 @@ function playNextRoundTone() {
 
   // Sehr leise und kurz
   gain.gain.setValueAtTime(0.0001, now);
-  gain.gain.exponentialRampToValueAtTime(0.04, now + 0.05);
+  gain.gain.exponentialRampToValueAtTime(0.15, now + 0.05);
   gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
 
   osc.connect(filter);
@@ -859,30 +859,31 @@ if(!framesInvisible){
 }
 
 // 🟫 FAKE FRAMES
-fakeFrames.forEach(f=>{
-  let borderWidth = 0.05;
-  let alpha = 1;
+if(!framesInvisible){
+  fakeFrames.forEach(f=>{
+    let borderWidth = 0.05;
+    let alpha = 1;
 
-  if(fakePulseActive){
-    fakePulseTime += 16;
-    let progress = fakePulseTime / pulseDuration;
+    if(fakePulseActive){
+      fakePulseTime += 16;
+      let progress = fakePulseTime / pulseDuration;
 
-    if(progress >= 1){
-      fakePulseActive = false;
-    } else {
-      borderWidth = 0.05 + Math.sin(progress * Math.PI) * 0.08;
-      alpha = 1 + Math.sin(progress * Math.PI) * 0.5;
+      if(progress >= 1){
+        fakePulseActive = false;
+      } else {
+        borderWidth = 0.05 + Math.sin(progress * Math.PI) * 0.08;
+        alpha = 1 + Math.sin(progress * Math.PI) * 0.5;
+      }
     }
-  }
 
-  ctx.fillStyle='#000000';
-  ctx.globalAlpha = alpha;
-  ctx.strokeStyle = f.color || '#00ff00'; // benutze die individuelle Farbe
-  ctx.lineWidth = borderWidth;
-  ctx.fillRect(f.x+0.05, f.y-0.27, 0.9, frameH-0.2);
-  ctx.strokeRect(f.x+0.05, f.y-0.27, 0.9, frameH-0.2);
-  ctx.globalAlpha = 1;
- });
+    ctx.fillStyle='#000000';
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = f.color || '#00ff00';
+    ctx.lineWidth = borderWidth;
+    ctx.fillRect(f.x+0.05, f.y-0.27, 0.9, frameH-0.2);
+    ctx.strokeRect(f.x+0.05, f.y-0.27, 0.9, frameH-0.2);
+    ctx.globalAlpha = 1;
+  });
 }
 
   arena.forEach((row,y)=>{
@@ -935,7 +936,7 @@ function startGame() {
     
     gameRunning = true;
     resetPlayer();
-    //round = 10;
+    round = 5;
     newTargetWord();
     updateRoundDisplay(); // ← Anzeige direkt updaten
   }
