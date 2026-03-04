@@ -538,7 +538,7 @@ function triggerColorShiftIllusion(){
 
  function triggerFakeFramePulse() {
 
-  if(round !== 2) return;
+  if(round !== 2 && round !== 5) return;
   if(fakePulseTriggered) return;
   if(fakeFrames.length === 0) return;
 
@@ -554,7 +554,7 @@ function triggerColorShiftIllusion(){
   
 function triggerOriginalFramePulse() {
 
-  if(round !== 3) return;
+  if(round !== 3 && round !== 5) return;
 
   setTimeout(() => {
     pulseActive = true;
