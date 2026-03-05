@@ -438,17 +438,30 @@ function randomizeFrame() {
 
 function shuffleFrames(){
 
-  // Original Frame neue Position
-  frameX = Math.floor(Math.random() * arena[0].length);
+  // Alle Frames sammeln
+  const allFrames = [
+    {x: frameX, y: frameY, original:true},
+    ...fakeFrames.map(f => ({x:f.x, y:f.y, fake:f}))
+  ];
 
-  const minY = 5;
-  const maxY = arena.length - frameH;
-  frameY = Math.floor(Math.random() * (maxY - minY)) + minY;
+  // Positionen extrahieren
+  const positions = allFrames.map(f => ({x:f.x, y:f.y}));
 
-  // Fake Frames neue Position
-  fakeFrames.forEach(f=>{
-    f.x = Math.floor(Math.random() * arena[0].length);
-    f.y = Math.floor(Math.random() * (maxY - minY)) + minY;
+  // Positionen mischen
+  for(let i = positions.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [positions[i], positions[j]] = [positions[j], positions[i]];
+  }
+
+  // Neue Positionen verteilen
+  allFrames.forEach((f,i)=>{
+    if(f.original){
+      frameX = positions[i].x;
+      frameY = positions[i].y;
+    } else {
+      f.fake.x = positions[i].x;
+      f.fake.y = positions[i].y;
+    }
   });
 
 }
