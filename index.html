@@ -582,18 +582,40 @@ function checkAndClearWords() {
   const found = findWords();
   if(!found.length) return;
   let targetFound = false;
-
+  let fakeFrameHit = false;
+  
   found.forEach(group=>{
     const letters = group.map(([y,x])=>arena[y][x]).join('');
-    if(letters.toUpperCase() === targetWord){
-      const inFrame = group.every(([y,x])=> x===frameX && y>=frameY && y<frameY+frameH );
-      if(inFrame) targetFound=true;
+if(letters.toUpperCase() === targetWord){
+
+  const inOriginalFrame = group.every(([y,x])=> 
+    x===frameX && y>=frameY && y<frameY+frameH
+  );
+
+  const inFakeFrame = fakeFrames.some(f =>
+    group.every(([y,x]) =>
+      x===f.x && y>=f.y && y<f.y+frameH
+    )
+  );
+
+  if(inOriginalFrame){
+    targetFound = true;
+  }
+
+  if(inFakeFrame && round === 7){
+    fakeFrameHit = true;
+  }
+}
     }
     const color = COLORS[Math.floor(Math.random()*COLORS.length)];
     group.forEach(([y,x])=>highlights[y][x]=color);
   });
 
   setTimeout(()=>{
+    if(fakeFrameHit){
+   round = 6;
+  updateRoundDisplay();
+}
     if(targetFound){
 
   playNextRoundTone(); // 👈 HIER
@@ -607,7 +629,8 @@ function checkAndClearWords() {
    if(round > maxRounds){
   round = 1;
 }
- updateRoundDisplay();
+ 
+  updateRoundDisplay();
     // Runde 6 Spezialeffekt
 if(round === 6){
   setTimeout(()=>{
