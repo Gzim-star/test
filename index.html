@@ -279,6 +279,8 @@ let pulseTime = 0;
 let pulseDuration = 300; // Millisekunden
 let framesInvisible = false;
 let hintDisabled = false; // Hint in Runde 4 deaktivieren
+let framesShuffled = false;
+let shuffleTimer = 0;
 // 🎨 Farben für Original Rahmen (deine bestehenden Farben benutzen)
 const originalFrameColors = [
   '#ff3b3b',  // 1  Rot
@@ -434,6 +436,22 @@ function randomizeFrame() {
   frameY = Math.floor(Math.random() * (maxY - minY)) + minY;
 }
 
+function shuffleFrames(){
+
+  // Original Frame neue Position
+  frameX = Math.floor(Math.random() * arena[0].length);
+
+  const minY = 5;
+  const maxY = arena.length - frameH;
+  frameY = Math.floor(Math.random() * (maxY - minY)) + minY;
+
+  // Fake Frames neue Position
+  fakeFrames.forEach(f=>{
+    f.x = Math.floor(Math.random() * arena[0].length);
+    f.y = Math.floor(Math.random() * (maxY - minY)) + minY;
+  });
+
+}
 function generateFakeFrames() {
   fakeFrames = [];
   let fakeCount = round - 1;
@@ -651,7 +669,10 @@ if(letters.toUpperCase() === targetWord){
 }
  
   updateRoundDisplay();
-    // Runde 6 Spezialeffekt
+    
+framesShuffled = false;
+shuffleTimer = 0;   
+// Runde 6 Spezialeffekt
 if(round === 6){
   setTimeout(()=>{
     framesInvisible = true;
@@ -954,7 +975,17 @@ function update(time=0){
   draw();
   requestAnimationFrame(update);
 }
+// Runde 8 Frame Shuffle
+if(gameRunning && round === 8 && !framesShuffled){
 
+  shuffleTimer += delta;
+
+  if(shuffleTimer > 3000){   // nach 4 Sekunden
+    shuffleFrames();
+    framesShuffled = true;
+  }
+
+}
 /* ===== INPUT ===== */
 document.addEventListener('keydown',e=>{
   if(e.key==='ArrowLeft') move(-1);
@@ -979,7 +1010,7 @@ function startGame() {
     
     gameRunning = true;
     resetPlayer();
-    //round = 7; fur testen (game)
+    round = 7; 
     newTargetWord();
     updateRoundDisplay(); // ← Anzeige direkt updaten
   }
