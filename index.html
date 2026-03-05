@@ -279,8 +279,6 @@ let pulseTime = 0;
 let pulseDuration = 300; // Millisekunden
 let framesInvisible = false;
 let hintDisabled = false; // Hint in Runde 4 deaktivieren
-let framesShuffled = false;
-let shuffleTimer = 0;
 // 🎨 Farben für Original Rahmen (deine bestehenden Farben benutzen)
 const originalFrameColors = [
   '#ff3b3b',  // 1  Rot
@@ -436,35 +434,6 @@ function randomizeFrame() {
   frameY = Math.floor(Math.random() * (maxY - minY)) + minY;
 }
 
-function shuffleFrames(){
-
-  // Alle Frames sammeln
-  const allFrames = [
-    {x: frameX, y: frameY, original:true},
-    ...fakeFrames.map(f => ({x:f.x, y:f.y, fake:f}))
-  ];
-
-  // Positionen extrahieren
-  const positions = allFrames.map(f => ({x:f.x, y:f.y}));
-
-  // Positionen mischen
-  for(let i = positions.length - 1; i > 0; i--){
-    const j = Math.floor(Math.random() * (i + 1));
-    [positions[i], positions[j]] = [positions[j], positions[i]];
-  }
-
-  // Neue Positionen verteilen
-  allFrames.forEach((f,i)=>{
-    if(f.original){
-      frameX = positions[i].x;
-      frameY = positions[i].y;
-    } else {
-      f.fake.x = positions[i].x;
-      f.fake.y = positions[i].y;
-    }
-  });
-
-}
 function generateFakeFrames() {
   fakeFrames = [];
   let fakeCount = round - 1;
@@ -682,10 +651,7 @@ if(letters.toUpperCase() === targetWord){
 }
  
   updateRoundDisplay();
-    
-framesShuffled = false;
-shuffleTimer = 0;   
-// Runde 6 Spezialeffekt
+    // Runde 6 Spezialeffekt
 if(round === 6){
   setTimeout(()=>{
     framesInvisible = true;
@@ -980,32 +946,15 @@ if(!framesInvisible){
 let lastTime=0, dropCounter=0, dropInterval=700;
 function update(time=0){
   const delta = time - lastTime;
-  lastTime = time;
-
+  lastTime=time;
   if(gameRunning){
-    dropCounter += delta;
-
-    if(dropCounter > dropInterval){
-      drop();
-      dropCounter = 0;
-    }
-
-    // ⭐ RUNDE 8 FRAME SHUFFLE
-    if(round === 3 && !framesShuffled){
-
-      shuffleTimer += delta;
-
-      if(shuffleTimer > 3000){
-        shuffleFrames();
-        framesShuffled = true;
-      }
-
-    }
+    dropCounter+=delta;
+    if(dropCounter>dropInterval){ drop(); dropCounter=0; }
   }
-
   draw();
   requestAnimationFrame(update);
 }
+
 /* ===== INPUT ===== */
 document.addEventListener('keydown',e=>{
   if(e.key==='ArrowLeft') move(-1);
@@ -1030,7 +979,7 @@ function startGame() {
     
     gameRunning = true;
     resetPlayer();
-    //round = 8;
+    //round = 7; fur testen (game)
     newTargetWord();
     updateRoundDisplay(); // ← Anzeige direkt updaten
   }
