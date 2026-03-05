@@ -967,24 +967,31 @@ if(!framesInvisible){
 let lastTime=0, dropCounter=0, dropInterval=700;
 function update(time=0){
   const delta = time - lastTime;
-  lastTime=time;
+  lastTime = time;
+
   if(gameRunning){
-    dropCounter+=delta;
-    if(dropCounter>dropInterval){ drop(); dropCounter=0; }
+    dropCounter += delta;
+
+    if(dropCounter > dropInterval){
+      drop();
+      dropCounter = 0;
+    }
+
+    // ⭐ RUNDE 8 FRAME SHUFFLE
+    if(round === 8 && !framesShuffled){
+
+      shuffleTimer += delta;
+
+      if(shuffleTimer > 3000){
+        shuffleFrames();
+        framesShuffled = true;
+      }
+
+    }
   }
+
   draw();
   requestAnimationFrame(update);
-}
-// Runde 8 Frame Shuffle
-if(gameRunning && round === 8 && !framesShuffled){
-
-  shuffleTimer += delta;
-
-  if(shuffleTimer > 3000){   // nach 4 Sekunden
-    shuffleFrames();
-    framesShuffled = true;
-  }
-
 }
 /* ===== INPUT ===== */
 document.addEventListener('keydown',e=>{
