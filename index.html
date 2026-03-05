@@ -991,7 +991,7 @@ function update(time=0){
     }
 
     // ⭐ RUNDE 8 FRAME SHUFFLE
-    if(round === 8 && !framesShuffled){
+    if(round === 2 && !framesShuffled){
 
       shuffleTimer += delta;
 
@@ -1030,7 +1030,7 @@ function startGame() {
     
     gameRunning = true;
     resetPlayer();
-    round = 8;
+    //round = 8;
     newTargetWord();
     updateRoundDisplay(); // ← Anzeige direkt updaten
   }
