@@ -636,8 +636,10 @@ if(letters.toUpperCase() === targetWord){
 
   return;
 }
-    if(targetFound){
+  if(targetFound){
 
+  framesInvisible = false; // 🔧 Reset damit neue Runde wieder sichtbar ist
+      
   playNextRoundTone(); // 👈 HIER
   // Spielfeld leeren
   arena.forEach(r=>r.fill(null));
