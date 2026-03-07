@@ -604,16 +604,14 @@ if(inOriginalFrame){
   }else{
     targetFound = true;    // normal
   }
-}
 
   if(inFakeFrame){
-  if(round === 7){
+   if(round === 7){
     fakeFrameHit = true;   // Runde 7 Strafe
   }
   if(round === 8){
     targetFound = true;    // Runde 8 Fake ist richtig
   }
-}
     
     const color = COLORS[Math.floor(Math.random()*COLORS.length)];
     group.forEach(([y,x])=>highlights[y][x]=color);
