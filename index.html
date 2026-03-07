@@ -411,47 +411,57 @@ function getMaskedWord(word, round){
   return letters.join('');
 }
 
-function revealHint(){
- if(hintDisabled) return;
+// Überschreibe die bestehende revealHint()-Funktion
+function revealHint() {
+  if(hintDisabled) return;
   if(hintRevealed) return;
 
   hintRevealed = true;
-
-  // Ganzes Wort anzeigen
-  document.getElementById('wordHint').textContent = targetWord;
-
-  // Nach 2 Sekunden wieder maskieren
-  revealTimeout = setTimeout(() => {
-    hintRevealed = false;
-    document.getElementById('wordHint').textContent =
-      getMaskedWord(targetWord, round);
-  }, 2000);
-}
-function revealFakeHint() {
-  if(round !== 9) return;   // ✅ Nur Runde 9
-  if(hintDisabled) return;
-  if(hintRevealed) return; // verhindert gleichzeitiges Original-Hint
-
-  hintRevealed = true; // verhindert, dass Hint wiederholt geklickt wird
-
-  const fakeWord = getFakeWord(targetWord); // erzeugt ein Fake-Hint Wort
-
   const hintEl = document.getElementById('wordHint');
 
-  // Schritt 1: Zeige Fake-Hint für 2 Sekunden
-  hintEl.textContent = fakeWord;
-
-  setTimeout(() => {
-    // Schritt 2: Zeige kurz das Original-Wort für 2 Sekunden
-    hintEl.textContent = targetWord;
+  if(round === 9) {
+    // 🎭 Fake Hint zuerst
+    const fakeWord = getFakeWord(targetWord);
+    hintEl.textContent = fakeWord;
 
     setTimeout(() => {
-      // Schritt 3: Maske wiederherstellen
+      // Zeige Original-Wort
+      hintEl.textContent = targetWord;
+
+      setTimeout(() => {
+        // Wieder maskieren
+        hintEl.textContent = getMaskedWord(targetWord, round);
+        hintRevealed = false;
+      }, 2000);
+
+    }, 2000);
+
+  } else {
+    // Normale Runde: direkt Original-Wort für 2s
+    hintEl.textContent = targetWord;
+    setTimeout(() => {
       hintEl.textContent = getMaskedWord(targetWord, round);
       hintRevealed = false;
     }, 2000);
+  }
+}
 
-  }, 2000);
+// Hilfsfunktion für Fake-Hint
+function getFakeWord(word){
+  const letters = word.split('');
+  const numReplace = Math.max(1, Math.floor(letters.length * 0.4));
+  const indexes = [];
+  
+  while(indexes.length < numReplace){
+    const i = Math.floor(Math.random() * letters.length);
+    if(!indexes.includes(i)) indexes.push(i);
+  }
+
+  indexes.forEach(i=>{
+    letters[i] = String.fromCharCode(65 + Math.floor(Math.random()*26));
+  });
+
+  return letters.join('');
 }
 
 // Erzeugt ein Fake-Hint Wort, z.B. zufällig Buchstaben ersetzen
