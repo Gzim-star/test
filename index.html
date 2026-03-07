@@ -598,6 +598,21 @@ if(letters.toUpperCase() === targetWord){
     )
   );
 
+// Runde 8 Spezialregel
+if(round === 8){
+
+  if(inFakeFrame){
+    targetFound = true;   // Fake ist jetzt richtig
+  }
+
+  if(inOriginalFrame){
+    fakeFrameHit = true;  // Original ist jetzt falsch
+  }
+
+}
+else{
+
+  // Normales Verhalten
   if(inOriginalFrame){
     targetFound = true;
   }
@@ -605,6 +620,7 @@ if(letters.toUpperCase() === targetWord){
   if(inFakeFrame && round === 7){
     fakeFrameHit = true;
   }
+
 }
     
     const color = COLORS[Math.floor(Math.random()*COLORS.length)];
@@ -976,7 +992,7 @@ function startGame() {
     
     gameRunning = true;
     resetPlayer();
-    //round = 7; fur testen (game)
+    round = 8; 
     newTargetWord();
     updateRoundDisplay(); // ← Anzeige direkt updaten
   }
