@@ -252,7 +252,6 @@ const highlights = Array.from({ length: 20 }, () => Array(10).fill(null));
 
 const player = { pos: { x: 0, y: 0 }, letter: '' };
 let targetWord = '';
-let fakeWordForRound = ''; // Fake-Wort fix nur für Runde 9
 let gameRunning = false;
 let hintRevealed = false;
 let revealTimeout = null;
@@ -362,11 +361,6 @@ function newTargetWord() {
 
   targetWord = wordQueue[wordIndex++];
 
-  if(round === 9){
-    fakeWordForRound = generateFakeWord(targetWord);
-} else {
-    fakeWordForRound = ''; // sonst leer
-}
   // 🔹 Rahmenhöhe automatisch an Wortlänge anpassen
   frameH = targetWord.length < 10 ? targetWord.length : 10;
 
@@ -417,30 +411,47 @@ function getMaskedWord(word, round){
   return letters.join('');
 }
 
+// 🔹 Fake-Hint aus WORDS-Liste, gleiche Länge wie targetWord
+function getFakeWord(originalWord) {
+  const len = originalWord.length;
+  const candidates = WORDS.filter(w => w.length === len && w.toUpperCase() !== originalWord.toUpperCase());
+  if(candidates.length === 0) return originalWord; // Fallback
+  const index = Math.floor(Math.random() * candidates.length);
+  return candidates[index].toUpperCase();
+}
+
 function revealHint(){
   if(hintDisabled) return;
   if(hintRevealed) return;
 
   hintRevealed = true;
+  const hintEl = document.getElementById('wordHint');
 
-  // Nur in Runde 9 Fake-Wort fix zeigen
-  if(round === 9 && fakeWordForRound){
-      document.getElementById('wordHint').textContent = fakeWordForRound;
+  if(round === 9){
+    // 🎭 Fake Hint zuerst
+    const fakeWord = getFakeWord(targetWord);
+    hintEl.textContent = fakeWord;
+
+    setTimeout(() => {
+      // Original-Wort zeigen
+      hintEl.textContent = targetWord;
+
+      setTimeout(() => {
+        // Wieder maskieren
+        hintEl.textContent = getMaskedWord(targetWord, round);
+        hintRevealed = false;
+      }, 2000);
+
+    }, 2000);
+
   } else {
-      // Wie bisher: kurz echtes Wort zeigen
-      document.getElementById('wordHint').textContent = targetWord;
+    // Normale Runde
+    hintEl.textContent = targetWord;
+    revealTimeout = setTimeout(() => {
+      hintEl.textContent = getMaskedWord(targetWord, round);
+      hintRevealed = false;
+    }, 2000);
   }
-
-  // Nach 2 Sekunden wieder maskieren
-  revealTimeout = setTimeout(() => {
-    hintRevealed = false;
-    document.getElementById('wordHint').textContent =
-      getMaskedWord(targetWord, round);
-  }, 2000);
-}
-function generateFakeWord(realWord){
-  let candidates = WORDS.filter(w => w !== realWord);
-  return candidates[Math.floor(Math.random() * candidates.length)];
 }
 function randomizeFrame() {
   frameX = Math.floor(Math.random() * arena[0].length);
@@ -1000,7 +1011,7 @@ function startGame() {
     
     gameRunning = true;
     resetPlayer();
-    round = 8;
+    //round = 8; fur testen (game)
     newTargetWord();
     updateRoundDisplay(); // ← Anzeige direkt updaten
   }
