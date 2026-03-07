@@ -134,6 +134,7 @@ canvas {
 <div class="game">
   <div class="hint">
   <span id="wordHint" onclick="revealHint()" style="cursor:pointer;">Hint</span>
+<span id="fakeHint" onclick="revealFakeHint()" style="cursor:pointer; color: #ff9999;">Hint</span>
 </div>
   <canvas id="wordFallCanvas" width="300" height="600"></canvas>
 
@@ -426,6 +427,50 @@ function revealHint(){
     document.getElementById('wordHint').textContent =
       getMaskedWord(targetWord, round);
   }, 2000);
+}
+function revealFakeHint() {
+  if(round !== 9) return;   // ✅ Nur Runde 9
+  if(hintDisabled) return;
+  if(hintRevealed) return; // verhindert gleichzeitiges Original-Hint
+
+  hintRevealed = true; // verhindert, dass Hint wiederholt geklickt wird
+
+  const fakeWord = getFakeWord(targetWord); // erzeugt ein Fake-Hint Wort
+
+  const hintEl = document.getElementById('wordHint');
+
+  // Schritt 1: Zeige Fake-Hint für 2 Sekunden
+  hintEl.textContent = fakeWord;
+
+  setTimeout(() => {
+    // Schritt 2: Zeige kurz das Original-Wort für 2 Sekunden
+    hintEl.textContent = targetWord;
+
+    setTimeout(() => {
+      // Schritt 3: Maske wiederherstellen
+      hintEl.textContent = getMaskedWord(targetWord, round);
+      hintRevealed = false;
+    }, 2000);
+
+  }, 2000);
+}
+
+// Erzeugt ein Fake-Hint Wort, z.B. zufällig Buchstaben ersetzen
+function getFakeWord(word){
+  const letters = word.split('');
+  const numReplace = Math.max(1, Math.floor(letters.length * 0.4)); // 40% ersetzen
+  const indexes = [];
+  
+  while(indexes.length < numReplace){
+    const i = Math.floor(Math.random() * letters.length);
+    if(!indexes.includes(i)) indexes.push(i);
+  }
+
+  indexes.forEach(i=>{
+    letters[i] = String.fromCharCode(65 + Math.floor(Math.random()*26));
+  });
+
+  return letters.join('');
 }
 function randomizeFrame() {
   frameX = Math.floor(Math.random() * arena[0].length);
