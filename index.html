@@ -598,20 +598,14 @@ if(letters.toUpperCase() === targetWord){
     )
   );
 
-if(inOriginalFrame){
-  if(round === 8){
-    fakeFrameHit = true;   // Original ist falsch
-  }else{
-    targetFound = true;    // normal
+  if(inOriginalFrame){
+    targetFound = true;
   }
 
-  if(inFakeFrame){
-   if(round === 7){
-    fakeFrameHit = true;   // Runde 7 Strafe
+  if(inFakeFrame && round === 7){
+    fakeFrameHit = true;
   }
-  if(round === 8){
-    targetFound = true;    // Runde 8 Fake ist richtig
-  }
+}
     
     const color = COLORS[Math.floor(Math.random()*COLORS.length)];
     group.forEach(([y,x])=>highlights[y][x]=color);
@@ -982,7 +976,7 @@ function startGame() {
     
     gameRunning = true;
     resetPlayer();
-    round = 8;
+    //round = 7; fur testen (game)
     newTargetWord();
     updateRoundDisplay(); // ← Anzeige direkt updaten
   }
