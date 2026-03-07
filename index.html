@@ -411,21 +411,29 @@ function getMaskedWord(word, round){
   return letters.join('');
 }
 
-// Überschreibe die bestehende revealHint()-Funktion
-function revealHint() {
+// 🔹 Fake-Hint aus WORDS-Liste, gleiche Länge wie targetWord
+function getFakeWord(originalWord) {
+  const len = originalWord.length;
+  const candidates = WORDS.filter(w => w.length === len && w.toUpperCase() !== originalWord.toUpperCase());
+  if(candidates.length === 0) return originalWord; // Fallback
+  const index = Math.floor(Math.random() * candidates.length);
+  return candidates[index].toUpperCase();
+}
+
+function revealHint(){
   if(hintDisabled) return;
   if(hintRevealed) return;
 
   hintRevealed = true;
   const hintEl = document.getElementById('wordHint');
 
-  if(round === 9) {
+  if(round === 9){
     // 🎭 Fake Hint zuerst
     const fakeWord = getFakeWord(targetWord);
     hintEl.textContent = fakeWord;
 
     setTimeout(() => {
-      // Zeige Original-Wort
+      // Original-Wort zeigen
       hintEl.textContent = targetWord;
 
       setTimeout(() => {
@@ -437,49 +445,13 @@ function revealHint() {
     }, 2000);
 
   } else {
-    // Normale Runde: direkt Original-Wort für 2s
+    // Normale Runde
     hintEl.textContent = targetWord;
-    setTimeout(() => {
+    revealTimeout = setTimeout(() => {
       hintEl.textContent = getMaskedWord(targetWord, round);
       hintRevealed = false;
     }, 2000);
   }
-}
-
-// Hilfsfunktion für Fake-Hint
-function getFakeWord(word){
-  const letters = word.split('');
-  const numReplace = Math.max(1, Math.floor(letters.length * 0.4));
-  const indexes = [];
-  
-  while(indexes.length < numReplace){
-    const i = Math.floor(Math.random() * letters.length);
-    if(!indexes.includes(i)) indexes.push(i);
-  }
-
-  indexes.forEach(i=>{
-    letters[i] = String.fromCharCode(65 + Math.floor(Math.random()*26));
-  });
-
-  return letters.join('');
-}
-
-// Erzeugt ein Fake-Hint Wort, z.B. zufällig Buchstaben ersetzen
-function getFakeWord(word){
-  const letters = word.split('');
-  const numReplace = Math.max(1, Math.floor(letters.length * 0.4)); // 40% ersetzen
-  const indexes = [];
-  
-  while(indexes.length < numReplace){
-    const i = Math.floor(Math.random() * letters.length);
-    if(!indexes.includes(i)) indexes.push(i);
-  }
-
-  indexes.forEach(i=>{
-    letters[i] = String.fromCharCode(65 + Math.floor(Math.random()*26));
-  });
-
-  return letters.join('');
 }
 function randomizeFrame() {
   frameX = Math.floor(Math.random() * arena[0].length);
@@ -1039,7 +1011,7 @@ function startGame() {
     
     gameRunning = true;
     resetPlayer();
-    round = 8;
+    round = 8; 
     newTargetWord();
     updateRoundDisplay(); // ← Anzeige direkt updaten
   }
