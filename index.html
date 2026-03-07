@@ -598,13 +598,22 @@ if(letters.toUpperCase() === targetWord){
     )
   );
 
-  if(inOriginalFrame){
-    targetFound = true;
-  }
+if(round === 8){
+    // In Runde 8 ist nur der Fake Frame korrekt
+    if(inFakeFrame){
+        targetFound = true;       // Fake Frame = korrekt
+        // Optional: eigener Ton
+        // playFakeFrameTone(); 
+    }
+    // Original Frame ignorieren
+} else {
+    if(inOriginalFrame){
+        targetFound = true;
+    }
 
-  if(inFakeFrame && round === 7){
-    fakeFrameHit = true;
-  }
+    if(inFakeFrame && round === 7){
+        fakeFrameHit = true;
+    }
 }
     
     const color = COLORS[Math.floor(Math.random()*COLORS.length)];
