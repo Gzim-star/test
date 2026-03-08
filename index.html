@@ -351,35 +351,6 @@ const fakeFrameColors = [
 let shuffledFrameColors = [];
 let colorIndex = 0;
 
-// 🔹 Runde 4: spezielle Rahmen (4,6,8,10) + Original-Hinweis
-let round4Frames = null;
-
-function setupRound4Frames() {
-  if(round !== 4) return;
-
-  round4Frames = []; // 🔴 wichtig
-  
-  const lengths = [4,6,8,10];
-
-  const positions = [];
-  while(positions.length < 4){
-    const x = Math.floor(Math.random() * arena[0].length);
-    if(!positions.includes(x)) positions.push(x);
-  }
-
-  if(!shuffledFrameColors || shuffledFrameColors.length < 4) shuffleFrameColors();
-
-  round4Frames = lengths.map((len,i)=>{
-    return {
-      x: positions[i],
-      y: Math.floor(Math.random() * (arena.length - len - 5) + 5),
-      len: len,
-      color: shuffledFrameColors[i],
-      isOriginal: i===3
-    }
-  });
-}
-  
 function shuffleFrameColors() {
   shuffledFrameColors = [...fakeFrameColors].sort(() => Math.random() - 0.5);
   colorIndex = 0;
@@ -390,29 +361,19 @@ function newTargetWord() {
 
   targetWord = wordQueue[wordIndex++];
 
-// 🔹 Spezielle Runde 4 Frames
-if(round === 4){
-  setupRound4Frames();
-  hintRevealed = false;
-  document.getElementById('wordHint').textContent = 'Hint';
-}
-  
   // 🔹 Rahmenhöhe automatisch an Wortlänge anpassen
   frameH = targetWord.length < 10 ? targetWord.length : 10;
 
-if(round !== 4){
-  randomizeFrame();
-  generateFakeFrames();
-}
-  
 // Hint in Runde 4 deaktivieren
-hintDisabled = (round === 10);
+hintDisabled = (round === 4);
   
   if(!hintRevealed){
     document.getElementById('wordHint').textContent =
       getMaskedWord(targetWord, round);
   }
 
+  randomizeFrame();
+  generateFakeFrames();
   // Alten Timer stoppen
   if(colorShiftTimeout){
     clearTimeout(colorShiftTimeout);
@@ -466,30 +427,6 @@ function revealHint(){
   hintRevealed = true;
   const hintEl = document.getElementById('wordHint');
 
-if(round === 4){
-  const hintEl = document.getElementById('wordHint');
-
-  const wordsToShow = round4Frames.slice(0,3).map(f => getFakeWord(targetWord));
-  wordsToShow.push(targetWord); // Original zuletzt
-
-  let index = 0;
-  function showNextWord(){
-    hintEl.textContent = wordsToShow[index];
-    index++;
-    if(index < wordsToShow.length){
-      setTimeout(showNextWord, 2000);
-    } else {
-      setTimeout(()=>{
-        hintEl.textContent = getMaskedWord(targetWord, round);
-        hintRevealed = false;
-      }, 2000);
-    }
-  }
-
-  showNextWord();
-  return; // Stoppt normale Hint-Funktion
-}
-  
   if(round === 9){
     // 🎭 Fake Hint zuerst
     const fakeWord = getFakeWord(targetWord);
@@ -677,14 +614,6 @@ function checkAndClearWords() {
     const letters = group.map(([y,x])=>arena[y][x]).join('');
 if(letters.toUpperCase() === targetWord){
 
-if(round === 4){
-  // Nur Original-Frame zählt
-  const inOriginalFrame = group.every(([y,x]) => 
-    round4Frames.some(f => f.isOriginal && x===f.x && y>=f.y && y<f.y+f.len)
-  );
-  if(inOriginalFrame) targetFound = true;
-}
-  
   const inOriginalFrame = group.every(([y,x])=> 
     x===frameX && y>=frameY && y<frameY+frameH
   );
@@ -990,7 +919,7 @@ if(pulseActive){
 let currentColor = frameColor || '#00ff00';
 
 // Nur zeichnen wenn sichtbar
-if(!framesInvisible && round !== 4){
+if(!framesInvisible){
 
   // Hintergrund
   ctx.fillStyle = '#000000';
@@ -1004,17 +933,6 @@ if(!framesInvisible && round !== 4){
   ctx.globalAlpha = 1;
 }
 
-if(round === 4 && round4Frames){
-  round4Frames.forEach(f=>{
-    let borderWidth = 0.05;
-    ctx.fillStyle = '#000';
-    ctx.strokeStyle = f.color;
-    ctx.lineWidth = borderWidth;
-    ctx.fillRect(f.x+0.05, f.y-0.27, 0.9, f.len-0.2);
-    ctx.strokeRect(f.x+0.05, f.y-0.27, 0.9, f.len-0.2);
-  });
-}
-  
 // 🟫 FAKE FRAMES
 if(!framesInvisible){
   fakeFrames.forEach(f=>{
@@ -1093,13 +1011,13 @@ function startGame() {
     
     gameRunning = true;
     resetPlayer();
-    round = 4; 
+    //round = 10; fur testen (game) 
     newTargetWord();
     updateRoundDisplay(); // ← Anzeige direkt updaten
   }
 }
 
-function restartGame(){ arena.forEach(r=>r.fill(null)); clearHighlights(); resetPlayer(); shuffleFrameColors(); colorIndex = 0; newTargetWord();  dropCounter=0; gameRunning=true; }
+function restartGame(){ arena.forEach(r=>r.fill(null)); clearHighlights(); resetPlayer(); shuffleFrameColors(); colorIndex = 0; newTargetWord(); generateFakeFrames(); dropCounter=0; gameRunning=true; }
 function dropFast(){ if(!gameRunning) return; while(!collide(arena,player)){ player.pos.y++; } player.pos.y--; merge(arena,player); checkAndClearWords(); clearDiagonalSixByColor(); resetPlayer(); }
 
 /* ===== INIT ===== */
