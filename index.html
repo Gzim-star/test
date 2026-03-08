@@ -398,6 +398,11 @@ if(round === 4){
   // 🔹 Rahmenhöhe automatisch an Wortlänge anpassen
   frameH = targetWord.length < 10 ? targetWord.length : 10;
 
+if(round !== 4){
+  randomizeFrame();
+  generateFakeFrames();
+}
+  
 // Hint in Runde 4 deaktivieren
 hintDisabled = (round === 10);
   
@@ -985,7 +990,7 @@ if(pulseActive){
 let currentColor = frameColor || '#00ff00';
 
 // Nur zeichnen wenn sichtbar
-if(!framesInvisible){
+if(!framesInvisible && round !== 4){
 
   // Hintergrund
   ctx.fillStyle = '#000000';
@@ -1088,7 +1093,7 @@ function startGame() {
     
     gameRunning = true;
     resetPlayer();
-    //round = 10; fur testen (game)
+    round = 4; 
     newTargetWord();
     updateRoundDisplay(); // ← Anzeige direkt updaten
   }
