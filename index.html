@@ -365,7 +365,7 @@ function newTargetWord() {
   frameH = targetWord.length < 10 ? targetWord.length : 10;
 
 // Hint in Runde 4 deaktivieren
-hintDisabled = (round === 4);
+hintDisabled = (round === 10);
   
   if(!hintRevealed){
     document.getElementById('wordHint').textContent =
@@ -1011,7 +1011,7 @@ function startGame() {
     
     gameRunning = true;
     resetPlayer();
-    //round = 9; fur testen (game)
+    round = 4; 
     newTargetWord();
     updateRoundDisplay(); // ← Anzeige direkt updaten
   }
