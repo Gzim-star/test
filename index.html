@@ -357,10 +357,9 @@ let round4Frames = null;
 function setupRound4Frames() {
   if(round !== 4) return;
 
-  round4Frames = [];
-
+  round4Frames = []; // 🔴 wichtig
+  
   const lengths = [4,6,8,10];
-  const originalIndex = Math.floor(Math.random()*4);
 
   const positions = [];
   while(positions.length < 4){
@@ -376,7 +375,7 @@ function setupRound4Frames() {
       y: Math.floor(Math.random() * (arena.length - len - 5) + 5),
       len: len,
       color: shuffledFrameColors[i],
-      isOriginal: i===originalIndex
+      isOriginal: i===3
     }
   });
 }
