@@ -291,6 +291,7 @@ let pulseTime = 0;
 let pulseDuration = 300; // Millisekunden
 let framesInvisible = false;
 let hintDisabled = false; // Hint in Runde 4 deaktivieren
+let mindMessageShown = false;
 // 🎨 Farben für Original Rahmen (deine bestehenden Farben benutzen)
 const originalFrameColors = [
   '#ff3b3b',  // 1  Rot
@@ -703,7 +704,8 @@ else if(round === 8){
 
   // Runde erhöhen (max 9)
   round++;
-   if(round > maxRounds){
+   mindMessageShown = false;
+    if(round > maxRounds){
   round = 1;
 }
  
@@ -1052,6 +1054,7 @@ setTimeout(()=>{
 },5000);
 
 if(wordQueue.length===0) shuffleWords();
+
 const messages = [
   "ARE YOU SURE?",
   "LOOK AGAIN",
@@ -1060,7 +1063,7 @@ const messages = [
 
 setInterval(()=>{
 
-  if(round >= 2 && round <= 10){
+  if(round >= 2 && round <= 10 && !mindMessageShown){
 
     const msg = document.getElementById("mindMessage");
 
@@ -1073,6 +1076,8 @@ setInterval(()=>{
     setTimeout(()=>{
       msg.style.opacity = 0;
     },2500);
+
+    mindMessageShown = true;
 
   }
 
