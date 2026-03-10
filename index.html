@@ -58,6 +58,7 @@ canvas {
 }
 
 .title {
+  animation: titlePulse 3s infinite;
   text-shadow:
   0 0 6px rgba(255,255,255,0.4),
   0 0 12px rgba(255,255,255,0.2);
@@ -94,6 +95,12 @@ canvas {
   letter-spacing: 2px;
 }
 
+@keyframes titlePulse{
+  0% { opacity: 0.9; }
+  50% { opacity: 1; }
+  100% { opacity: 0.9; }
+}
+  
 @keyframes reveal {
   to {
     opacity: 1;
