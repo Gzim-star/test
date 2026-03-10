@@ -119,6 +119,18 @@ canvas {
   border-radius: 10px;
 }
 
+ #mindMessage{
+  position:absolute;
+  top:45%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  color:white;
+  font-family:'Press Start 2P', monospace;
+  font-size:12px;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 1.5s;
+} 
 </style>
 </head>
 
@@ -136,7 +148,7 @@ canvas {
   <span id="wordHint" onclick="revealHint()" style="cursor:pointer;">Hint</span>
 </div>
   <canvas id="wordFallCanvas" width="300" height="600"></canvas>
-
+<div id="mindMessage"></div>
 <div id="roundDisplay" style="
     position: relative;
     top: 65px;        /* + Wert = runter | - Wert = hoch */
@@ -1019,7 +1031,7 @@ function startGame() {
     
     gameRunning = true;
     resetPlayer();
-    //round = 10; fur testen (game)
+    round = 2; 
     newTargetWord();
     updateRoundDisplay(); // ← Anzeige direkt updaten
   }
@@ -1040,6 +1052,31 @@ setTimeout(()=>{
 },5000);
 
 if(wordQueue.length===0) shuffleWords();
+const messages = [
+  "ARE YOU SURE?",
+  "LOOK AGAIN",
+  "TRUST NOTHING"
+];
+
+setInterval(()=>{
+
+  if(round >= 2 && round <= 10){
+
+    const msg = document.getElementById("mindMessage");
+
+    const randomText = messages[Math.floor(Math.random()*messages.length)];
+
+    msg.textContent = randomText;
+
+    msg.style.opacity = 1;
+
+    setTimeout(()=>{
+      msg.style.opacity = 0;
+    },2500);
+
+  }
+
+},120000);
 update();
 </script>
 </body>
