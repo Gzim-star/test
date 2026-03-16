@@ -639,6 +639,15 @@ if(letters.toUpperCase() === targetWord){
 
   if(round === 10){
 
+  
+     // 🔹 Runde 4 Spezial: 2. Buchstabe unsichtbar machen
+  if(round === 4 && inOriginalFrame){
+    const secondLetterIndex = 1; // Index 1 = 2. Buchstabe
+    const [ySecond, xSecond] = group[secondLetterIndex];
+    arena[ySecond][xSecond] = null; // Macht das Feld unsichtbar
+  }
+
+   
   // In Runde 10 darf das Wort NICHT im Rahmen sein
   if(!inOriginalFrame && !inFakeFrame){
     targetFound = true;
@@ -1033,7 +1042,7 @@ function startGame() {
     
     gameRunning = true;
     resetPlayer();
-    //round = 10; fur testen (game) 
+    round = 4;  
     newTargetWord();
     updateRoundDisplay(); // ← Anzeige direkt updaten
   }
