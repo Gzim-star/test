@@ -953,7 +953,14 @@ if(!framesInvisible){
   ctx.lineWidth = borderWidth;
   ctx.strokeRect(frameX+0.05, frameY-0.27, 0.9, frameH-0.2);
   ctx.globalAlpha = 1;
+
+    // 🔹 Runde 4: 2. Buchstabe von unten unsichtbar machen
+  if(round === 4){
+    const secondFromBottomY = frameY + frameH - 2; // Index des zweiten von unten
+    arena[secondFromBottomY][frameX] = null; // Unsichtbar im Original-Rahmen
+  }
 }
+
 
 // 🟫 FAKE FRAMES
 if(!framesInvisible){
