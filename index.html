@@ -263,6 +263,9 @@ const arena = Array.from({ length: 20 }, () => Array(10).fill(null));
 const highlights = Array.from({ length: 20 }, () => Array(10).fill(null));
 
 const player = { pos: { x: 0, y: 0 }, letter: '' };
+
+let invisibleLetters = [];
+
 let targetWord = '';
 let gameRunning = false;
 let hintRevealed = false;
@@ -376,6 +379,14 @@ function newTargetWord() {
 
   // 🔹 Rahmenhöhe automatisch an Wortlänge anpassen
   frameH = targetWord.length < 10 ? targetWord.length : 10;
+
+  // 🔹 Hier nach frameX / frameY setzen:
+  if(round === 4){
+      const secondLetterIndex = 1; // 2. Buchstabe
+      invisibleLetters = [{ x: frameX, y: frameY + secondLetterIndex }];
+  } else {
+      invisibleLetters = [];
+  }
 
 // Hint in Runde 4 deaktivieren
 hintDisabled = (round === 4);
@@ -983,14 +994,19 @@ if(!framesInvisible){
   });
 }
 
-  arena.forEach((row,y)=>{
+arena.forEach((row,y)=>{
     row.forEach((v,x)=>{
-      if(v){ 
-        ctx.fillStyle = highlights[y][x]||COLORS[(x+y)%COLORS.length]; 
-        ctx.fillText(v,x+0.5,y+0.5); 
-      }
+        if(v){ 
+            // 🔹 Prüfen, ob das Feld unsichtbar ist
+            const isInvisible = invisibleLetters.some(p => p.x === x && p.y === y);
+            if(!isInvisible){
+                ctx.fillStyle = highlights[y][x] || COLORS[(x+y)%COLORS.length]; 
+                ctx.fillText(v, x+0.5, y+0.5); 
+            }
+            // sonst nicht zeichnen → optisch unsichtbar
+        }
     });
-  });
+});
 
   ctx.fillStyle=COLORS[(player.pos.x+player.pos.y)%COLORS.length];
   ctx.fillText(player.letter,player.pos.x+0.5,player.pos.y+0.5);
