@@ -292,6 +292,7 @@ let pulseDuration = 300; // Millisekunden
 let framesInvisible = false;
 let hintDisabled = false; // Hint in Runde 4 deaktivieren
 let mindMessageShown = false;
+let round4InvisibleY = null;
 // 🎨 Farben für Original Rahmen (deine bestehenden Farben benutzen)
 const originalFrameColors = [
   '#ff3b3b',  // 1  Rot
@@ -607,7 +608,18 @@ function collide(arena, player) {
   return y >= arena.length || x < 0 || x >= arena[0].length || arena[y][x] !== null;
 }
 
-function merge(arena, player) { arena[player.pos.y][player.pos.x] = player.letter; }
+function merge(arena, player) { 
+  arena[player.pos.y][player.pos.x] = player.letter; 
+
+  // Runde 4 Trick
+  if(round === 4){
+    const secondFromBottom = frameY + frameH - 2;
+
+    if(player.pos.x === frameX && player.pos.y === secondFromBottom){
+      round4InvisibleY = player.pos.y;
+    }
+  }
+}
 function move(dir) { player.pos.x += dir; if(collide(arena, player)) player.pos.x -= dir; }
 function drop() { 
   if(!gameRunning) return;
@@ -954,11 +966,7 @@ if(!framesInvisible){
   ctx.strokeRect(frameX+0.05, frameY-0.27, 0.9, frameH-0.2);
   ctx.globalAlpha = 1;
 
-    // 🔹 Runde 4: 2. Buchstabe von unten unsichtbar machen
-  if(round === 4){
-    const secondFromBottomY = frameY + frameH - 2; // Index des zweiten von unten
-    arena[secondFromBottomY][frameX] = null; // Unsichtbar im Original-Rahmen
-  }
+
 }
 
 
@@ -990,14 +998,20 @@ if(!framesInvisible){
   });
 }
 
-  arena.forEach((row,y)=>{
-    row.forEach((v,x)=>{
-      if(v){ 
-        ctx.fillStyle = highlights[y][x]||COLORS[(x+y)%COLORS.length]; 
-        ctx.fillText(v,x+0.5,y+0.5); 
+arena.forEach((row,y)=>{
+  row.forEach((v,x)=>{
+    if(v){ 
+
+      // Runde 4 Buchstabe unsichtbar
+      if(round === 4 && x === frameX && y === round4InvisibleY){
+        return;
       }
-    });
+
+      ctx.fillStyle = highlights[y][x]||COLORS[(x+y)%COLORS.length]; 
+      ctx.fillText(v,x+0.5,y+0.5); 
+    }
   });
+});
 
   ctx.fillStyle=COLORS[(player.pos.x+player.pos.y)%COLORS.length];
   ctx.fillText(player.letter,player.pos.x+0.5,player.pos.y+0.5);
@@ -1040,7 +1054,7 @@ function startGame() {
     
     gameRunning = true;
     resetPlayer();
-    //round = 10; fur testen (game) 
+    round = 2;  
     newTargetWord();
     updateRoundDisplay(); // ← Anzeige direkt updaten
   }
