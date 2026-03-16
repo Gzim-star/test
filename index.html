@@ -292,6 +292,8 @@ let pulseDuration = 300; // Millisekunden
 let framesInvisible = false;
 let hintDisabled = false; // Hint in Runde 4 deaktivieren
 let mindMessageShown = false;
+// Für Runde 4: 2. Buchstabe unsichtbar machen
+let round4SecondLetter = null;
 // 🎨 Farben für Original Rahmen (deine bestehenden Farben benutzen)
 const originalFrameColors = [
   '#ff3b3b',  // 1  Rot
@@ -639,15 +641,12 @@ if(letters.toUpperCase() === targetWord){
 
   if(round === 10){
 
-  
-     // 🔹 Runde 4 Spezial: 2. Buchstabe unsichtbar machen
+  // 🔹 Runde 4 Spezial: 2. Buchstabe unsichtbar
   if(round === 4 && inOriginalFrame){
-    const secondLetterIndex = 1; // Index 1 = 2. Buchstabe
-    const [ySecond, xSecond] = group[secondLetterIndex];
-    arena[ySecond][xSecond] = null; // Macht das Feld unsichtbar
+      // Index 1 = 2. Buchstabe
+      round4SecondLetter = group[1]; // speichert [y,x]
   }
 
-   
   // In Runde 10 darf das Wort NICHT im Rahmen sein
   if(!inOriginalFrame && !inFakeFrame){
     targetFound = true;
@@ -992,14 +991,18 @@ if(!framesInvisible){
   });
 }
 
-  arena.forEach((row,y)=>{
-    row.forEach((v,x)=>{
-      if(v){ 
-        ctx.fillStyle = highlights[y][x]||COLORS[(x+y)%COLORS.length]; 
-        ctx.fillText(v,x+0.5,y+0.5); 
-      }
-    });
+arena.forEach((row,y)=>{
+  row.forEach((v,x)=>{
+    if(v){ 
+      // 🔹 Runde 4: 2. Buchstabe unsichtbar
+      if(round === 4 && round4SecondLetter 
+         && y === round4SecondLetter[0] && x === round4SecondLetter[1]) return;
+
+      ctx.fillStyle = highlights[y][x]||COLORS[(x+y)%COLORS.length]; 
+      ctx.fillText(v,x+0.5,y+0.5); 
+    }
   });
+});
 
   ctx.fillStyle=COLORS[(player.pos.x+player.pos.y)%COLORS.length];
   ctx.fillText(player.letter,player.pos.x+0.5,player.pos.y+0.5);
